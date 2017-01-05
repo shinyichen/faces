@@ -9,6 +9,7 @@
     <script src="../styles/bootstrap/js/bootstrap.min.js"></script>
     <script src="../scripts/ui-bootstrap-tpls-2.3.2.min.js"></script>
     <script src="../common/fileInput.js"></script>
+    <script src="../common/utils.js"></script>
     <script src="results.js"></script>
 </head>
 <body>
@@ -30,10 +31,10 @@
 
                 <!-- rows -->
                 <tbody>
-                    <tr class="table-row" ng-repeat="(key, value) in resultSet track by $index">
-                        <td>{{key}}</td>
+                    <tr class="table-row" ng-repeat="(cluster_id, set) in resultSet track by $index">
+                        <td>{{cluster_id}}</td>
                         <td>
-                            <div ng-repeat="v in value track by $index">{{v}}</div>
+                            <div ng-repeat="s in set">{{ s.FILENAME }}</div>
                         </td>
                     </tr>
                 </tbody>
