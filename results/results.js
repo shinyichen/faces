@@ -16,30 +16,42 @@
     // The Chaise RecordSet module
     angular.module('results', ['ui.bootstrap', 'fileInput', 'utils'])
 
-
         // Register the recordset controller
         .controller('resultsController', ['$scope', 'FileUtils', function($scope, FileUtils) {
 
-            $scope.resultSet = null;
+            $scope.imageDir = "../..";
+
+            $scope.clusters = null;
+
+            $scope.cluster_id = null;
 
             $scope.showOpener = true;
 
+            $scope.showCluster = false;
+
             $scope.open = function() {
-                console.log($scope.text);
 
-                // if csv file
-                $scope.resultSet = FileUtils.csv2json($scope.text);
+                // csv file
+                $scope.clusters = FileUtils.csv2json($scope.text);
 
-                // if json file
-                //$scope.resultSet = JSON.parse($scope.text);
-
-                console.log($scope.resultSet);
                 $scope.showOpener = false;
             };
 
             $scope.text = null;
 
-        }])
+            $scope.more = function(cluster_id) {
+                $scope.cluster_id = cluster_id;
+                $scope.showCluster = true;
+            };
 
+            $scope.goClusters = function() {
+                $scope.cluster_id = null;
+                $scope.showCluster = false;
+            };
+
+            $scope.showImage = function(source) {
+                window.open($scope.imageDir + "/" + source, '_blank');
+            };
+        }])
 
 })();
