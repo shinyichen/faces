@@ -17,7 +17,7 @@
     angular.module('results', ['ui.bootstrap', 'fileInput', 'utils'])
 
         // Register the recordset controller
-        .controller('resultsController', ['$scope', 'FileUtils', function($scope, FileUtils) {
+        .controller('resultsController', ['$scope', 'FileUtils', '$uibModal', function($scope, FileUtils, $uibModal) {
 
             $scope.imageDir = "../..";
 
@@ -51,7 +51,20 @@
 
             $scope.showImage = function(source) {
                 window.open($scope.imageDir + "/" + source, '_blank');
+
+                //$uibModal.open({
+                //    backdrop: true,
+                //    keyboard: true,
+                //    size: "lg",
+                //    template: "<img src=\"" + $scope.imageDir + "/" + source + "\">"
+                //});
+
             };
+
+            $scope.restart = function() {
+                $scope.showOpener = true;
+            };
+
         }])
 
 })();

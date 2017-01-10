@@ -22,6 +22,9 @@
 
                 for(var i = 1; i < lines.length; i++){
 
+                    if (lines[i] === "")
+                        continue;
+
                     var obj = {};
                     var cluster_index;
                     var currentline = lines[i].split(",");
