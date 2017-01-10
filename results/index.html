@@ -25,7 +25,7 @@
 
         <div ng-if="!showOpener && !showCluster">
             <button type="button" class="btn btn-primary" ng-click="restart()">Back</button>
-            <div>{{clusters.length}} cluster</div>
+            <div>{{count}} clusters, {{lastPage}} pages</div>
             <table class="table table-striped table-bordered table-hover">
                 <!-- sortable column header -->
                 <thead class="table-heading">
@@ -38,17 +38,26 @@
 
                 <!-- rows -->
                 <tbody>
-                    <tr class="table-row" ng-repeat="(cluster_id, set) in clusters track by $index">
-                        <td align="center">{{::cluster_id}}</td>
-                        <td align="center">{{::set.length}}</td>
+                    <tr class="table-row" ng-repeat="cluster_id in page.clusters track by $index">
+                        <td align="center">{{cluster_id}}</td>
+                        <td align="center">{{clusters[cluster_id].length}}</td>
                         <td>
-                            <img ng-repeat="s in set | limitTo: 3" ng-src="{{::imageDir}}/{{::s.FILENAME}}" ng-src="{{::imageDir}}/{{::s.FILENAME}}" ng-click="showImage(s.FILENAME)"class="img-thumbnail" style="width: 100px; height: auto; vertical-align: bottom; cursor: pointer">
-                            <button ng-if="set.length > 3" type="button" class="btn btn-primary btn-xs" ng-click="more(cluster_id)" style="vertical-align: bottom;">{{::set.length-3}} more</button>
+                            <img ng-repeat="s in clusters[cluster_id] | limitTo: 3" ng-src="{{::imageDir}}/{{s.FILENAME}}" ng-click="showImage(s.FILENAME)"class="img-thumbnail" style="width: 100px; height: auto; vertical-align: bottom; cursor: pointer">
+                            <button ng-if="clusters[cluster_id].length > 3" type="button" class="btn btn-primary btn-xs" ng-click="more(cluster_id)" style="vertical-align: bottom;">{{clusters[cluster_id].length-3}} more</button>
                         </td>
                     </tr>
                 </tbody>
             </table>
+
+            <button type="button" class="btn btn-primary" ng-disabled="page.number == 1" ng-click="previous()">
+                <span class="glyphicon glyphicon-chevron-left"></span>
+            </button>
+            <button type="button" class="btn btn-primary" ng-disabled="page.number == lastPage" ng-click="next()">
+                <span class="glyphicon glyphicon-chevron-right"></span>
+            </button>
         </div>
+
+
         <div ng-if="showCluster">
             <button type="button" class="btn btn-primary" ng-click="goClusters()">Back</button>
             <div>Cluster {{::cluster_id}} has {{clusters[cluster_id].length}} images</div>
