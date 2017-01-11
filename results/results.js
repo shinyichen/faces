@@ -19,28 +19,29 @@
         // Register the recordset controller
         .controller('resultsController', ['$scope', 'FileUtils', '$uibModal', function($scope, FileUtils, $uibModal) {
 
-            $scope.imageDir = "../..";
+            $scope.imageDir = "../.."; // relative path to image directory
 
-            $scope.clusters = null;
+            $scope.text = null;        // string of text from result file
 
-            $scope.counter = 0;
+            $scope.clusters = null;    // cluster data
 
-            $scope.cluster_id = null;
+            $scope.counter = 0;        // number of clusters
 
-            $scope.showOpener = true;
+            $scope.cluster_id = null;  // current cluster being displayed
 
-            $scope.showCluster = false;
+            $scope.showCluster = false; // show cluster view
 
-            $scope.lastPage = 0;
+            $scope.lastPage = 0;       // last page number
 
-            $scope.page = {};
+            $scope.page = {};          // current page info {number: 1, clusters: [0, 1, 2]}
 
+            var clusterIDs = [];       // an array of cluster id's
 
+            var pageSize = 25;         // number of clusters per page
 
-            var clusterIDs = [];
-
-            var pageSize = 25;
-
+            /**
+             * read csv result file and generate clusters data
+             */
             $scope.open = function() {
 
                 // csv file
@@ -52,21 +53,29 @@
                     "number": 1,
                     "clusters": clusterIDs.slice(0, Math.min(clusterIDs.length, pageSize))
                 };
-                $scope.showOpener = false;
             };
 
-            $scope.text = null;
-
+            /**
+             * go to cluster view and show all images of the cluster
+             * @param cluster_id
+             */
             $scope.more = function(cluster_id) {
                 $scope.cluster_id = cluster_id;
                 $scope.showCluster = true;
             };
 
+            /**
+             * go to cluster list view
+             */
             $scope.goClusters = function() {
                 $scope.cluster_id = null;
                 $scope.showCluster = false;
             };
 
+            /**
+             * view individual image
+             * @param source
+             */
             $scope.showImage = function(source) {
                 window.open($scope.imageDir + "/" + source, '_blank');
 
@@ -79,24 +88,26 @@
 
             };
 
-            $scope.restart = function() {
-                $scope.showOpener = true;
-            };
-
-
-
+            /**
+             * previous page
+             */
             $scope.previous = function() {
                 if ($scope.page.number !== 1) { // starts at 1
                     $scope.page.number -= 1;
                     $scope.page.clusters = clusterIDs.slice(($scope.page.number - 1) * pageSize, Math.min(clusterIDs.length, $scope.page.number * pageSize));
+                    window.scrollTo(0, 0);
                 }
 
             };
 
+            /**
+             * next page
+             */
             $scope.next = function() {
                 if ($scope.page.number !== $scope.lastPage) {
                     $scope.page.number += 1;
                     $scope.page.clusters = clusterIDs.slice(($scope.page.number - 1) * pageSize, Math.min(clusterIDs.length, $scope.page.number * pageSize));
+                    window.scrollTo(0, 0);
                 }
             }
 

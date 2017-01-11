@@ -22,3 +22,8 @@ main div {
     overflow: auto;
     justify-content: center;
 }
+
+.col-centered{
+    float: none;
+    margin: 0 auto;
+}
