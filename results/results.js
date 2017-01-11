@@ -17,11 +17,15 @@
     angular.module('results', ['ui.bootstrap', 'fileInput', 'utils'])
 
         // Register the recordset controller
-        .controller('resultsController', ['$scope', 'FileUtils', '$uibModal', function($scope, FileUtils, $uibModal) {
+        .controller('resultsController', ['$scope', 'FileUtils', function($scope, FileUtils) {
 
             $scope.imageDir = "../.."; // relative path to image directory
 
-            $scope.text = null;        // string of text from result file
+            $scope.inputText = null;   // string of text from input file
+
+            $scope.resultText = null;  // string of text from result file
+
+            $scope.inputs = null;      // input data
 
             $scope.clusters = null;    // cluster data
 
@@ -44,8 +48,11 @@
              */
             $scope.open = function() {
 
-                // csv file
-                $scope.clusters = FileUtils.csv2json($scope.text);
+                // input file
+                $scope.inputs = FileUtils.parseInput($scope.inputText);
+
+                // result file
+                $scope.clusters = FileUtils.parseResult($scope.resultText);
                 clusterIDs = Object.keys($scope.clusters);
                 $scope.count = clusterIDs.length;
                 $scope.lastPage = Math.ceil(clusterIDs.length / pageSize);

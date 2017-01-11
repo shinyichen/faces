@@ -18,7 +18,8 @@
     <div ng-controller="resultsController" class="container-fluid">
         <div class="row">
             <div ng-show="!showCluster" class="col-lg-4 col-md-4" style="white-space:nowrap" class="input-group">
-                <input type="file" name="file" fileread="text">
+                <input type="file" name="file" fileread="inputText">
+                <input type="file" name="file" fileread="resultText">
                 <button type="button" class="btn btn-default btn-xs" ng-click="open()">Open</button>
             </div>
             <div ng-show="!showCluster && clusters" class="col-lg-4 col-md-4 pager col-centered">
