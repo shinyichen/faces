@@ -66,6 +66,7 @@
                         <td>
                             <!--<img ng-repeat="s in clusters[cluster_id] | limitTo: 3" ng-src="{{::imageDir}}/{{s.FILENAME}}" ng-click="showImage(s.FILENAME)"class="img-thumbnail" style="width: 100px; height: auto; vertical-align: bottom; cursor: pointer">-->
                             <thumbnail ng-repeat="s in clusters[cluster_id] | limitTo: 3"
+                                       class="img-thumbnail"
                                        ng-attr-id="{{s.FILENAME}}"
                                        img-src="{{::imageDir}}/{{s.FILENAME}}"
                                        sx="inputs[s.TEMPLATE_ID].FACE_X"
@@ -98,7 +99,17 @@
             <button type="button" class="btn btn-primary btn-sm" ng-click="goClusters()">Back</button>
             <div>Cluster {{::cluster_id}} has {{clusters[cluster_id].length}} images</div>
             <div>
-                <img ng-repeat="s in clusters[cluster_id]" ng-src="{{::imageDir}}/{{::s.FILENAME}}" ng-click="showImage(s.FILENAME)" class="img-thumbnail" style="width: 100px; height: auto; cursor: pointer">
+                <thumbnail ng-repeat="s in clusters[cluster_id]"
+                           img-src="{{::imageDir}}/{{::s.FILENAME}}"
+                           sx="inputs[s.TEMPLATE_ID].FACE_X"
+                           sy="inputs[s.TEMPLATE_ID].FACE_Y"
+                           s-width="inputs[s.TEMPLATE_ID].FACE_WIDTH"
+                           s-height="inputs[s.TEMPLATE_ID].FACE_HEIGHT"
+                           d-width="200"
+                           d-height="200"
+                           ng-click="showImage(s.FILENAME)"
+                           class="img-thumbnail"
+                           style="cursor: pointer"></thumbnail>
             </div>
         </div>
     </div>
