@@ -14,7 +14,7 @@
 (function() {
 
     // The Chaise RecordSet module
-    angular.module('results', ['ui.bootstrap', 'fileInput', 'utils'])
+    angular.module('results', ['ui.bootstrap', 'fileInput', 'utils', 'images'])
 
         // Register the recordset controller
         .controller('resultsController', ['$scope', 'FileUtils', function($scope, FileUtils) {

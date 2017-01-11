@@ -11,6 +11,7 @@
     <script src="../scripts/ui-bootstrap-tpls-2.3.2.min.js"></script>
     <script src="../common/fileInput.js"></script>
     <script src="../common/utils.js"></script>
+    <script src="../common/thumbnail.js"></script>
     <script src="results.js"></script>
 </head>
 <body>
@@ -53,7 +54,18 @@
                         <td align="center">{{cluster_id}}</td>
                         <td align="center">{{clusters[cluster_id].length}}</td>
                         <td>
-                            <img ng-repeat="s in clusters[cluster_id] | limitTo: 3" ng-src="{{::imageDir}}/{{s.FILENAME}}" ng-click="showImage(s.FILENAME)"class="img-thumbnail" style="width: 100px; height: auto; vertical-align: bottom; cursor: pointer">
+                            <!--<img ng-repeat="s in clusters[cluster_id] | limitTo: 3" ng-src="{{::imageDir}}/{{s.FILENAME}}" ng-click="showImage(s.FILENAME)"class="img-thumbnail" style="width: 100px; height: auto; vertical-align: bottom; cursor: pointer">-->
+                            <thumbnail ng-repeat="s in clusters[cluster_id] | limitTo: 3"
+                                       ng-attr-id="{{s.FILENAME}}"
+                                       img-src="{{::imageDir}}/{{s.FILENAME}}"
+                                       sx="inputs[s.TEMPLATE_ID].FACE_X"
+                                       sy="inputs[s.TEMPLATE_ID].FACE_Y"
+                                       s-width="inputs[s.TEMPLATE_ID].FACE_WIDTH"
+                                       s-height="inputs[s.TEMPLATE_ID].FACE_HEIGHT"
+                                       d-width="150"
+                                       d-height="150"
+                                       ng-click="showImage(s.FILENAME)"
+                                       style="vertical-align: bottom; cursor: pointer"></thumbnail>
                             <button ng-if="clusters[cluster_id].length > 3" type="button" class="btn btn-primary btn-xs" ng-click="more(cluster_id)" style="vertical-align: bottom;">{{clusters[cluster_id].length-3}} more</button>
                         </td>
                     </tr>
