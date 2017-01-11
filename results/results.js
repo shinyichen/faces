@@ -21,6 +21,8 @@
 
             $scope.imageDir = "../.."; // relative path to image directory
 
+            $scope.showOpener = true;  // show opener view
+
             $scope.inputText = null;   // string of text from input file
 
             $scope.resultText = null;  // string of text from result file
@@ -60,6 +62,8 @@
                     "number": 1,
                     "clusters": clusterIDs.slice(0, Math.min(clusterIDs.length, pageSize))
                 };
+
+                $scope.showOpener = false;
             };
 
             /**
@@ -93,6 +97,11 @@
                 //    template: "<img src=\"" + $scope.imageDir + "/" + source + "\">"
                 //});
 
+            };
+
+            $scope.restart = function() {
+                $scope.showOpener = true;
+                $scope.showCluster = false;
             };
 
             /**

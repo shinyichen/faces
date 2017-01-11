@@ -17,13 +17,28 @@
 <body>
 
     <div ng-controller="resultsController" class="container-fluid">
-        <div class="row">
-            <div ng-show="!showCluster" class="col-lg-4 col-md-4" style="white-space:nowrap" class="input-group">
-                <input type="file" name="file" fileread="inputText">
-                <input type="file" name="file" fileread="resultText">
-                <button type="button" class="btn btn-default btn-xs" ng-click="open()">Open</button>
+        <div ng-show="showOpener">
+            <div class="row">
+                <div class="col-lg-offset-4 col-md-offset-4 col-lg-4 col-md-4">
+                    <div class="form-group">
+                        <label class="col-form-label">Input File: </label>
+                        <input class="form-control" type="file" name="file" fileread="inputText">
+                    </div>
+                    <div class="form-group">
+                        <label class="col-form-label">Result File: </label>
+                        <input class="form-control" type="file" name="file" fileread="resultText">
+                    </div>
+                    <button type="button" class="btn btn-primary" ng-click="open()">Open</button>
+                </div>
             </div>
-            <div ng-show="!showCluster && clusters" class="col-lg-4 col-md-4 pager col-centered">
+        </div>
+
+
+        <div ng-if="!showOpener && !showCluster && clusters">
+            <div class="col-lg-4 col-md-4">
+                <button type="button" class="btn btn-primary btn-sm" ng-click="restart()">Open New Result</button>
+            </div>
+            <div class="col-lg-4 col-md-4 pager col-centered">
                 <button type="button" class="btn btn-primary btn-sm" ng-disabled="page.number == 1" ng-click="previous()">
                     <span class="glyphicon glyphicon-chevron-left"></span>
                 </button>
@@ -32,11 +47,6 @@
                 </button>
                 <div>{{count}} clusters, page {{page.number}} of {{lastPage}}</div>
             </div>
-            <div class="col-lg-4 col-md-4"></div>
-        </div>
-
-
-        <div ng-if="!showCluster && clusters">
 
             <table class="table table-striped table-bordered table-hover">
                 <!-- sortable column header -->
