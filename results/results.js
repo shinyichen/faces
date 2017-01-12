@@ -14,10 +14,10 @@
 (function() {
 
     // The Chaise RecordSet module
-    angular.module('results', ['ui.bootstrap', 'fileInput', 'utils', 'images'])
+    angular.module('results', ['ui.bootstrap', 'fileInput', 'utils', 'images', 'modals'])
 
         // Register the recordset controller
-        .controller('resultsController', ['$scope', 'FileUtils', function($scope, FileUtils) {
+        .controller('resultsController', ['$scope', 'FileUtils', '$uibModal', function($scope, FileUtils, $uibModal) {
 
             $scope.imageDir = "../.."; // relative path to image directory
 
@@ -88,7 +88,7 @@
              * @param source
              */
             $scope.showImage = function(source) {
-                window.open($scope.imageDir + "/" + source, '_blank');
+                //window.open($scope.imageDir + "/" + source, '_blank');
 
                 //$uibModal.open({
                 //    backdrop: true,
@@ -96,6 +96,20 @@
                 //    size: "lg",
                 //    template: "<img src=\"" + $scope.imageDir + "/" + source + "\">"
                 //});
+
+                 $uibModal.open({
+                     animation: true,
+                     backdrop: true,
+                     keyboard: true,
+                     size: "lg",
+                     component: 'imageModalComponent',
+                     resolve: {
+                         source: function () {
+                             return $scope.imageDir + "/" + source;
+                         }
+                    }
+                });
+
 
             };
 

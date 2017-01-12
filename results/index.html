@@ -12,6 +12,7 @@
     <script src="../common/fileInput.js"></script>
     <script src="../common/utils.js"></script>
     <script src="../common/thumbnail.js"></script>
+    <script src="../common/modalComponent.js"></script>
     <script src="results.js"></script>
 </head>
 <body>
@@ -96,8 +97,15 @@
 
 
         <div ng-if="showCluster">
-            <button type="button" class="btn btn-primary btn-sm" ng-click="goClusters()">Back</button>
-            <div>Cluster {{::cluster_id}} has {{clusters[cluster_id].length}} images</div>
+            <div class="row">
+                <div class="col-lg-4 col-md-4">
+                    <button type="button" class="btn btn-primary btn-sm" ng-click="goClusters()">Back to clusters</button>
+                </div>
+                <div class="col-lg-4 col-md-4 col-centered">
+                    <h4>Cluster {{::cluster_id}} has {{clusters[cluster_id].length}} images</h4>
+                </div>
+            </div>
+
             <div>
                 <thumbnail ng-repeat="s in clusters[cluster_id]"
                            img-src="{{::imageDir}}/{{::s.FILENAME}}"
