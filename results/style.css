@@ -27,3 +27,9 @@ main div {
     float: none;
     margin: 0 auto;
 }
+
+.modal-dialog {
+    height:70%;
+    width:70%;
+    align-self: center;
+}

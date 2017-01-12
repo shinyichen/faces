@@ -90,18 +90,11 @@
             $scope.showImage = function(source) {
                 //window.open($scope.imageDir + "/" + source, '_blank');
 
-                //$uibModal.open({
-                //    backdrop: true,
-                //    keyboard: true,
-                //    size: "lg",
-                //    template: "<img src=\"" + $scope.imageDir + "/" + source + "\">"
-                //});
-
                  $uibModal.open({
                      animation: true,
                      backdrop: true,
                      keyboard: true,
-                     size: "lg",
+                     size: 'lg',
                      component: 'imageModalComponent',
                      resolve: {
                          source: function () {
