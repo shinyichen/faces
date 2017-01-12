@@ -2,5 +2,12 @@
     <button class="btn btn-default pull-right modal-close" type="button" ng-click="$ctrl.close()">X</button>
 </div>
 <div class="modal-body">
-    <thumbnail style="display: block; margin: auto;" img-src="{{$ctrl.resolve.source}}"></thumbnail>
+    <thumbnail style="display: block; margin: auto;"
+               img-src="{{$ctrl.source}}"
+               box-x="$ctrl.boxX"
+               box-y="$ctrl.boxY"
+               box-width="$ctrl.boxWidth"
+               box-height="$ctrl.boxHeight"
+               box=true>
+    </thumbnail>
 </div>

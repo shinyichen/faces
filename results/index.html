@@ -70,13 +70,14 @@
                                        class="img-thumbnail"
                                        ng-attr-id="{{s.FILENAME}}"
                                        img-src="{{::imageDir}}/{{s.FILENAME}}"
-                                       sx="inputs[s.TEMPLATE_ID].FACE_X"
-                                       sy="inputs[s.TEMPLATE_ID].FACE_Y"
-                                       s-width="inputs[s.TEMPLATE_ID].FACE_WIDTH"
-                                       s-height="inputs[s.TEMPLATE_ID].FACE_HEIGHT"
-                                       d-width="150"
-                                       d-height="150"
-                                       ng-click="showImage(s.FILENAME)"
+                                       box-x="inputs[s.TEMPLATE_ID].FACE_X"
+                                       box-y="inputs[s.TEMPLATE_ID].FACE_Y"
+                                       box-width="inputs[s.TEMPLATE_ID].FACE_WIDTH"
+                                       box-height="inputs[s.TEMPLATE_ID].FACE_HEIGHT"
+                                       display-width="150"
+                                       display-height="150"
+                                       crop=true
+                                       ng-click="showImage(s.TEMPLATE_ID)"
                                        style="vertical-align: bottom; cursor: pointer"></thumbnail>
                             <button ng-if="clusters[cluster_id].length > 3" type="button" class="btn btn-primary btn-xs" ng-click="more(cluster_id)" style="vertical-align: bottom;">{{clusters[cluster_id].length-3}} more</button>
                         </td>
@@ -109,13 +110,14 @@
             <div>
                 <thumbnail ng-repeat="s in clusters[cluster_id]"
                            img-src="{{::imageDir}}/{{::s.FILENAME}}"
-                           sx="inputs[s.TEMPLATE_ID].FACE_X"
-                           sy="inputs[s.TEMPLATE_ID].FACE_Y"
-                           s-width="inputs[s.TEMPLATE_ID].FACE_WIDTH"
-                           s-height="inputs[s.TEMPLATE_ID].FACE_HEIGHT"
-                           d-width="200"
-                           d-height="200"
-                           ng-click="showImage(s.FILENAME)"
+                           box-x="inputs[s.TEMPLATE_ID].FACE_X"
+                           box-y="inputs[s.TEMPLATE_ID].FACE_Y"
+                           box-width="inputs[s.TEMPLATE_ID].FACE_WIDTH"
+                           box-height="inputs[s.TEMPLATE_ID].FACE_HEIGHT"
+                           display-width="200"
+                           display-height="200"
+                           crop=true
+                           ng-click="showImage(s.TEMPLATE_ID)"
                            class="img-thumbnail"
                            style="cursor: pointer"></thumbnail>
             </div>

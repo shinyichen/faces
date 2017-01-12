@@ -87,9 +87,10 @@
              * view individual image
              * @param source
              */
-            $scope.showImage = function(source) {
+            $scope.showImage = function(template_id) {
                 //window.open($scope.imageDir + "/" + source, '_blank');
 
+                var template = $scope.inputs[template_id];
                  $uibModal.open({
                      animation: true,
                      backdrop: true,
@@ -97,8 +98,14 @@
                      size: 'lg',
                      component: 'imageModalComponent',
                      resolve: {
-                         source: function () {
-                             return $scope.imageDir + "/" + source;
+                         params: function () {
+                             return {
+                                 "source": $scope.imageDir + "/" + template.FILENAME,
+                                 "boxX": template.FACE_X,
+                                 "boxY": template.FACE_Y,
+                                 "boxWidth": template.FACE_WIDTH,
+                                 "boxHeight": template.FACE_HEIGHT
+                             }
                          }
                     }
                 });
