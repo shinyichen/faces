@@ -18,9 +18,22 @@
 <body>
 
     <div ng-controller="resultsController" class="container-fluid">
+
         <div ng-show="showOpener">
             <div class="row">
                 <div class="col-lg-offset-4 col-md-offset-4 col-lg-4 col-md-4">
+                    <h4>Open a preset:</h4>
+                    <div class="dropdown">
+                        <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">Select Preset
+                            <span class="caret"></span></button>
+                        <ul class="dropdown-menu dropdown-menu-left">
+                            <li ng-repeat="p in presets">
+                                <a href ng-click="openPreset(p)">{{p}}</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <hr>
+                    <h4>Or open a new result:</h4>
                     <div class="form-group">
                         <label class="col-form-label">Input File: </label>
                         <input class="form-control" type="file" name="file" fileread="inputText">

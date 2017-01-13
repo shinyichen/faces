@@ -17,11 +17,13 @@
     angular.module('results', ['ui.bootstrap', 'fileInput', 'utils', 'images', 'modals'])
 
         // Register the recordset controller
-        .controller('resultsController', ['$scope', 'FileUtils', '$uibModal', function($scope, FileUtils, $uibModal) {
+        .controller('resultsController', ['$scope', 'FileUtils', '$uibModal', '$http', function($scope, FileUtils, $uibModal, $http) {
 
             $scope.imageDir = "../.."; // relative path to image directory
 
             $scope.showOpener = true;  // show opener view
+
+            $scope.presets = ["clusters_32", "clusters_64", "clusters_128", "clusters_512", "clusters_1024", "clusters_1870"];
 
             $scope.inputText = null;   // string of text from input file
 
@@ -44,6 +46,23 @@
             var clusterIDs = [];       // an array of cluster id's
 
             var pageSize = 25;         // number of clusters per page
+
+            $scope.openPreset = function(id) {
+                var input = "../data/" + id + "/hint.csv";
+                var result = "../data/" + id + "/clusters.txt";
+                $http.get(input).then(function(response) {
+                    $scope.inputText = response.data;
+                    return $http.get(result);
+                }, function(error) {
+                    console.log(error);
+                }).then(function(response) {
+                    $scope.resultText = response.data;
+                    console.log(response.data);
+                    $scope.open();
+                }, function(error) {
+                    console.log(error);
+                });
+            };
 
             /**
              * read csv result file and generate clusters data
