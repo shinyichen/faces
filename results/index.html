@@ -10,7 +10,7 @@
     <script src="../styles/bootstrap/js/bootstrap.min.js"></script>
     <script src="../scripts/ui-bootstrap-tpls-2.3.2.min.js"></script>
     <script src="../common/fileInput.js"></script>
-    <script src="../common/utils.js"></script>
+    <!--<script src="../common/utils.js"></script>-->
     <script src="../common/thumbnail.js"></script>
     <script src="../common/modalComponent.js"></script>
     <script src="results.js"></script>
@@ -31,6 +31,12 @@
                                 <a href ng-click="openPreset(p)">{{p}}</a>
                             </li>
                         </ul>
+                    </div>
+                    <div class="form-check">
+                        <label class="form-check-label">
+                            <input class="form-check-input" type="checkbox" ng-model="formModel.groundTruth">
+                            Use ground truth
+                        </label>
                     </div>
                     <hr>
                     <h4>Or open a new result:</h4>
@@ -76,23 +82,22 @@
                 <tbody>
                     <tr class="table-row" ng-repeat="cluster_id in page.clusters track by $index">
                         <td align="center">{{cluster_id}}</td>
-                        <td align="center">{{clusters[cluster_id].length}}</td>
+                        <td align="center">{{clusters[cluster_id].templates.length}}</td>
                         <td>
-                            <!--<img ng-repeat="s in clusters[cluster_id] | limitTo: 3" ng-src="{{::imageDir}}/{{s.FILENAME}}" ng-click="showImage(s.FILENAME)"class="img-thumbnail" style="width: 100px; height: auto; vertical-align: bottom; cursor: pointer">-->
-                            <thumbnail ng-repeat="s in clusters[cluster_id] | limitTo: 3"
+                            <thumbnail ng-repeat="s in clusters[cluster_id].templates | limitTo: 3"
                                        class="img-thumbnail"
                                        ng-attr-id="{{s.FILENAME}}"
                                        img-src="{{::imageDir}}/{{s.FILENAME}}"
-                                       box-x="inputs[s.TEMPLATE_ID].FACE_X"
-                                       box-y="inputs[s.TEMPLATE_ID].FACE_Y"
-                                       box-width="inputs[s.TEMPLATE_ID].FACE_WIDTH"
-                                       box-height="inputs[s.TEMPLATE_ID].FACE_HEIGHT"
+                                       box-x="templates[s.TEMPLATE_ID].FACE_X"
+                                       box-y="templates[s.TEMPLATE_ID].FACE_Y"
+                                       box-width="templates[s.TEMPLATE_ID].FACE_WIDTH"
+                                       box-height="templates[s.TEMPLATE_ID].FACE_HEIGHT"
                                        display-width="150"
                                        display-height="150"
                                        crop=true
                                        ng-click="showImage(s.TEMPLATE_ID)"
                                        style="vertical-align: bottom; cursor: pointer"></thumbnail>
-                            <button ng-if="clusters[cluster_id].length > 3" type="button" class="btn btn-primary btn-xs" ng-click="more(cluster_id)" style="vertical-align: bottom;">{{clusters[cluster_id].length-3}} more</button>
+                            <button ng-if="clusters[cluster_id].templates.length > 3" type="button" class="btn btn-primary btn-xs" ng-click="more(cluster_id)" style="vertical-align: bottom;">{{clusters[cluster_id].templates.length-3}} more</button>
                         </td>
                     </tr>
                 </tbody>
@@ -116,17 +121,17 @@
                     <button type="button" class="btn btn-primary btn-sm" ng-click="goClusters()">Back to clusters</button>
                 </div>
                 <div class="col-lg-4 col-md-4 col-centered">
-                    <h4>Cluster {{::cluster_id}} has {{clusters[cluster_id].length}} images</h4>
+                    <h4>Cluster {{::cluster_id}} has {{clusters[cluster_id].templates.length}} images</h4>
                 </div>
             </div>
 
             <div>
-                <thumbnail ng-repeat="s in clusters[cluster_id]"
+                <thumbnail ng-repeat="s in clusters[cluster_id].templates"
                            img-src="{{::imageDir}}/{{::s.FILENAME}}"
-                           box-x="inputs[s.TEMPLATE_ID].FACE_X"
-                           box-y="inputs[s.TEMPLATE_ID].FACE_Y"
-                           box-width="inputs[s.TEMPLATE_ID].FACE_WIDTH"
-                           box-height="inputs[s.TEMPLATE_ID].FACE_HEIGHT"
+                           box-x="templates[s.TEMPLATE_ID].FACE_X"
+                           box-y="templates[s.TEMPLATE_ID].FACE_Y"
+                           box-width="templates[s.TEMPLATE_ID].FACE_WIDTH"
+                           box-height="templates[s.TEMPLATE_ID].FACE_HEIGHT"
                            display-width="200"
                            display-height="200"
                            crop=true

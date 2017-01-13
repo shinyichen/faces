@@ -38,9 +38,10 @@
                     }
 
                     if (!result[cluster_index]) {
-                        result[cluster_index] = [];
+                        result[cluster_index] = {};
+                        result[cluster_index].templates = [];
                     }
-                    result[cluster_index].push(obj);
+                    result[cluster_index].templates.push(obj);
 
                 }
 
@@ -85,9 +86,59 @@
                 return result;
             }
 
+            /**
+             * read ground truth file
+             * append subject to templates
+             * return subjects
+             * @param csv string
+             * @param templates
+             * @return Object subjects ({subject_id: [template_id1, template_id2, ...], ....})
+             */
+            function processGroundTruth(csv, templates) {
+
+                var lines=csv.split("\n");
+                var headers=lines[0].split(",");
+                var id_col = -1, subject_col = -1;
+                var subjects = {};
+
+                headers.forEach(function(value, index, array) {
+                    var col = value.trim();
+                    array[index] = col;
+                    if (col === "TEMPLATE_ID")
+                        id_col = index;
+                    else if (col === "SUBJECT_ID")
+                        subject_col = index;
+                });
+
+                for(var i = 1; i < lines.length; i++){ // skip header
+
+                    if (lines[i] === "")
+                        continue;
+
+                    var currentline = lines[i].split(",");
+                    var template_id = currentline[id_col];
+                    var subject_id = currentline[subject_col];
+
+                    // append subject to templates
+                    if (templates[template_id]) { // only care if template is used
+                        templates[template_id].SUBJECT_ID = subject_id;
+
+                        if (subjects[subject_id]) // subject already created
+                            subjects[subject_id].push(template_id);
+                        else
+                            subjects[subject_id] = [template_id]; // create new entry
+                    }
+
+                }
+
+                return subjects;
+
+            }
+
             return {
                 parseResult: parseResult,
-                parseInput: parseInput
+                parseInput: parseInput,
+                processGroundTruth: processGroundTruth
             }
         }])
 
