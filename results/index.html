@@ -19,7 +19,7 @@
 
     <div ng-controller="resultsController" class="container-fluid">
 
-        <div ng-show="showOpener">
+        <div ng-show="view=='opener'">
             <div class="row">
                 <div class="col-lg-offset-4 col-md-offset-4 col-lg-4 col-md-4">
                     <h4>Open a preset:</h4>
@@ -48,7 +48,7 @@
         </div>
 
 
-        <div ng-if="!showOpener && !showCluster && clusters">
+        <div ng-if="view=='clusters_overview' && clusters">
             <div class="col-lg-4 col-md-4">
                 <button type="button" class="btn btn-primary btn-sm" ng-click="restart()">Open New Result</button>
             </div>
@@ -110,7 +110,7 @@
         </div>
 
 
-        <div ng-if="showCluster">
+        <div ng-if="view=='cluster'">
             <div class="row">
                 <div class="col-lg-4 col-md-4">
                     <button type="button" class="btn btn-primary btn-sm" ng-click="goClusters()">Back to clusters</button>

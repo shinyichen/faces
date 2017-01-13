@@ -16,12 +16,19 @@
     // The Chaise RecordSet module
     angular.module('results', ['ui.bootstrap', 'fileInput', 'utils', 'images', 'modals'])
 
+        .constant('views', {
+            "opener": "opener",
+            "clusters_overview": "clusters_overview",
+            "clusters_labeled": "clusters_labeled",
+            "cluster": "cluster"
+        })
+
         // Register the recordset controller
-        .controller('resultsController', ['$scope', 'FileUtils', '$uibModal', '$http', function($scope, FileUtils, $uibModal, $http) {
+        .controller('resultsController', ['$scope', 'FileUtils', '$uibModal', '$http', 'views', function($scope, FileUtils, $uibModal, $http, views) {
 
             $scope.imageDir = "../.."; // relative path to image directory
 
-            $scope.showOpener = true;  // show opener view
+            $scope.view = views.opener;  // show opener view at startup
 
             $scope.presets = ["clusters_32", "clusters_64", "clusters_128", "clusters_512", "clusters_1024", "clusters_1870"];
 
@@ -36,8 +43,6 @@
             $scope.counter = 0;        // number of clusters
 
             $scope.cluster_id = null;  // current cluster being displayed
-
-            $scope.showCluster = false; // show cluster view
 
             $scope.lastPage = 0;       // last page number
 
@@ -82,7 +87,7 @@
                     "clusters": clusterIDs.slice(0, Math.min(clusterIDs.length, pageSize))
                 };
 
-                $scope.showOpener = false;
+                $scope.view = views.clusters_overview;
             };
 
             /**
@@ -91,7 +96,7 @@
              */
             $scope.more = function(cluster_id) {
                 $scope.cluster_id = cluster_id;
-                $scope.showCluster = true;
+                $scope.view = views.cluster;
             };
 
             /**
@@ -99,7 +104,7 @@
              */
             $scope.goClusters = function() {
                 $scope.cluster_id = null;
-                $scope.showCluster = false;
+                $scope.view = views.clusters_overview;
             };
 
             /**
@@ -133,8 +138,7 @@
             };
 
             $scope.restart = function() {
-                $scope.showOpener = true;
-                $scope.showCluster = false;
+                $scope.view = views.opener;
             };
 
             /**
