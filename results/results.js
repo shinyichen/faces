@@ -52,11 +52,13 @@
 
             $scope.presets = ["clusters_32", "clusters_64", "clusters_128", "clusters_512", "clusters_1024", "clusters_1870"];
 
-            $scope.inputText = null;   // string of text from input file
+            $scope.inputs = {
+                "inputText": null,   // string of text from input file
+                "resultText": null,  // string of text from result file
+                "groundTruthText": null // string of text from ground truth file, optional
+            };
 
-            $scope.resultText = null;  // string of text from result file
-
-            $scope.groundTruthText = null; // string of text from ground truth file, optional
+            $scope.useGroundTruth = false;
 
             $scope.templates = null;      // input data
 
@@ -86,22 +88,25 @@
                 var gt = "../data/ground_truth.csv";
 
                 $http.get(input).then(function(response) {
-                    $scope.inputText = response.data;
+                    $scope.inputs.inputText = response.data;
                     return $http.get(result);
                 }, function(error) {
                     console.log(error);
                 }).then(function(response) {
 
-                    $scope.resultText = response.data;
+                    $scope.inputs.resultText = response.data;
                     if ($scope.formModel.groundTruth) {
+                        $scope.useGroundTruth = true;
                         $http.get(gt).then(function(r) {
-                            $scope.groundTruthText = r.data;
+                            $scope.inputs.groundTruthText = r.data;
                             $scope.open();
                         }, function(error) {
                             console.log(error);
                         });
-                    } else
-                       $scope.open();
+                    } else {
+                        $scope.useGroundTruth = false;
+                        $scope.open();
+                    }
                 }, function(error) {
                     console.log(error);
                 });
@@ -113,16 +118,16 @@
             $scope.open = function() {
 
                 // result file
-                parseClusters($scope.resultText);
+                parseClusters($scope.inputs.resultText);
                 clusterIDs = Object.keys($scope.clusters);
 
                 // input file
-                parseTemplates($scope.inputText);
-
+                parseTemplates($scope.inputs.inputText);
 
                 // ground truth (optional)
-                if ($scope.formModel.groundTruth && $scope.groundTruthText) {
-                    parseGroundTruth($scope.groundTruthText);
+                if ($scope.inputs.groundTruthText) {
+                    $scope.useGroundTruth = true;
+                    parseGroundTruth($scope.inputs.groundTruthText);
                     subjectIDs = Object.keys($scope.subjects);
                     calculatePrecision();
                     $scope.count = subjectIDs.length;
@@ -135,6 +140,7 @@
 
                 }
                 else {
+                    $scope.useGroundTruth = false;
                     $scope.count = clusterIDs.length;
                     $scope.page = {
                         "number": 1,
@@ -159,7 +165,7 @@
              */
             $scope.goClusters = function() {
                 $scope.cluster_id = null;
-                if ($scope.formModel.groundTruth)
+                if ($scope.useGroundTruth)
                     $scope.view = views.clusters_labeled;
                 else
                     $scope.view = views.clusters_overview;
@@ -196,7 +202,12 @@
             };
 
             $scope.restart = function() {
+                $scope.useGroundTruth = false;
+                $scope.inputs.inputText = null;
+                $scope.inputs.resultText = null;
+                $scope.inputs.groundTruthText = null;
                 $scope.view = views.opener;
+
             };
 
             /**
@@ -205,7 +216,7 @@
             $scope.previous = function() {
                 if ($scope.page.number !== 1) { // starts at 1
                     $scope.page.number -= 1;
-                    if ($scope.formModel.groundTruth)
+                    if ($scope.useGroundTruth)
                         $scope.page.subjects =
                             subjectIDs.slice(($scope.page.number - 1) * pageSize, Math.min(clusterIDs.length, $scope.page.number * pageSize));
                     else
@@ -222,7 +233,7 @@
             $scope.next = function() {
                 if ($scope.page.number !== $scope.lastPage) {
                     $scope.page.number += 1;
-                    if ($scope.formModel.groundTruth)
+                    if ($scope.useGroundTruth)
                         $scope.page.subjects =
                             subjectIDs.slice(($scope.page.number - 1) * pageSize, Math.min(clusterIDs.length, $scope.page.number * pageSize));
                     else

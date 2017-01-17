@@ -10,7 +10,6 @@
     <script src="../styles/bootstrap/js/bootstrap.min.js"></script>
     <script src="../scripts/ui-bootstrap-tpls-2.3.2.min.js"></script>
     <script src="../common/fileInput.js"></script>
-    <!--<script src="../common/utils.js"></script>-->
     <script src="../common/thumbnail.js"></script>
     <script src="../common/modalComponent.js"></script>
     <script src="results.js"></script>
@@ -19,7 +18,7 @@
 
     <div ng-controller="resultsController" class="container-fluid">
 
-        <div ng-show="view=='opener'">
+        <div ng-if="view=='opener'">
             <div class="row">
                 <div class="col-lg-offset-4 col-md-offset-4 col-lg-4 col-md-4">
                     <h4>Open a preset:</h4>
@@ -42,11 +41,15 @@
                     <h4>Or open a new result:</h4>
                     <div class="form-group">
                         <label class="col-form-label">Input File: </label>
-                        <input class="form-control" type="file" name="file" fileread="inputText">
+                        <input class="form-control" type="file" name="file" fileread="inputs.inputText">
                     </div>
                     <div class="form-group">
                         <label class="col-form-label">Result File: </label>
-                        <input class="form-control" type="file" name="file" fileread="resultText">
+                        <input class="form-control" type="file" name="file" fileread="inputs.resultText">
+                    </div>
+                    <div class="form-group">
+                        <label class="col-form-label">Ground Truth File: (optional)</label>
+                        <input class="form-control" type="file" name="file" fileread="inputs.groundTruthText">
                     </div>
                     <button type="button" class="btn btn-primary" ng-click="open()">Open</button>
                 </div>
