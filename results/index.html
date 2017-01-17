@@ -54,6 +54,7 @@
         </div>
 
 
+        <!-- cluster overview view -->
         <div ng-if="view=='clusters_overview' && clusters">
             <div class="col-lg-4 col-md-4">
                 <button type="button" class="btn btn-primary btn-sm" ng-click="restart()">Open New Result</button>
@@ -111,7 +112,72 @@
                     <span class="glyphicon glyphicon-chevron-right"></span>
                 </button>
             </div>
+        </div>
 
+
+        <!-- cluster labeled view -->
+        <div ng-if="view=='clusters_labeled' && clusters">
+            <div class="col-lg-4 col-md-4">
+                <button type="button" class="btn btn-primary btn-sm" ng-click="restart()">Open New Result</button>
+            </div>
+            <div class="col-lg-4 col-md-4 pager col-centered">
+                <button type="button" class="btn btn-primary btn-sm" ng-disabled="page.number == 1" ng-click="previous()">
+                    <span class="glyphicon glyphicon-chevron-left"></span>
+                </button>
+                <button type="button" class="btn btn-primary btn-sm" ng-disabled="page.number == lastPage" ng-click="next()">
+                    <span class="glyphicon glyphicon-chevron-right"></span>
+                </button>
+                <div>{{count}} clusters, page {{page.number}} of {{lastPage}}</div>
+            </div>
+
+            <div ng-repeat="subject_id in page.subjects track by $index">
+
+                <table class="table table-bordered table-striped table-hover">
+                    <thead class="table-heading">
+                    <tr class="bg-primary">
+                        <th colspan="5">Subject ID: {{subject_id}}</th>
+                    </tr>
+                    <tr>
+                        <th style="width: 10%">Cluster ID</th>
+                        <th style="width: 10%">Image Count</th>
+                        <th style="width: 10%">Precision</th>
+                        <th style="width: 10%">Recall</th>
+                        <th style="width: 60%">Cluster</th>
+                    </tr>
+                    </thead>
+                    <tr ng-repeat="cluster_id in subjectClusters[subject_id]">
+                        <td style="width: 10%">{{cluster_id}}</td>
+                        <td style="width: 10%">{{clusters[cluster_id].templates.length}}</td>
+                        <td style="width: 10%">{{clusters[cluster_id].precision}}</td>
+                        <td style="width: 10%">{{clusters[cluster_id].recall}}</td>
+                        <td style="width: 60%">
+                            <thumbnail ng-repeat="s in clusters[cluster_id].templates | limitTo: 3"
+                                       class="img-thumbnail"
+                                       ng-attr-id="{{s.FILENAME}}"
+                                       img-src="{{::imageDir}}/{{s.FILENAME}}"
+                                       box-x="templates[s.TEMPLATE_ID].FACE_X"
+                                       box-y="templates[s.TEMPLATE_ID].FACE_Y"
+                                       box-width="templates[s.TEMPLATE_ID].FACE_WIDTH"
+                                       box-height="templates[s.TEMPLATE_ID].FACE_HEIGHT"
+                                       display-width="150"
+                                       display-height="150"
+                                       crop=true
+                                       ng-click="showImage(s.TEMPLATE_ID)"
+                                       style="vertical-align: bottom; cursor: pointer"></thumbnail>
+                            <button ng-if="clusters[cluster_id].templates.length > 3" type="button" class="btn btn-primary btn-xs" ng-click="more(cluster_id)" style="vertical-align: bottom;">{{clusters[cluster_id].templates.length-3}} more</button>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="pager">
+                <button type="button" class="btn btn-primary btn-sm" ng-disabled="page.number == 1" ng-click="previous()">
+                    <span class="glyphicon glyphicon-chevron-left"></span>
+                </button>
+                <button type="button" class="btn btn-primary btn-sm" ng-disabled="page.number == lastPage" ng-click="next()">
+                    <span class="glyphicon glyphicon-chevron-right"></span>
+                </button>
+            </div>
         </div>
 
 

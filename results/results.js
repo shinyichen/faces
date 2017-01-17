@@ -64,6 +64,8 @@
 
             $scope.subjects = null;    // {subject_id: [template_ids...], ...}
 
+            $scope.subjectClusters = null; // {subject_id: [cluster id's]}
+
             $scope.counter = 0;        // number of clusters
 
             $scope.cluster_id = null;  // current cluster being displayed
@@ -74,7 +76,9 @@
 
             var clusterIDs = [];       // an array of cluster id's
 
-            var pageSize = 25;         // number of clusters per page
+            var subjectIDs = null;  // a list of subject IDs
+
+            var pageSize = 12;         // number of clusters per page
 
             $scope.openPreset = function(id) {
                 var input = "../data/" + id + "/hint.csv";
@@ -111,26 +115,34 @@
                 // result file
                 parseClusters($scope.resultText);
                 clusterIDs = Object.keys($scope.clusters);
-                $scope.count = clusterIDs.length;
-                $scope.lastPage = Math.ceil(clusterIDs.length / pageSize);
-                $scope.page = {
-                    "number": 1,
-                    "clusters": clusterIDs.slice(0, Math.min(clusterIDs.length, pageSize))
-                };
 
                 // input file
                 parseTemplates($scope.inputText);
 
 
                 // ground truth (optional)
-                if ($scope.groundTruthText) {
+                if ($scope.formModel.groundTruth && $scope.groundTruthText) {
                     parseGroundTruth($scope.groundTruthText);
+                    subjectIDs = Object.keys($scope.subjects);
                     calculatePrecision();
+                    $scope.count = subjectIDs.length;
+                    $scope.page = {
+                        "number": 1,
+                        "subjects": subjectIDs.slice(0, Math.min(clusterIDs.length, pageSize))
+                    };
+                    $scope.lastPage = Math.ceil(subjectIDs.length / pageSize);
                     $scope.view = views.clusters_labeled;
-                    console.log($scope.clusters)
+
                 }
-                else
+                else {
+                    $scope.count = clusterIDs.length;
+                    $scope.page = {
+                        "number": 1,
+                        "clusters": clusterIDs.slice(0, Math.min(clusterIDs.length, pageSize))
+                    };
+                    $scope.lastPage = Math.ceil(clusterIDs.length / pageSize);
                     $scope.view = views.clusters_overview;
+                }
             };
 
             /**
@@ -147,7 +159,10 @@
              */
             $scope.goClusters = function() {
                 $scope.cluster_id = null;
-                $scope.view = views.clusters_overview;
+                if ($scope.formModel.groundTruth)
+                    $scope.view = views.clusters_labeled;
+                else
+                    $scope.view = views.clusters_overview;
             };
 
             /**
@@ -190,7 +205,12 @@
             $scope.previous = function() {
                 if ($scope.page.number !== 1) { // starts at 1
                     $scope.page.number -= 1;
-                    $scope.page.clusters = clusterIDs.slice(($scope.page.number - 1) * pageSize, Math.min(clusterIDs.length, $scope.page.number * pageSize));
+                    if ($scope.formModel.groundTruth)
+                        $scope.page.subjects =
+                            subjectIDs.slice(($scope.page.number - 1) * pageSize, Math.min(clusterIDs.length, $scope.page.number * pageSize));
+                    else
+                        $scope.page.clusters =
+                            clusterIDs.slice(($scope.page.number - 1) * pageSize, Math.min(clusterIDs.length, $scope.page.number * pageSize));
                     window.scrollTo(0, 0);
                 }
 
@@ -202,7 +222,12 @@
             $scope.next = function() {
                 if ($scope.page.number !== $scope.lastPage) {
                     $scope.page.number += 1;
-                    $scope.page.clusters = clusterIDs.slice(($scope.page.number - 1) * pageSize, Math.min(clusterIDs.length, $scope.page.number * pageSize));
+                    if ($scope.formModel.groundTruth)
+                        $scope.page.subjects =
+                            subjectIDs.slice(($scope.page.number - 1) * pageSize, Math.min(clusterIDs.length, $scope.page.number * pageSize));
+                    else
+                        $scope.page.clusters =
+                            clusterIDs.slice(($scope.page.number - 1) * pageSize, Math.min(clusterIDs.length, $scope.page.number * pageSize));
                     window.scrollTo(0, 0);
                 }
             };
@@ -245,8 +270,6 @@
                     $scope.templates[obj["TEMPLATE_ID"]] = {};
 
                 }
-
-                return $scope.clusters; //JavaScript object
             }
 
             var inputHeaders = ["FILENAME", "FACE_X", "FACE_Y", "FACE_WIDTH", "FACE_HEIGHT"];
@@ -288,6 +311,7 @@
                 var headers=lines[0].split(",");
                 var id_col = -1, subject_col = -1;
                 $scope.subjects = {};
+                $scope.subjectClusters = {};
 
                 headers.forEach(function(value, index, array) {
                     var col = value.trim();
@@ -311,13 +335,15 @@
                     if ($scope.templates[template_id]) { // only care if template is used
                         $scope.templates[template_id].SUBJECT_ID = subject_id;
 
-                        if ($scope.subjects[subject_id]) // subject already created
+                        if ($scope.subjects[subject_id]) {// subject already created
                             $scope.subjects[subject_id].push(template_id);
-                        else
+                        }
+                        else {
                             $scope.subjects[subject_id] = [template_id]; // create new entry
+                        }
                     }
-
                 }
+
 
             }
 
@@ -325,9 +351,11 @@
              * calculate precision and recall of each cluster
              */
             function calculatePrecision() {
-                for (var c in $scope.clusters) {
+                $scope.subjectClusters = {};
 
-                    var cluster = $scope.clusters[c];
+                for (var cid in $scope.clusters) {
+
+                    var cluster = $scope.clusters[cid];
 
                     // find subjects in the cluster
                     var subjects = {};
@@ -355,18 +383,29 @@
                     var mainSubject = null;
                     if (mainSubjects.length > 1) {
                         // TODO determine the main subject
+                        mainSubject = mainSubjects[0];
                     } else {
                         mainSubject = mainSubjects[0];
                     }
 
                     // calculate precision
                     var subjectCount = $scope.subjects[mainSubject].length;
-                    cluster.precision = clusterSubjectCount / cluster.templates.length;
+                    cluster.precision = round(clusterSubjectCount / cluster.templates.length, 2);
 
                     // calculate recall
-                    cluster.recall = clusterSubjectCount / subjectCount;
+                    cluster.recall = round(clusterSubjectCount / subjectCount, 2);
 
+                    // map clusters to subject
+                    if ($scope.subjectClusters[mainSubject]) {
+                        $scope.subjectClusters[mainSubject].push(cid);
+                    } else {
+                        $scope.subjectClusters[mainSubject] = [cid];
+                    }
                 }
+            }
+
+            function round(value, decimals) {
+                return Number(Math.round(value+'e'+decimals)+'e-'+decimals);
             }
 
         }])
