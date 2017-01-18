@@ -34,8 +34,7 @@
 
         .constant('views', {
             "opener": "opener",
-            "clusters_overview": "clusters_overview",
-            "clusters_labeled": "clusters_labeled",
+            "overview": "overview",
             "cluster": "cluster"
         })
 
@@ -135,8 +134,11 @@
                         "number": 1,
                         "subjects": subjectIDs.slice(0, Math.min(clusterIDs.length, pageSize))
                     };
+                    $scope.page.open = [];
+                    for (var i = 0; i < $scope.page.subjects.length; i++) {
+                        $scope.page.open.push(false);
+                    }
                     $scope.lastPage = Math.ceil(subjectIDs.length / pageSize);
-                    $scope.view = views.clusters_labeled;
 
                 }
                 else {
@@ -147,8 +149,9 @@
                         "clusters": clusterIDs.slice(0, Math.min(clusterIDs.length, pageSize))
                     };
                     $scope.lastPage = Math.ceil(clusterIDs.length / pageSize);
-                    $scope.view = views.clusters_overview;
                 }
+
+                $scope.view = views.overview;
             };
 
             /**
@@ -165,10 +168,7 @@
              */
             $scope.goClusters = function() {
                 $scope.cluster_id = null;
-                if ($scope.useGroundTruth)
-                    $scope.view = views.clusters_labeled;
-                else
-                    $scope.view = views.clusters_overview;
+                $scope.view = views.overview;
             };
 
             /**
@@ -216,9 +216,14 @@
             $scope.previous = function() {
                 if ($scope.page.number !== 1) { // starts at 1
                     $scope.page.number -= 1;
-                    if ($scope.useGroundTruth)
+                    if ($scope.useGroundTruth) {
                         $scope.page.subjects =
                             subjectIDs.slice(($scope.page.number - 1) * pageSize, Math.min(clusterIDs.length, $scope.page.number * pageSize));
+                        $scope.page.open = [];
+                        for (var i = 0; i < $scope.page.subjects.length; i++) {
+                            $scope.page.open.push(false);
+                        }
+                    }
                     else
                         $scope.page.clusters =
                             clusterIDs.slice(($scope.page.number - 1) * pageSize, Math.min(clusterIDs.length, $scope.page.number * pageSize));
@@ -233,14 +238,39 @@
             $scope.next = function() {
                 if ($scope.page.number !== $scope.lastPage) {
                     $scope.page.number += 1;
-                    if ($scope.useGroundTruth)
+                    if ($scope.useGroundTruth) {
                         $scope.page.subjects =
                             subjectIDs.slice(($scope.page.number - 1) * pageSize, Math.min(clusterIDs.length, $scope.page.number * pageSize));
+                        $scope.page.open = [];
+                        for (var i = 0; i < $scope.page.subjects.length; i++) {
+                            $scope.page.open.push(false);
+                        }
+                    }
                     else
                         $scope.page.clusters =
                             clusterIDs.slice(($scope.page.number - 1) * pageSize, Math.min(clusterIDs.length, $scope.page.number * pageSize));
                     window.scrollTo(0, 0);
                 }
+            };
+
+            $scope.averagePrecision = function(subject_id) {
+                var total = 0.0;
+                var clusters = $scope.subjectClusters[subject_id];
+                clusters.forEach(function(cluster_id) {
+                    total += $scope.clusters[cluster_id].precision;
+                });
+
+                return round(total/clusters.length, 2);
+            };
+
+            $scope.averageRecall = function(subject_id) {
+                var total = 0.0;
+                var clusters = $scope.subjectClusters[subject_id];
+                clusters.forEach(function(cluster_id) {
+                    total += $scope.clusters[cluster_id].recall;
+                });
+
+                return round(total/clusters.length, 2);
             };
 
             function parseClusters(csv) {
