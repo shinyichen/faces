@@ -174,9 +174,9 @@
             /**
              * view individual image
              * @param template_id
+             * @param match boolean optional, image is a match or not
              */
-            $scope.showImage = function(template_id) {
-                //window.open($scope.imageDir + "/" + source, '_blank');
+            $scope.showImage = function(template_id, match) {
 
                 var template = $scope.templates[template_id];
                  $uibModal.open({
@@ -192,7 +192,8 @@
                                  "boxX": template["FACE_X"],
                                  "boxY": template["FACE_Y"],
                                  "boxWidth": template["FACE_WIDTH"],
-                                 "boxHeight": template["FACE_HEIGHT"]
+                                 "boxHeight": template["FACE_HEIGHT"],
+                                 "match": match
                              }
                          }
                     }
@@ -392,6 +393,8 @@
              * calculate precision and recall of each cluster
              */
             function calculatePrecision() {
+
+                var i;
                 $scope.subjectClusters = {};
 
                 for (var cid in $scope.clusters) {
@@ -400,7 +403,7 @@
 
                     // find subjects in the cluster
                     var subjects = {};
-                    for (var i = 0; i < cluster.templates.length; i++) {
+                    for (i = 0; i < cluster.templates.length; i++) {
                         var template_id = cluster.templates[i]["TEMPLATE_ID"];
                         var subject_id = $scope.templates[template_id]["SUBJECT_ID"];
                         if (subjects[subject_id])
@@ -435,6 +438,11 @@
 
                     // calculate recall
                     cluster.recall = round(clusterSubjectCount / subjectCount, 2);
+
+                    // mark correctness
+                    for (i = 0; i < cluster.templates.length; i++) {
+                        cluster.templates[i].match = $scope.templates[cluster.templates[i]['TEMPLATE_ID']]['SUBJECT_ID'] === mainSubject;
+                    }
 
                     // map clusters to subject
                     if ($scope.subjectClusters[mainSubject]) {

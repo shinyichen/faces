@@ -19,7 +19,8 @@
                         displayWidth: '=?',   // max display width
                         displayHeight: '=?',  // max display height
                         box: "=?",       // draw bounding box of selected rectangle and use original image
-                        crop: "=?"       // crop the original image to bounding rectangle
+                        crop: "=?",       // crop the original image to bounding rectangle
+                        match: "=?"       // applies when using box option, use different box color depending on match
                     },
                     link: function (scope, element) {
 
@@ -77,7 +78,15 @@
 
                                 if (scope.box) {
                                     // draw bounding box
-                                    ctx.strokeStyle = "green";
+                                    if (scope.match !== undefined) {
+                                        if (scope.match)
+                                            ctx.strokeStyle = "#5cb85c";
+                                        else
+                                            ctx.strokeStyle = "#d9534f";
+                                    } else {
+                                        ctx.strokeStyle = "green";
+                                    }
+
                                     ctx.lineWidth = 4;
                                     ctx.strokeRect(startX + (scope.boxX/r) - 8, startY + (scope.boxY/r) - 8, scope.boxWidth/r + 16, scope.boxHeight/r + 16);
                                 }

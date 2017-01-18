@@ -19,15 +19,8 @@
                     $ctrl.boxY = $ctrl.resolve.params.boxY;
                     $ctrl.boxWidth = $ctrl.resolve.params.boxWidth;
                     $ctrl.boxHeight = $ctrl.resolve.params.boxHeight;
+                    $ctrl.match = $ctrl.resolve.params.match;
                 };
-
-                //$ctrl.ok = function () {
-                //    $ctrl.close({$value: $ctrl.selected.item});
-                //};
-                //
-                //$ctrl.cancel = function () {
-                //    $ctrl.dismiss({$value: 'cancel'});
-                //};
             }
     });
 })();

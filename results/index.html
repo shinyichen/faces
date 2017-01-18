@@ -234,7 +234,8 @@
                                                        display-width="150"
                                                        display-height="150"
                                                        crop=true
-                                                       ng-click="showImage(s.TEMPLATE_ID)"
+                                                       ng-click="showImage(s.TEMPLATE_ID, s.match)"
+                                                       ng-class="{'no-mark-thumbnail': s.match, 'mark-thumbnail': !s.match}"
                                                        style="vertical-align: bottom; cursor: pointer"></thumbnail>
                                             <button ng-if="clusters[cluster_id].templates.length > 3" type="button" class="btn btn-primary btn-xs" ng-click="more(cluster_id)" style="vertical-align: bottom;">{{clusters[cluster_id].templates.length-3}} more</button>
                                         </td>
@@ -263,12 +264,12 @@
                         <button type="button" class="btn btn-primary btn-sm" ng-click="goClusters()">Back to clusters</button>
                     </div>
                     <div class="col-lg-4 col-md-4 col-centered">
-                        <h4>Cluster {{::cluster_id}} has {{clusters[cluster_id].templates.length}} images</h4>
+                        <h4>Cluster {{cluster_id}} has {{clusters[cluster_id].templates.length}} images</h4>
                     </div>
                 </div>
 
                 <div>
-                    <thumbnail ng-repeat="s in clusters[cluster_id].templates"
+                    <thumbnail ng-repeat="s in clusters[cluster_id].templates track by $index"
                                img-src="{{::imageDir}}/{{::s.FILENAME}}"
                                box-x="templates[s.TEMPLATE_ID].FACE_X"
                                box-y="templates[s.TEMPLATE_ID].FACE_Y"
@@ -277,8 +278,9 @@
                                display-width="200"
                                display-height="200"
                                crop=true
-                               ng-click="showImage(s.TEMPLATE_ID)"
+                               ng-click="showImage(s.TEMPLATE_ID, s.match)"
                                class="img-thumbnail"
+                               ng-class="{'no-mark-thumbnail': s.match, 'mark-thumbnail': !s.match}"
                                style="cursor: pointer"></thumbnail>
                 </div>
             </div>
