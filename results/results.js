@@ -43,6 +43,8 @@
 
             $scope.imageDir = "../.."; // relative path to image directory
 
+            $scope.avgImgDir = null;
+
             $scope.view = views.opener;  // show opener view at startup
 
             $scope.formModel = {
@@ -75,6 +77,8 @@
 
             $scope.page = {};          // current page info {number: 1, clusters: [0, 1, 2]}
 
+            var preset = null;
+
             var clusterIDs = [];       // an array of cluster id's
 
             var subjectIDs = null;  // a list of subject IDs
@@ -85,6 +89,8 @@
                 var input = "../data/" + id + "/hint.csv";
                 var result = "../data/" + id + "/clusters.txt";
                 var gt = "../data/ground_truth.csv";
+                preset = id;
+                $scope.avgImgDir = "../data/" + id;
 
                 $http.get(input).then(function(response) {
                     $scope.inputs.inputText = response.data;

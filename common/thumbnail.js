@@ -61,17 +61,11 @@
                                 startY = (canvas.height - fHeight) / 2;
                                 ctx.drawImage(img, scope.boxX, scope.boxY, scope.boxWidth, scope.boxHeight, startX, startY, fWidth, fHeight);
                             } else {
-                                if (img.naturalWidth > scope.displayWidth || img.naturalHeight > scope.displayHeight) {
-                                    rx = img.naturalWidth / scope.displayWidth;
-                                    ry = img.naturalHeight / scope.displayHeight;
-                                    r = Math.max(rx, ry);
-                                    fWidth = img.naturalWidth / r;   // final thumbnail W
-                                    fHeight = img.naturalHeight / r; // final thumbnail H
-                                } else {
-                                    r = 1;
-                                    fWidth = img.naturalWidth;
-                                    fHeight = img.naturalHeight;
-                                }
+                                rx = img.naturalWidth / scope.displayWidth;
+                                ry = img.naturalHeight / scope.displayHeight;
+                                r = Math.max(rx, ry);
+                                fWidth = img.naturalWidth / r;   // final thumbnail W
+                                fHeight = img.naturalHeight / r; // final thumbnail H
                                 startX = (canvas.width - fWidth) / 2;
                                 startY = (canvas.height - fHeight) / 2;
                                 ctx.drawImage(img, startX, startY, fWidth, fHeight);

@@ -80,6 +80,7 @@
                     <tr>
                         <th style="width: 1px; white-space: nowrap; align-content: center">Cluster ID</th>
                         <th style="width: 1px; white-space: nowrap">Image Count</th>
+                        <th style="width: 200px;">Mean Image</th>
                         <th>Cluster</th>
                     </tr>
                     </thead>
@@ -89,9 +90,15 @@
                     <tr class="table-row" ng-repeat="cluster_id in page.clusters track by $index">
                         <td align="center">{{cluster_id}}</td>
                         <td align="center">{{clusters[cluster_id].templates.length}}</td>
+                        <td ng-repeat="cid in [cluster_id]"> <!-- force directive to be updated -->
+                            <thumbnail class="img-thumbnail no-mark-thumbnail"
+                                       img-src="{{::avgImgDir}}/average_{{cid}}"
+                                       display-width="150"
+                                       display-height="150"></thumbnail>
+                        </td>
                         <td>
                             <thumbnail ng-repeat="s in clusters[cluster_id].templates | limitTo: 3"
-                                       class="img-thumbnail"
+                                       class="img-thumbnail no-mark-thumbnail"
                                        ng-attr-id="{{s.FILENAME}}"
                                        img-src="{{::imageDir}}/{{s.FILENAME}}"
                                        box-x="templates[s.TEMPLATE_ID].FACE_X"
@@ -209,20 +216,27 @@
                                 <table class="table table-bordered table-striped table-hover">
                                     <thead class="table-heading">
                                     <tr>
-                                        <th style="width: 10%">Cluster ID</th>
-                                        <th style="width: 10%">Image Count</th>
-                                        <th style="width: 10%">Precision</th>
-                                        <th style="width: 10%">Recall</th>
-                                        <th style="width: 60%">Cluster</th>
+                                        <th style="width: 1px">Cluster ID</th>
+                                        <th style="width: 1px">Image Count</th>
+                                        <th style="width: 1px">Precision</th>
+                                        <th style="width: 1px">Recall</th>
+                                        <th style="width: 200px">Mean Image</th>
+                                        <th>Cluster</th>
                                     </tr>
                                     </thead>
                                     <tbody>
                                     <tr ng-repeat="cluster_id in subjectClusters[subject_id]">
-                                        <td style="width: 10%">{{cluster_id}}</td>
-                                        <td style="width: 10%">{{clusters[cluster_id].templates.length}}</td>
-                                        <td style="width: 10%">{{clusters[cluster_id].precision}}</td>
-                                        <td style="width: 10%">{{clusters[cluster_id].recall}}</td>
-                                        <td style="width: 60%">
+                                        <td>{{cluster_id}}</td>
+                                        <td>{{clusters[cluster_id].templates.length}}</td>
+                                        <td>{{clusters[cluster_id].precision}}</td>
+                                        <td>{{clusters[cluster_id].recall}}</td>
+                                        <td>
+                                            <thumbnail class="img-thumbnail no-mark-thumbnail"
+                                                       img-src="{{::avgImgDir}}/average_{{cluster_id}}"
+                                                       display-width="150"
+                                                       display-height="150"></thumbnail>
+                                        </td>
+                                        <td style="width: 50%">
                                             <thumbnail ng-repeat="s in clusters[cluster_id].templates | limitTo: 3"
                                                        class="img-thumbnail"
                                                        ng-attr-id="{{s.FILENAME}}"
