@@ -204,6 +204,13 @@
                                 <span ng-switch-default> --</span>
                             </td>
                         </tr>
+                        <tr>
+                            <td ng-switch="subjectClusters[subject_id].length > 0">
+                                Total recall:
+                                <span ng-switch-when="true"> {{totalRecall(subject_id)}}</span>
+                                <span ng-switch-default> --</span>
+                            </td>
+                        </tr>
                         </tbody>
                     </table>
 

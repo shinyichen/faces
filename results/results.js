@@ -280,6 +280,16 @@
                 return round(total/clusters.length, 2);
             };
 
+            $scope.totalRecall = function(subject_id) {
+                var total = 0.0;
+                var clusters = $scope.subjectClusters[subject_id];
+                clusters.forEach(function(cluster_id) {
+                    total += $scope.clusters[cluster_id].recall;
+                });
+
+                return round(total, 3);
+            };
+
             function parseClusters(csv) {
 
                 var lines=csv.split("\n");
