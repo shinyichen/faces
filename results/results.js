@@ -51,7 +51,7 @@
                 "groundTruth": true
             };
 
-            $scope.presets = ["clusters_32", "clusters_64", "clusters_128", "clusters_512", "clusters_1024", "clusters_1870"];
+            $scope.presets = ["clusters_32", "clusters_64", "clusters_128", "clusters_256", "clusters_512", "clusters_1024", "clusters_1870"];
 
             $scope.inputs = {
                 "inputText": null,   // string of text from input file

@@ -171,7 +171,7 @@
                     <button type="button" class="btn btn-primary btn-sm" ng-disabled="page.number == lastPage" ng-click="next()">
                         <span class="glyphicon glyphicon-chevron-right"></span>
                     </button>
-                    <div>{{count}} clusters, page {{page.number}} of {{lastPage}}</div>
+                    <div>{{count}} subjects, page {{page.number}} of {{lastPage}}</div>
                 </div>
 
                 <div ng-repeat="subject_id in page.subjects track by $index">
@@ -216,10 +216,10 @@
                                 <table class="table table-bordered table-striped table-hover">
                                     <thead class="table-heading">
                                     <tr>
-                                        <th style="width: 1px">Cluster ID</th>
-                                        <th style="width: 1px">Image Count</th>
-                                        <th style="width: 1px">Precision</th>
-                                        <th style="width: 1px">Recall</th>
+                                        <th style="width: 1px; white-space: nowrap;">Cluster ID</th>
+                                        <th style="width: 1px; white-space: nowrap;">Image Count</th>
+                                        <th style="width: 1px; white-space: nowrap;">Precision</th>
+                                        <th style="width: 1px; white-space: nowrap;">Recall</th>
                                         <th style="width: 200px">Mean Image</th>
                                         <th>Cluster</th>
                                     </tr>
@@ -236,7 +236,7 @@
                                                        display-width="150"
                                                        display-height="150"></thumbnail>
                                         </td>
-                                        <td style="width: 50%">
+                                        <td>
                                             <thumbnail ng-repeat="s in clusters[cluster_id].templates | limitTo: 3"
                                                        class="img-thumbnail"
                                                        ng-attr-id="{{s.FILENAME}}"
