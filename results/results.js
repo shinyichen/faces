@@ -45,9 +45,12 @@
 
             $scope.avgImgDir = null;
 
+            $scope.loading = false;
+
             $scope.view = views.opener;  // show opener view at startup
 
             $scope.formModel = {
+                "preset": null,
                 "groundTruth": true
             };
 
@@ -85,7 +88,26 @@
 
             var pageSize = 12;         // number of clusters per page
 
-            $scope.openPreset = function(id) {
+            $scope.selectPreset = function(id) {
+                $scope.formModel.preset = id;
+            };
+
+            /**
+             * read csv result file and generate clusters data
+             */
+            $scope.open = function() {
+
+                $scope.loading = true;
+
+                if ($scope.formModel.preset) {
+                    loadPreset($scope.formModel.preset);
+                } else {
+                    load();
+                }
+            };
+
+            function loadPreset(id) {
+
                 var input = "../data/" + id + "/hint.csv";
                 var result = "../data/" + id + "/clusters.txt";
                 var gt = "../data/ground_truth.csv";
@@ -96,6 +118,7 @@
                     $scope.inputs.inputText = response.data;
                     return $http.get(result);
                 }, function(error) {
+                    $scope.loading = false;
                     console.log(error);
                 }).then(function(response) {
 
@@ -104,23 +127,22 @@
                         $scope.useGroundTruth = true;
                         $http.get(gt).then(function(r) {
                             $scope.inputs.groundTruthText = r.data;
-                            $scope.open();
+                            load();
                         }, function(error) {
+                            $scope.loading = false;
                             console.log(error);
                         });
                     } else {
                         $scope.useGroundTruth = false;
-                        $scope.open();
+                        load();
                     }
                 }, function(error) {
+                    $scope.loading = false;
                     console.log(error);
                 });
-            };
+            }
 
-            /**
-             * read csv result file and generate clusters data
-             */
-            $scope.open = function() {
+            function load() {
 
                 // result file
                 parseClusters($scope.inputs.resultText);
@@ -157,8 +179,9 @@
                     $scope.lastPage = Math.ceil(clusterIDs.length / pageSize);
                 }
 
+                $scope.loading = false;
                 $scope.view = views.overview;
-            };
+            }
 
             /**
              * go to cluster view and show all images of the cluster
@@ -214,7 +237,7 @@
                 $scope.inputs.resultText = null;
                 $scope.inputs.groundTruthText = null;
                 $scope.view = views.opener;
-
+                $scope.formModel.preset = null;
             };
 
             /**

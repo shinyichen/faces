@@ -27,7 +27,7 @@
                             <span class="caret"></span></button>
                         <ul class="dropdown-menu dropdown-menu-left">
                             <li ng-repeat="p in presets">
-                                <a href ng-click="openPreset(p)">{{p}}</a>
+                                <a href ng-click="selectPreset(p)">{{p}}</a>
                             </li>
                         </ul>
                     </div>
@@ -40,18 +40,21 @@
                     <hr>
                     <h4>Or open a new result:</h4>
                     <div class="form-group">
-                        <label class="col-form-label">Input File: </label>
+                        <label class="col-form-label">Templates File: </label>
                         <input class="form-control" type="file" name="file" fileread="inputs.inputText">
                     </div>
                     <div class="form-group">
-                        <label class="col-form-label">Result File: </label>
+                        <label class="col-form-label">Clusters File: </label>
                         <input class="form-control" type="file" name="file" fileread="inputs.resultText">
                     </div>
                     <div class="form-group">
                         <label class="col-form-label">Ground Truth File: (optional)</label>
                         <input class="form-control" type="file" name="file" fileread="inputs.groundTruthText">
                     </div>
-                    <button type="button" class="btn btn-primary" ng-click="open()">Open</button>
+                    <button type="button" class="btn btn-primary" ng-disabled="loading" ng-click="open()">
+                        <span ng-show="loading" class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span>
+                        Open
+                    </button>
                 </div>
             </div>
         </div>
