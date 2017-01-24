@@ -307,18 +307,18 @@
 
                 <nav aria-label="Page navigation">
                     <ul class="pagination pagination-sm">
-                        <li ng-class="{'disabled':page.number === 1}" ng-click="previous()"><span aria-hidden="true">&laquo;</span></li>
-                        <li ng-class="{'active': page.number === pages[0]}" ng-click="gotoPage(pages[0])"><span>{{pages[0]}}</span></li>
-                        <li ng-if="lastPage >= 2" ng-class="{'active': page.number === pages[1]}" ng-click="gotoPage(pages[1])"><span>{{pages[1]}}</span></li>
-                        <li ng-if="lastPage >= 3" ng-class="{'active': page.number === pages[2]}" ng-click="gotoPage(pages[2])"><span>{{pages[2]}}</span></li>
-                        <li ng-if="lastPage >= 4" ng-class="{'active': page.number === pages[3]}" ng-click="gotoPage(pages[3])"><span>{{pages[3]}}</span></li>
-                        <li ng-if="lastPage >= 5" ng-class="{'active': page.number === pages[4]}" ng-click="gotoPage(pages[4])"><span>{{pages[4]}}</span></li>
-                        <li ng-if="lastPage >= 6" ng-class="{'active': page.number === pages[5]}" ng-click="gotoPage(pages[5])"><span>{{pages[5]}}</span></li>
-                        <li ng-if="lastPage >= 7" ng-class="{'active': page.number === pages[6]}" ng-click="gotoPage(pages[6])"><span>{{pages[6]}}</span></li>
-                        <li ng-if="lastPage >= 8" ng-class="{'active': page.number === pages[7]}" ng-click="gotoPage(pages[7])"><span>{{pages[7]}}</span></li>
-                        <li ng-if="lastPage >= 9" ng-class="{'active': page.number === pages[8]}" ng-click="gotoPage(pages[8])"><span>{{pages[8]}}</span></li>
-                        <li ng-if="lastPage >= 10" ng-class="{'active': page.number === pages[9]}" ng-click="gotoPage(pages[9])"><span>{{pages[9]}}</span></li>
-                        <li ng-class="{'disabled':page.number === lastPage}" ng-click="next()"><span aria-hidden="true">&raquo;</span></li>
+                        <li ng-class="{'disabled':page.number === 1}" style="cursor: pointer;" ng-click="previous()"><span aria-hidden="true">&laquo;</span></li>
+                        <li ng-class="{'active': page.number === pages[0]}" style="cursor: pointer;" ng-click="gotoPage(pages[0])"><span>{{pages[0]}}</span></li>
+                        <li ng-if="lastPage >= 2" ng-class="{'active': page.number === pages[1]}" style="cursor: pointer;" ng-click="gotoPage(pages[1])"><span>{{pages[1]}}</span></li>
+                        <li ng-if="lastPage >= 3" ng-class="{'active': page.number === pages[2]}" style="cursor: pointer;" ng-click="gotoPage(pages[2])"><span>{{pages[2]}}</span></li>
+                        <li ng-if="lastPage >= 4" ng-class="{'active': page.number === pages[3]}" style="cursor: pointer;" ng-click="gotoPage(pages[3])"><span>{{pages[3]}}</span></li>
+                        <li ng-if="lastPage >= 5" ng-class="{'active': page.number === pages[4]}" style="cursor: pointer;" ng-click="gotoPage(pages[4])"><span>{{pages[4]}}</span></li>
+                        <li ng-if="lastPage >= 6" ng-class="{'active': page.number === pages[5]}" style="cursor: pointer;" ng-click="gotoPage(pages[5])"><span>{{pages[5]}}</span></li>
+                        <li ng-if="lastPage >= 7" ng-class="{'active': page.number === pages[6]}" style="cursor: pointer;" ng-click="gotoPage(pages[6])"><span>{{pages[6]}}</span></li>
+                        <li ng-if="lastPage >= 8" ng-class="{'active': page.number === pages[7]}" style="cursor: pointer;" ng-click="gotoPage(pages[7])"><span>{{pages[7]}}</span></li>
+                        <li ng-if="lastPage >= 9" ng-class="{'active': page.number === pages[8]}" style="cursor: pointer;" ng-click="gotoPage(pages[8])"><span>{{pages[8]}}</span></li>
+                        <li ng-if="lastPage >= 10" ng-class="{'active': page.number === pages[9]}" style="cursor: pointer;" ng-click="gotoPage(pages[9])"><span>{{pages[9]}}</span></li>
+                        <li ng-class="{'disabled':page.number === lastPage}" style="cursor: pointer;" ng-click="next()"><span aria-hidden="true">&raquo;</span></li>
                     </ul>
                 </nav>
             </div>

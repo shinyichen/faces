@@ -251,32 +251,7 @@
              */
             $scope.previous = function() {
                 if ($scope.page.number !== 1) { // starts at 1
-                    $scope.page.number -= 1;
-                    if ($scope.lastPage > 10 && $scope.page.number > 6 && $scope.page.number < ($scope.lastPage - 4)) {
-                        $scope.pages.forEach(function(element, index, array) {
-                            array[index] = $scope.page.number - (5 - index);
-                        });
-                    } else if ($scope.lastPage > 10 && $scope.page.number >= ($scope.lastPage - 4)) {
-                        $scope.pages.forEach(function(element, index, array) {
-                            array[index] = $scope.lastPage - (9 - index);
-                        });
-                    } else {
-                        $scope.pages = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-                    }
-                    if ($scope.useGroundTruth) {
-                        $scope.page.subjects =
-                            subjectIDs.slice(($scope.page.number - 1) * pageSize, Math.min(clusterIDs.length, $scope.page.number * pageSize));
-                        $scope.page.open = [];
-                        for (var i = 0; i < $scope.page.subjects.length; i++) {
-                            $scope.page.open.push(false);
-                        }
-                    }
-                    else
-                        $scope.page.clusters =
-                            clusterIDs.slice(($scope.page.number - 1) * pageSize, Math.min(clusterIDs.length, $scope.page.number * pageSize));
-
-                    $scope.expanded = false;
-                    window.scrollTo(0, 0);
+                    $scope.gotoPage($scope.page.number - 1);
                 }
 
             };
@@ -286,32 +261,7 @@
              */
             $scope.next = function() {
                 if ($scope.page.number !== $scope.lastPage) {
-                    $scope.page.number += 1;
-                    if ($scope.lastPage > 10 && $scope.page.number > 6 && $scope.page.number < ($scope.lastPage - 4)) {
-                        $scope.pages.forEach(function(element, index, array) {
-                            array[index] = $scope.page.number - (5 - index);
-                        });
-                    } else if ($scope.lastPage > 10 && $scope.page.number >= ($scope.lastPage - 4)) {
-                        $scope.pages.forEach(function(element, index, array) {
-                            array[index] = $scope.lastPage - (9 - index);
-                        });
-                    } else {
-                        $scope.pages = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-                    }
-                    if ($scope.useGroundTruth) {
-                        $scope.page.subjects =
-                            subjectIDs.slice(($scope.page.number - 1) * pageSize, Math.min(clusterIDs.length, $scope.page.number * pageSize));
-                        $scope.page.open = [];
-                        for (var i = 0; i < $scope.page.subjects.length; i++) {
-                            $scope.page.open.push(false);
-                        }
-                    }
-                    else
-                        $scope.page.clusters =
-                            clusterIDs.slice(($scope.page.number - 1) * pageSize, Math.min(clusterIDs.length, $scope.page.number * pageSize));
-
-                    $scope.expanded = false;
-                    window.scrollTo(0, 0);
+                    $scope.gotoPage($scope.page.number + 1);
                 }
             };
 
@@ -341,7 +291,7 @@
                             clusterIDs.slice(($scope.page.number - 1) * pageSize, Math.min(clusterIDs.length, $scope.page.number * pageSize));
 
                 $scope.expanded = false;
-                    window.scrollTo(0, 0);
+                window.scrollTo(0, 0);
             };
 
             $scope.averagePrecision = function(subject_id) {
