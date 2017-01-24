@@ -252,6 +252,23 @@
 
             };
 
+            $scope.showAverageImage = function(path) {
+                $uibModal.open({
+                    animation: true,
+                    backdrop: true,
+                    keyboard: true,
+                    size: 'lg',
+                    component: 'imageModalComponent',
+                    resolve: {
+                        params: function () {
+                            return {
+                                "source": path
+                            }
+                        }
+                    }
+                });
+            };
+
             $scope.restart = function() {
                 $scope.useGroundTruth = false;
                 $scope.inputs.inputText = null;
