@@ -64,19 +64,24 @@
 
             <!-- overview -->
             <div ng-show="view==='overview'">
-                <div class="col-lg-4 col-md-4">
-                    <button type="button" class="btn btn-primary btn-sm" ng-click="restart()">Open New Result</button>
-                </div>
-                <div class="col-lg-4 col-md-4 pager col-centered">
-                    <button type="button" class="btn btn-primary btn-sm" ng-disabled="page.number == 1" ng-click="previous()">
-                        <span class="glyphicon glyphicon-chevron-left"></span>
-                    </button>
-                    <button type="button" class="btn btn-primary btn-sm" ng-disabled="page.number == lastPage" ng-click="next()">
-                        <span class="glyphicon glyphicon-chevron-right"></span>
-                    </button>
-                    <div>{{count}} clusters, page {{page.number}} of {{lastPage}}</div>
-                </div>
-
+                <button type="button" class="btn btn-primary btn-sm" ng-click="restart()">Open New Result</button>
+                <div>{{::count}} clusters, {{::lastPage}} pages</div>
+                <nav aria-label="Page navigation">
+                    <ul class="pagination">
+                        <li ng-class="{'disabled':page.number === 1}" ng-click="previous()"><span aria-hidden="true">&laquo;</span></li>
+                        <li ng-class="{'active': page.number === pages[0]}" ng-click="gotoPage(pages[0])"><span>{{pages[0]}}</span></li>
+                        <li ng-if="lastPage >= 2" ng-class="{'active': page.number === pages[1]}" ng-click="gotoPage(pages[1])"><span>{{pages[1]}}</span></li>
+                        <li ng-if="lastPage >= 3" ng-class="{'active': page.number === pages[2]}" ng-click="gotoPage(pages[2])"><span>{{pages[2]}}</span></li>
+                        <li ng-if="lastPage >= 4" ng-class="{'active': page.number === pages[3]}" ng-click="gotoPage(pages[3])"><span>{{pages[3]}}</span></li>
+                        <li ng-if="lastPage >= 5" ng-class="{'active': page.number === pages[4]}" ng-click="gotoPage(pages[4])"><span>{{pages[4]}}</span></li>
+                        <li ng-if="lastPage >= 6" ng-class="{'active': page.number === pages[5]}" ng-click="gotoPage(pages[5])"><span>{{pages[5]}}</span></li>
+                        <li ng-if="lastPage >= 7" ng-class="{'active': page.number === pages[6]}" ng-click="gotoPage(pages[6])"><span>{{pages[6]}}</span></li>
+                        <li ng-if="lastPage >= 8" ng-class="{'active': page.number === pages[7]}" ng-click="gotoPage(pages[7])"><span>{{pages[7]}}</span></li>
+                        <li ng-if="lastPage >= 9" ng-class="{'active': page.number === pages[8]}" ng-click="gotoPage(pages[8])"><span>{{pages[8]}}</span></li>
+                        <li ng-if="lastPage >= 10" ng-class="{'active': page.number === pages[9]}" ng-click="gotoPage(pages[9])"><span>{{pages[9]}}</span></li>
+                        <li ng-class="{'disabled':page.number === lastPage}" ng-click="next()"><span aria-hidden="true">&raquo;</span></li>
+                    </ul>
+                </nav>
                 <table class="table table-striped table-bordered table-hover">
                     <!-- sortable column header -->
                     <thead class="table-heading">
@@ -119,14 +124,22 @@
                     </tbody>
                 </table>
 
-                <div class="pager">
-                    <button type="button" class="btn btn-primary btn-sm" ng-disabled="page.number == 1" ng-click="previous()">
-                        <span class="glyphicon glyphicon-chevron-left"></span>
-                    </button>
-                    <button type="button" class="btn btn-primary btn-sm" ng-disabled="page.number == lastPage" ng-click="next()">
-                        <span class="glyphicon glyphicon-chevron-right"></span>
-                    </button>
-                </div>
+                <nav aria-label="Page navigation">
+                    <ul class="pagination">
+                        <li ng-class="{'disabled':page.number === 1}" ng-click="previous()"><span aria-hidden="true">&laquo;</span></li>
+                        <li ng-class="{'active': page.number === pages[0]}" ng-click="gotoPage(pages[0])"><span>{{pages[0]}}</span></li>
+                        <li ng-if="lastPage >= 2" ng-class="{'active': page.number === pages[1]}" ng-click="gotoPage(pages[1])"><span>{{pages[1]}}</span></li>
+                        <li ng-if="lastPage >= 3" ng-class="{'active': page.number === pages[2]}" ng-click="gotoPage(pages[2])"><span>{{pages[2]}}</span></li>
+                        <li ng-if="lastPage >= 4" ng-class="{'active': page.number === pages[3]}" ng-click="gotoPage(pages[3])"><span>{{pages[3]}}</span></li>
+                        <li ng-if="lastPage >= 5" ng-class="{'active': page.number === pages[4]}" ng-click="gotoPage(pages[4])"><span>{{pages[4]}}</span></li>
+                        <li ng-if="lastPage >= 6" ng-class="{'active': page.number === pages[5]}" ng-click="gotoPage(pages[5])"><span>{{pages[5]}}</span></li>
+                        <li ng-if="lastPage >= 7" ng-class="{'active': page.number === pages[6]}" ng-click="gotoPage(pages[6])"><span>{{pages[6]}}</span></li>
+                        <li ng-if="lastPage >= 8" ng-class="{'active': page.number === pages[7]}" ng-click="gotoPage(pages[7])"><span>{{pages[7]}}</span></li>
+                        <li ng-if="lastPage >= 9" ng-class="{'active': page.number === pages[8]}" ng-click="gotoPage(pages[8])"><span>{{pages[8]}}</span></li>
+                        <li ng-if="lastPage >= 10" ng-class="{'active': page.number === pages[9]}" ng-click="gotoPage(pages[9])"><span>{{pages[9]}}</span></li>
+                        <li ng-class="{'disabled':page.number === lastPage}" ng-click="next()"><span aria-hidden="true">&raquo;</span></li>
+                    </ul>
+                </nav>
             </div>
 
             <!-- detailed view -->
@@ -164,18 +177,24 @@
 
             <!-- overview -->
             <div ng-show="view==='overview'">
-                <div class="col-lg-4 col-md-4">
-                    <button type="button" class="btn btn-primary btn-sm" ng-click="restart()">Open New Result</button>
-                </div>
-                <div class="col-lg-4 col-md-4 pager col-centered">
-                    <button type="button" class="btn btn-primary btn-sm" ng-disabled="page.number == 1" ng-click="previous()">
-                        <span class="glyphicon glyphicon-chevron-left"></span>
-                    </button>
-                    <button type="button" class="btn btn-primary btn-sm" ng-disabled="page.number == lastPage" ng-click="next()">
-                        <span class="glyphicon glyphicon-chevron-right"></span>
-                    </button>
-                    <div>{{count}} subjects, page {{page.number}} of {{lastPage}}</div>
-                </div>
+                <button type="button" class="btn btn-primary btn-sm" ng-click="restart()">Open New Result</button>
+                <div>{{count}} subjects, {{lastPage}} pages</div>
+                <nav aria-label="Page navigation">
+                    <ul class="pagination">
+                        <li ng-class="{'disabled':page.number === 1}" ng-click="previous()"><span aria-hidden="true">&laquo;</span></li>
+                        <li ng-class="{'active': page.number === pages[0]}" ng-click="gotoPage(pages[0])"><span>{{pages[0]}}</span></li>
+                        <li ng-if="lastPage >= 2" ng-class="{'active': page.number === pages[1]}" ng-click="gotoPage(pages[1])"><span>{{pages[1]}}</span></li>
+                        <li ng-if="lastPage >= 3" ng-class="{'active': page.number === pages[2]}" ng-click="gotoPage(pages[2])"><span>{{pages[2]}}</span></li>
+                        <li ng-if="lastPage >= 4" ng-class="{'active': page.number === pages[3]}" ng-click="gotoPage(pages[3])"><span>{{pages[3]}}</span></li>
+                        <li ng-if="lastPage >= 5" ng-class="{'active': page.number === pages[4]}" ng-click="gotoPage(pages[4])"><span>{{pages[4]}}</span></li>
+                        <li ng-if="lastPage >= 6" ng-class="{'active': page.number === pages[5]}" ng-click="gotoPage(pages[5])"><span>{{pages[5]}}</span></li>
+                        <li ng-if="lastPage >= 7" ng-class="{'active': page.number === pages[6]}" ng-click="gotoPage(pages[6])"><span>{{pages[6]}}</span></li>
+                        <li ng-if="lastPage >= 8" ng-class="{'active': page.number === pages[7]}" ng-click="gotoPage(pages[7])"><span>{{pages[7]}}</span></li>
+                        <li ng-if="lastPage >= 9" ng-class="{'active': page.number === pages[8]}" ng-click="gotoPage(pages[8])"><span>{{pages[8]}}</span></li>
+                        <li ng-if="lastPage >= 10" ng-class="{'active': page.number === pages[9]}" ng-click="gotoPage(pages[9])"><span>{{pages[9]}}</span></li>
+                        <li ng-class="{'disabled':page.number === lastPage}" ng-click="next()"><span aria-hidden="true">&raquo;</span></li>
+                    </ul>
+                </nav>
 
                 <div ng-repeat="subject_id in page.subjects track by $index">
 
@@ -271,14 +290,22 @@
                     </div>
                 </div>
 
-                <div class="pager">
-                    <button type="button" class="btn btn-primary btn-sm" ng-disabled="page.number == 1" ng-click="previous()">
-                        <span class="glyphicon glyphicon-chevron-left"></span>
-                    </button>
-                    <button type="button" class="btn btn-primary btn-sm" ng-disabled="page.number == lastPage" ng-click="next()">
-                        <span class="glyphicon glyphicon-chevron-right"></span>
-                    </button>
-                </div>
+                <nav aria-label="Page navigation">
+                    <ul class="pagination">
+                        <li ng-class="{'disabled':page.number === 1}" ng-click="previous()"><span aria-hidden="true">&laquo;</span></li>
+                        <li ng-class="{'active': page.number === pages[0]}" ng-click="gotoPage(pages[0])"><span>{{pages[0]}}</span></li>
+                        <li ng-if="lastPage >= 2" ng-class="{'active': page.number === pages[1]}" ng-click="gotoPage(pages[1])"><span>{{pages[1]}}</span></li>
+                        <li ng-if="lastPage >= 3" ng-class="{'active': page.number === pages[2]}" ng-click="gotoPage(pages[2])"><span>{{pages[2]}}</span></li>
+                        <li ng-if="lastPage >= 4" ng-class="{'active': page.number === pages[3]}" ng-click="gotoPage(pages[3])"><span>{{pages[3]}}</span></li>
+                        <li ng-if="lastPage >= 5" ng-class="{'active': page.number === pages[4]}" ng-click="gotoPage(pages[4])"><span>{{pages[4]}}</span></li>
+                        <li ng-if="lastPage >= 6" ng-class="{'active': page.number === pages[5]}" ng-click="gotoPage(pages[5])"><span>{{pages[5]}}</span></li>
+                        <li ng-if="lastPage >= 7" ng-class="{'active': page.number === pages[6]}" ng-click="gotoPage(pages[6])"><span>{{pages[6]}}</span></li>
+                        <li ng-if="lastPage >= 8" ng-class="{'active': page.number === pages[7]}" ng-click="gotoPage(pages[7])"><span>{{pages[7]}}</span></li>
+                        <li ng-if="lastPage >= 9" ng-class="{'active': page.number === pages[8]}" ng-click="gotoPage(pages[8])"><span>{{pages[8]}}</span></li>
+                        <li ng-if="lastPage >= 10" ng-class="{'active': page.number === pages[9]}" ng-click="gotoPage(pages[9])"><span>{{pages[9]}}</span></li>
+                        <li ng-class="{'disabled':page.number === lastPage}" ng-click="next()"><span aria-hidden="true">&raquo;</span></li>
+                    </ul>
+                </nav>
             </div>
 
             <!-- detailed view -->
