@@ -50,7 +50,7 @@
             $scope.view = views.opener;  // show opener view at startup
 
             $scope.formModel = {
-                "preset": null,
+                "preset": "",
                 "groundTruth": true
             };
 
@@ -82,17 +82,11 @@
 
             $scope.pages = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]; // pagination being shown
 
-            var preset = null;
-
             var clusterIDs = [];       // an array of cluster id's
 
             var subjectIDs = null;  // a list of subject IDs
 
             var pageSize = 12;         // number of clusters per page
-
-            $scope.selectPreset = function(id) {
-                $scope.formModel.preset = id;
-            };
 
             /**
              * read csv result file and generate clusters data
@@ -101,7 +95,7 @@
 
                 $scope.loading = true;
 
-                if ($scope.formModel.preset) {
+                if ($scope.formModel.preset !== "") {
                     loadPreset($scope.formModel.preset);
                 } else {
                     load();
@@ -113,7 +107,6 @@
                 var input = "../data/" + id + "/hint.csv";
                 var result = "../data/" + id + "/clusters.txt";
                 var gt = "../data/ground_truth.csv";
-                preset = id;
                 $scope.avgImgDir = "../data/" + id;
 
                 $http.get(input).then(function(response) {
@@ -239,7 +232,7 @@
                 $scope.inputs.resultText = null;
                 $scope.inputs.groundTruthText = null;
                 $scope.view = views.opener;
-                $scope.formModel.preset = null;
+                $scope.formModel.preset = "";
                 $scope.pages = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
             };
 
