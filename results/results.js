@@ -169,7 +169,7 @@
                     };
                     $scope.page.open = [];
                     for (var i = 0; i < $scope.page.subjects.length; i++) {
-                        $scope.page.open.push(false);
+                        $scope.page.open.push($scope.expanded);
                     }
                     $scope.lastPage = Math.ceil(subjectIDs.length / pageSize);
 
@@ -291,14 +291,13 @@
                             subjectIDs.slice(($scope.page.number - 1) * pageSize, Math.min(clusterIDs.length, $scope.page.number * pageSize));
                         $scope.page.open = [];
                         for (var i = 0; i < $scope.page.subjects.length; i++) {
-                            $scope.page.open.push(false);
+                            $scope.page.open.push($scope.expanded);
                         }
                     }
                     else
                         $scope.page.clusters =
                             clusterIDs.slice(($scope.page.number - 1) * pageSize, Math.min(clusterIDs.length, $scope.page.number * pageSize));
 
-                $scope.expanded = false;
                 window.scrollTo(0, 0);
             };
 
