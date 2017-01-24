@@ -18,6 +18,8 @@
 
     <div ng-controller="resultsController" class="container-fluid">
 
+        <div uib-alert ng-repeat="alert in alerts" ng-class="'alert-danger'" dismiss-on-timeout="4000" close="closeAlert($index)">{{alert.msg}}</div>
+
         <div ng-if="view=='opener'">
             <div class="row">
                 <div class="col-lg-offset-4 col-md-offset-4 col-lg-4 col-md-4">

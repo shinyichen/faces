@@ -84,23 +84,31 @@
 
             $scope.expanded = false;
 
+            $scope.alerts = [];
+
             var clusterIDs = [];       // an array of cluster id's
 
             var subjectIDs = null;  // a list of subject IDs
 
             var pageSize = 12;         // number of clusters per page
 
+            $scope.closeAlert = function(index) {
+                $scope.alerts.splice(index, 1);
+            };
+
             /**
              * read csv result file and generate clusters data
              */
             $scope.open = function() {
 
-                $scope.loading = true;
-
                 if ($scope.formModel.preset !== "") {
+                    $scope.loading = true;
                     loadPreset($scope.formModel.preset);
-                } else {
+                } else if ($scope.inputs.resultText && $scope.inputs.inputText){
+                    $scope.loading = true;
                     load();
+                } else {
+                    $scope.alerts.push({"msg": "Select from a preset or provide templates and clusters files."});
                 }
             };
 
@@ -116,7 +124,7 @@
                     return $http.get(result);
                 }, function(error) {
                     $scope.loading = false;
-                    console.log(error);
+                    $scope.alerts.push({"msg": "Error reading templates file: " + error});
                 }).then(function(response) {
 
                     $scope.inputs.resultText = response.data;
@@ -127,7 +135,7 @@
                             load();
                         }, function(error) {
                             $scope.loading = false;
-                            console.log(error);
+                            $scope.alerts.push({"msg": "Error reading ground truth file: " + error});
                         });
                     } else {
                         $scope.useGroundTruth = false;
@@ -135,7 +143,7 @@
                     }
                 }, function(error) {
                     $scope.loading = false;
-                    console.log(error);
+                    $scope.alerts.push({"msg": "Error reading clusters file: " + error});
                 });
             }
 
