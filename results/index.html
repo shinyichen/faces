@@ -174,7 +174,7 @@
         </div>
 
 
-        <!-- main view without ground truth -->
+        <!-- main view with ground truth -->
         <div id="main-view-with-gt" ng-if="view!=='opener' && useGroundTruth">
 
             <!-- overview -->
@@ -201,7 +201,13 @@
                     </div>
                     <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4 text-center pagination"><h4>{{::count}} subjects, {{::lastPage}} pages</h4></div>
                     <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4 pagination">
-                        <button type="button" class="btn btn-primary btn-sm pull-right" ng-click="restart()">Open New Result</button>
+                        <div class="pull-right">
+                            <button ng-switch="expanded" type="button" class="btn btn-primary btn-sm" ng-click="toggleCollapse()">
+                                <span ng-switch-when="true">Collapse All</span>
+                                <span ng-switch-default>Expand All</span>
+                            </button>
+                            <button type="button" class="btn btn-primary btn-sm" ng-click="restart()">Open New Result</button>
+                        </div>
                     </div>
                 </div>
 

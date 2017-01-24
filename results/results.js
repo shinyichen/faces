@@ -82,6 +82,8 @@
 
             $scope.pages = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]; // pagination being shown
 
+            $scope.expanded = false;
+
             var clusterIDs = [];       // an array of cluster id's
 
             var subjectIDs = null;  // a list of subject IDs
@@ -178,6 +180,13 @@
                 $scope.view = views.overview;
             }
 
+            $scope.toggleCollapse = function() {
+                $scope.expanded = !$scope.expanded;
+                $scope.page.open.forEach(function(value, index, array) {
+                    array[index] = $scope.expanded;
+                });
+            };
+
             /**
              * go to cluster view and show all images of the cluster
              * @param cluster_id
@@ -234,6 +243,7 @@
                 $scope.view = views.opener;
                 $scope.formModel.preset = "";
                 $scope.pages = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+                $scope.expanded = false;
             };
 
             /**
@@ -264,6 +274,8 @@
                     else
                         $scope.page.clusters =
                             clusterIDs.slice(($scope.page.number - 1) * pageSize, Math.min(clusterIDs.length, $scope.page.number * pageSize));
+
+                    $scope.expanded = false;
                     window.scrollTo(0, 0);
                 }
 
@@ -297,6 +309,8 @@
                     else
                         $scope.page.clusters =
                             clusterIDs.slice(($scope.page.number - 1) * pageSize, Math.min(clusterIDs.length, $scope.page.number * pageSize));
+
+                    $scope.expanded = false;
                     window.scrollTo(0, 0);
                 }
             };
@@ -325,6 +339,8 @@
                     else
                         $scope.page.clusters =
                             clusterIDs.slice(($scope.page.number - 1) * pageSize, Math.min(clusterIDs.length, $scope.page.number * pageSize));
+
+                $scope.expanded = false;
                     window.scrollTo(0, 0);
             };
 
