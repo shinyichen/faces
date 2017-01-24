@@ -86,6 +86,11 @@
 
             $scope.alerts = [];
 
+            var windowPosition = {
+                "x": 0,
+                "y": 0
+            };
+
             var clusterIDs = [];       // an array of cluster id's
 
             var subjectIDs = null;  // a list of subject IDs
@@ -200,8 +205,11 @@
              * @param cluster_id
              */
             $scope.more = function(cluster_id) {
+                windowPosition.x = window.scrollX;
+                windowPosition.y = window.scrollY;
                 $scope.cluster_id = cluster_id;
                 $scope.view = views.cluster;
+                window.scrollTo(0, 0);
             };
 
             /**
@@ -210,6 +218,7 @@
             $scope.goClusters = function() {
                 $scope.cluster_id = null;
                 $scope.view = views.overview;
+                window.scrollTo(windowPosition.x, windowPosition.y);
             };
 
             /**
