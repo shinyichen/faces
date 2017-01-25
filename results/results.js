@@ -29,7 +29,6 @@
  */
 (function() {
 
-    // The Chaise RecordSet module
     angular.module('results', ['ui.bootstrap', 'fileInput', 'images', 'modals'])
 
         .constant('views', {
@@ -38,7 +37,6 @@
             "cluster": "cluster"
         })
 
-        // Register the recordset controller
         .controller('resultsController', ['$scope', '$uibModal', '$http', 'views', function($scope, $uibModal, $http, views) {
 
             $scope.imageDir = "../.."; // relative path to image directory
@@ -78,7 +76,9 @@
 
             $scope.lastPage = 0;       // last page number
 
-            $scope.page = {};          // current page info {number: 1, clusters: [0, 1, 2]}
+            $scope.page = {
+                "open": []
+            };          // current page info {number: 1, clusters: [0, 1, 2]}
 
             $scope.pages = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]; // pagination being shown
 
@@ -174,7 +174,7 @@
                     };
                     $scope.page.open = [];
                     for (var i = 0; i < $scope.page.subjects.length; i++) {
-                        $scope.page.open.push($scope.expanded);
+                        $scope.page.open.push(false);
                     }
                     $scope.lastPage = Math.ceil(subjectIDs.length / pageSize);
 
@@ -540,6 +540,17 @@
                 return Number(Math.round(value+'e'+decimals)+'e-'+decimals);
             }
 
+            $scope.$watch('page.open', function(newValue, oldValue) {
+                if (newValue.every(function(v) {
+                        return v;
+                    })) {
+                    $scope.expanded = true;
+                } else if (newValue.every(function(v) {
+                        return !v;
+                    })) {
+                    $scope.expanded = false;
+                }
+            }, true);
         }])
 
 })();
