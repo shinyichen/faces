@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="analysis">
+<head>
+    <meta charset="UTF-8">
+    <title>Analysis</title>
+    <link rel="stylesheet" type="text/css" href="../styles/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <script src="../scripts/angular.min.js"></script>
+    <script src="../scripts/jquery-3.1.1.min.js"></script>
+    <script src="../styles/bootstrap/js/bootstrap.min.js"></script>
+    <script src="../scripts/ui-bootstrap-tpls-2.3.2.min.js"></script>
+    <script src="../scripts/tsne.js"></script>
+    <script src="analysis.js"></script>
+</head>
+<body>
+
+    <div ng-controller="analysisController" class="container-fluid">
+        <plot dataset="data"></plot>
+    </div>
+
+</body>
+</html>
