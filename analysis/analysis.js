@@ -56,7 +56,18 @@
                 link: function(scope, element, attrs) {
 
                     d3Service.d3().then(function(d3) {
-                        var w=500, h=500, transform = d3.zoomIdentity;
+                        var w = 1000, h = 700, padding = 20, transform = d3.zoomIdentity;
+
+                        // scale functions to make data fit in the viewport
+                        var xScale = d3.scaleLinear()
+                            .domain([d3.min(scope.dataset, function(d) { return d[0]; }),
+                                     d3.max(scope.dataset, function(d) { return d[0]; })])
+                            .range([padding, w - padding * 2]);
+
+                        var yScale = d3.scaleLinear()
+                            .domain([d3.min(scope.dataset, function(d) { return d[1]; }),
+                                     d3.max(scope.dataset, function(d) { return d[1]; })])
+                            .range([h - padding, padding]);
 
                         var svg = d3.select(element[0]).append("svg");
                         svg.attr("width", w)
@@ -79,20 +90,20 @@
                             .data(scope.dataset)
                             .enter().append("circle")
                             .attr("cx", function(d) {
-                                return d[0];
+                                return xScale(d[0]);
                             })
                             .attr("cy", function(d) {
-                                return d[1];
+                                return yScale(d[1]);
                             })
-                            .attr("r", 5)
-                            .attr('stroke-width', 1)
-                            .attr('stroke', 'black')
+                            .attr("r", 1)
                             .attr('fill', 'rgb(100,100,255)')
-                            .attr("transform", "translate(" + w/2 + "," + h/2 + ")") // center
+                            //.attr("transform", "translate(" + w/2 + "," + h/2 + ")") // center
                             .call(d3.drag().on("drag", dragged));
 
                         svg.call(d3.zoom()
-                            .scaleExtent([1 / 2, 8])
+                            .scaleExtent([1, 32])
+                            .translateExtent([[0, 0], [w, h]])
+                            .extent([[0, 0], [w, h]])
                             .on("zoom", zoomed));
 
                         function zoomed() {
@@ -103,8 +114,6 @@
                             d3.select(this).attr("cx", d.x = d3.event.x).attr("cy", d.y = d3.event.y);
                         }
 
-                        var scale = d3.scale.linear();
-                        scale.domain([-100, 100]);
                     });
                 }
             }
