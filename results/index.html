@@ -80,7 +80,7 @@
                             </ul>
                         </nav>
                     </div>
-                    <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4 text-center pagination"><h4>{{::count}} clusters, {{::lastPage}} pages</h4></div>
+                    <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4 text-center pagination"><h4>{{::clusterCount}} clusters, {{::lastPage}} pages</h4></div>
                     <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4 pagination">
                         <button type="button" class="btn btn-primary btn-sm pull-right" ng-click="restart()">Open New Result</button>
                     </div>
@@ -92,7 +92,7 @@
                     <tr>
                         <th style="width: 1px; white-space: nowrap; align-content: center">Cluster ID</th>
                         <th style="width: 1px; white-space: nowrap">Image Count</th>
-                        <th style="width: 200px;">Mean Image</th>
+                        <!--<th style="width: 200px;">Mean Image</th>-->
                         <th>Cluster</th>
                     </tr>
                     </thead>
@@ -102,15 +102,15 @@
                     <tr class="table-row" ng-repeat="cluster_id in page.clusters track by $index">
                         <td align="center">{{cluster_id}}</td>
                         <td align="center">{{clusters[cluster_id].templates.length}}</td>
-                        <td ng-repeat="cid in [cluster_id]"> <!-- force directive to be updated -->
-                            <thumbnail class="img-thumbnail no-mark-thumbnail"
-                                       img-src="{{::avgImgDir}}/average_{{cid}}"
-                                       display-width="150"
-                                       display-height="150"
-                                       ng-click="showAverageImage(avgImgDir + '/average_' + cid)"
-                                       style="cursor:pointer;">
-                            </thumbnail>
-                        </td>
+                        <!--<td ng-repeat="cid in [cluster_id]"> &lt;!&ndash; force directive to be updated &ndash;&gt;-->
+                            <!--<thumbnail class="img-thumbnail no-mark-thumbnail"-->
+                                       <!--img-src="{{::avgImgDir}}/average_{{cid}}"-->
+                                       <!--display-width="150"-->
+                                       <!--display-height="150"-->
+                                       <!--ng-click="showAverageImage(avgImgDir + '/average_' + cid)"-->
+                                       <!--style="cursor:pointer;">-->
+                            <!--</thumbnail>-->
+                        <!--</td>-->
                         <td>
                             <thumbnail ng-repeat="s in clusters[cluster_id].templates | limitTo: 3"
                                        class="img-thumbnail no-mark-thumbnail"
@@ -204,7 +204,7 @@
                             </ul>
                         </nav>
                     </div>
-                    <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4 text-center pagination"><h4>{{::count}} subjects, {{::lastPage}} pages</h4></div>
+                    <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4 text-center pagination"><h4>{{::subjectCount}} subjects, {{::clusterCount}} clusters, {{::lastPage}} pages</h4></div>
                     <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4 pagination">
                         <div class="pull-right">
                             <button ng-switch="expanded" type="button" class="btn btn-primary btn-sm" ng-click="toggleCollapse()">
@@ -269,7 +269,7 @@
                                         <th style="width: 1px; white-space: nowrap;">Image Count</th>
                                         <th style="width: 1px; white-space: nowrap;">Precision</th>
                                         <th style="width: 1px; white-space: nowrap;">Recall</th>
-                                        <th style="width: 200px">Mean Image</th>
+                                        <!--<th style="width: 200px">Mean Image</th>-->
                                         <th>Cluster</th>
                                     </tr>
                                     </thead>
@@ -279,15 +279,15 @@
                                         <td>{{clusters[cluster_id].templates.length}}</td>
                                         <td>{{clusters[cluster_id].precision}}</td>
                                         <td>{{clusters[cluster_id].recall}}</td>
-                                        <td>
-                                            <thumbnail class="img-thumbnail no-mark-thumbnail"
-                                                       img-src="{{::avgImgDir}}/average_{{cluster_id}}"
-                                                       display-width="150"
-                                                       display-height="150"
-                                                       ng-click="showAverageImage(avgImgDir + '/average_' + cluster_id)"
-                                                       style="cursor:pointer;">
-                                            </thumbnail>
-                                        </td>
+                                        <!--<td>-->
+                                            <!--<thumbnail class="img-thumbnail no-mark-thumbnail"-->
+                                                       <!--img-src="{{::avgImgDir}}/average_{{cluster_id}}"-->
+                                                       <!--display-width="150"-->
+                                                       <!--display-height="150"-->
+                                                       <!--ng-click="showAverageImage(avgImgDir + '/average_' + cluster_id)"-->
+                                                       <!--style="cursor:pointer;">-->
+                                            <!--</thumbnail>-->
+                                        <!--</td>-->
                                         <td>
                                             <thumbnail ng-repeat="s in clusters[cluster_id].templates | limitTo: 3"
                                                        class="img-thumbnail"

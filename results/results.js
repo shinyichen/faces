@@ -70,7 +70,9 @@
 
             $scope.subjectClusters = null; // {subject_id: [cluster id's]}
 
-            $scope.counter = 0;        // number of clusters
+            $scope.clusterCount = 0;        // number of clusters
+
+            $scope.subjectCount = 0;
 
             $scope.cluster_id = null;  // current cluster being displayed
 
@@ -167,7 +169,8 @@
                     parseGroundTruth($scope.inputs.groundTruthText);
                     subjectIDs = Object.keys($scope.subjects);
                     calculatePrecision();
-                    $scope.count = subjectIDs.length;
+                    $scope.clusterCount = clusterIDs.length;
+                    $scope.subjectCount = subjectIDs.length;
                     $scope.page = {
                         "number": 1,
                         "subjects": subjectIDs.slice(0, Math.min(clusterIDs.length, pageSize))
@@ -181,7 +184,7 @@
                 }
                 else {
                     $scope.useGroundTruth = false;
-                    $scope.count = clusterIDs.length;
+                    $scope.clusterCount = clusterIDs.length;
                     $scope.page = {
                         "number": 1,
                         "clusters": clusterIDs.slice(0, Math.min(clusterIDs.length, pageSize))
