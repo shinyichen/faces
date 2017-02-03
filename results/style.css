@@ -58,3 +58,11 @@ main div {
     border-width: 4px;
     margin: 4px;
 }
+
+.subject-table {
+    width: 100%;
+}
+
+.subject-table td{
+    padding-top: 10px;
+}

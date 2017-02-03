@@ -218,49 +218,44 @@
 
                 <div ng-repeat="subject_id in page.subjects track by $index">
 
-                    <table class="table">
-                        <thead class="table-heading">
-                        <tr class="bg-primary">
-                            <th>Subject ID: {{subject_id}}</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr>
-                            <td ng-switch="subjectClusters[subject_id].length > 0">
-                                Total clusters:
-                                <span ng-switch-when="true"> {{subjectClusters[subject_id].length}}</span>
-                                <span ng-switch-default> 0</span>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td ng-switch="subjectClusters[subject_id].length > 0">
-                                Average precision:
-                                <span ng-switch-when="true"> {{averagePrecision(subject_id)}}</span>
-                                <span ng-switch-default> --</span>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td ng-switch="subjectClusters[subject_id].length > 0">
-                                Average recall:
-                                <span ng-switch-when="true"> {{averageRecall(subject_id)}}</span>
-                                <span ng-switch-default> --</span>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td ng-switch="subjectClusters[subject_id].length > 0">
-                                Total recall:
-                                <span ng-switch-when="true"> {{totalRecall(subject_id)}}</span>
-                                <span ng-switch-default> --</span>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
-
                     <div ng-if="subjectClusters[subject_id].length > 0">
                         <uib-accordion>
                             <div uib-accordion-group class="panel-default" is-open="page.open[$index]">
                                 <uib-accordion-heading>
-                                    <a>Clusters</a><i class="pull-right glyphicon text-primary" ng-class="{'glyphicon-chevron-down': page.open[$index], 'glyphicon-chevron-right': !page.open[$index]}"></i>
+                                    <table class="subject-table">
+                                        <thead>
+                                        <tr>
+                                            <th style="width: 20%"><a>Subject ID: {{subject_id}}</a></th>
+                                            <th>Total Clusters</th>
+                                            <th>Average Precision</th>
+                                            <th>Average Recall</th>
+                                            <th>Total Recall</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                            <td>
+                                                <i class="glyphicon text-primary" ng-class="{'glyphicon-chevron-down': page.open[$index], 'glyphicon-chevron-right': !page.open[$index]}"></i>
+                                            </td>
+                                            <td ng-switch="subjectClusters[subject_id].length > 0">
+                                                <span ng-switch-when="true"> {{subjectClusters[subject_id].length}}</span>
+                                                <span ng-switch-default> 0</span>
+                                            </td>
+                                            <td ng-switch="subjectClusters[subject_id].length > 0">
+                                                <span ng-switch-when="true"> {{averagePrecision(subject_id)}}</span>
+                                                <span ng-switch-default> --</span>
+                                            </td>
+                                            <td ng-switch="subjectClusters[subject_id].length > 0">
+                                                <span ng-switch-when="true"> {{averageRecall(subject_id)}}</span>
+                                                <span ng-switch-default> --</span>
+                                            </td>
+                                            <td ng-switch="subjectClusters[subject_id].length > 0">
+                                                <span ng-switch-when="true"> {{totalRecall(subject_id)}}</span>
+                                                <span ng-switch-default> --</span>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
                                 </uib-accordion-heading>
                                 <table class="table table-bordered table-striped table-hover">
                                     <thead class="table-heading">
