@@ -112,7 +112,7 @@
                             <!--</thumbnail>-->
                         <!--</td>-->
                         <td>
-                            <thumbnail ng-repeat="s in clusters[cluster_id].templates | limitTo: 3"
+                            <thumbnail ng-repeat="s in clusters[cluster_id].templates | orderBy: '-CONFIDENCE' | limitTo: 3"
                                        class="img-thumbnail no-mark-thumbnail"
                                        ng-attr-id="{{s.FILENAME}}"
                                        img-src="{{::imageDir}}/{{s.FILENAME}}"
@@ -161,7 +161,7 @@
                 </div>
 
                 <div>
-                    <thumbnail ng-repeat="s in clusters[cluster_id].templates"
+                    <thumbnail ng-repeat="s in clusters[cluster_id].templates | orderBy: '-CONFIDENCE'"
                                img-src="{{::imageDir}}/{{::s.FILENAME}}"
                                box-x="templates[s.TEMPLATE_ID].FACE_X"
                                box-y="templates[s.TEMPLATE_ID].FACE_Y"
@@ -284,7 +284,7 @@
                                             <!--</thumbnail>-->
                                         <!--</td>-->
                                         <td>
-                                            <thumbnail ng-repeat="s in clusters[cluster_id].templates | limitTo: 3"
+                                            <thumbnail ng-repeat="s in clusters[cluster_id].templates | orderBy: '-CONFIDENCE' | limitTo: 3"
                                                        class="img-thumbnail"
                                                        ng-attr-id="{{s.FILENAME}}"
                                                        img-src="{{::imageDir}}/{{s.FILENAME}}"
@@ -338,7 +338,7 @@
                 </div>
 
                 <div>
-                    <thumbnail ng-repeat="s in clusters[cluster_id].templates track by $index"
+                    <thumbnail ng-repeat="s in clusters[cluster_id].templates | orderBy: '-CONFIDENCE' track by $index"
                                img-src="{{::imageDir}}/{{::s.FILENAME}}"
                                box-x="templates[s.TEMPLATE_ID].FACE_X"
                                box-y="templates[s.TEMPLATE_ID].FACE_Y"

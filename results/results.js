@@ -387,6 +387,7 @@
                             obj[headers[j]] = currentline[j];
                         }
                     }
+                    obj["CONFIDENCE"] = Number(obj["CONFIDENCE"]); // convert confidence to number
 
                     if (!$scope.clusters[cluster_index]) {
                         $scope.clusters[cluster_index] = {};
@@ -544,14 +545,16 @@
             }
 
             $scope.$watch('page.open', function(newValue, oldValue) {
-                if (newValue.every(function(v) {
-                        return v;
-                    })) {
-                    $scope.expanded = true;
-                } else if (newValue.every(function(v) {
-                        return !v;
-                    })) {
-                    $scope.expanded = false;
+                if ($scope.useGroundTruth) {
+                    if (newValue.every(function(v) {
+                            return v;
+                        })) {
+                        $scope.expanded = true;
+                    } else if (newValue.every(function(v) {
+                            return !v;
+                        })) {
+                        $scope.expanded = false;
+                    }
                 }
             }, true);
         }])
