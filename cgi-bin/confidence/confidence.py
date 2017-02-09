@@ -69,6 +69,6 @@ if __name__ == "__main__":
             image_name = os.path.splitext(image)[0]
             i_vector = id2feature[image_name] # image vector
             coeff = np.corrcoef(i_vector, a_vector)[0,1]
-            confidence.append([image, coeff])
+            confidence.append([image, abs(coeff)])
     #pprint(confidence)
     np.savetxt(output_path, confidence, delimiter=',', fmt=('%s'))

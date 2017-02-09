@@ -10,8 +10,8 @@ from sklearn.metrics import adjusted_mutual_info_score, normalized_mutual_info_s
 ####################################################################################################
 # Parse parameters
 ####################################################################################################
-use_key_image_file = "/nfs/isicvlnas01/projects/glaive/expts/00051-xpeng-CS3-faceClustering-selfeval-proto02/expts/partition/partition_render-45.list"
-use_feat_lmdb = "/nfs/div2/jchen/features/raw-features-CS3-render-45.lmdb"
+use_key_image_file = "/nfs/isicvlnas01/projects/glaive/expts/00051-xpeng-CS3-faceClustering-selfeval-proto08/expts/partition/partition_render-45.list"
+use_feat_lmdb = "/nfs/isicvlnas01/projects/glaive/expts/00051-xpeng-CS3-faceFeatex-selfeval-proto08/expts/features/raw-features-CS3-render-45.lmdb"
 metric = "cosine"
 output_file = "/nfs/div2/jchen/features/output/features.txt"
 output_label = "/nfs/div2/jchen/features/output/labels.txt"
@@ -27,11 +27,10 @@ else :
     self_simi = True
 
 # localize lmdb
-#my_feat_lmdb = os.path.join( os.environ['TMPDIR'], os.path.basename( use_feat_lmdb ) )
-#if ( not os.path.isdir( my_feat_lmdb ) ) :
-#    os.system( 'cp -rf %s %s' % ( use_feat_lmdb, my_feat_lmdb ) )
-#    print "INFO: successfully localize data lmdb to", my_feat_lmdb
-my_feat_lmdb = use_feat_lmdb
+my_feat_lmdb = os.path.join( os.environ['TMPDIR'], os.path.basename( use_feat_lmdb ) )
+if ( not os.path.isdir( my_feat_lmdb ) ) :
+   os.system( 'cp -rf %s %s' % ( use_feat_lmdb, my_feat_lmdb ) )
+   print "INFO: successfully localize data lmdb to", my_feat_lmdb
 
 ####################################################################################################
 # Main Clustering
