@@ -52,7 +52,7 @@
                 "groundTruth": true
             };
 
-            $scope.presets = ["clusters_32", "clusters_64", "clusters_128", "clusters_256", "clusters_512", "clusters_1024", "clusters_1870"];
+            $scope.presets = ["clusters_32", "clusters_32_avg", "clusters_32_min", "clusters_64", "clusters_128", "clusters_256", "clusters_512", "clusters_1024", "clusters_1870"];
 
             $scope.inputs = {
                 "inputText": null,   // string of text from input file
@@ -173,7 +173,7 @@
                     $scope.subjectCount = subjectIDs.length;
                     $scope.page = {
                         "number": 1,
-                        "subjects": subjectIDs.slice(0, Math.min(clusterIDs.length, pageSize))
+                        "subjects": subjectIDs.slice(0, Math.min(subjectIDs.length, pageSize))
                     };
                     $scope.page.open = [];
                     for (var i = 0; i < $scope.page.subjects.length; i++) {
@@ -317,7 +317,7 @@
                 }
                     if ($scope.useGroundTruth) {
                         $scope.page.subjects =
-                            subjectIDs.slice(($scope.page.number - 1) * pageSize, Math.min(clusterIDs.length, $scope.page.number * pageSize));
+                            subjectIDs.slice(($scope.page.number - 1) * pageSize, Math.min(subjectIDs.length, $scope.page.number * pageSize));
                         $scope.page.open = [];
                         for (var i = 0; i < $scope.page.subjects.length; i++) {
                             $scope.page.open.push($scope.expanded);
@@ -382,9 +382,9 @@
 
                     for(var j = 0; j < headers.length; j++){
                         if (headers[j] == "CLUSTER_INDEX") {
-                            cluster_index = currentline[j];
+                            cluster_index = currentline[j].trim();
                         } else {
-                            obj[headers[j]] = currentline[j];
+                            obj[headers[j]] = currentline[j].trim();
                         }
                     }
                     obj["CONFIDENCE"] = Number(obj["CONFIDENCE"]); // convert confidence to number
@@ -469,6 +469,7 @@
                         }
                         else {
                             $scope.subjects[subject_id] = [template_id]; // create new entry
+                            $scope.subjectClusters[subject_id] = [];
                         }
                     }
                 }
@@ -482,7 +483,6 @@
             function calculatePrecision() {
 
                 var i;
-                $scope.subjectClusters = {};
 
                 for (var cid in $scope.clusters) {
 
