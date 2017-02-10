@@ -10,6 +10,7 @@
     <script src="../styles/bootstrap/js/bootstrap.min.js"></script>
     <script src="../scripts/ui-bootstrap-tpls-2.3.2.min.js"></script>
     <script src="../common/fileInput.js"></script>
+    <script src="../common/thumbnail.js"></script>
     <script src="d3.js"></script>
     <script src="analysis.js"></script>
 </head>
@@ -24,9 +25,68 @@
             <!--<span ng-show="loading" class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span>-->
             <!--Open-->
         <!--</button>-->
-        <div ng-if="data_ready">
-            <plot dataset="dataset"></plot>
+        <div class="row" ng-if="data_ready" >
+            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                <plot dataset="dataset"></plot>
+            </div>
+            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                <table class="table">
+                    <tr>
+                        <td style="width: 40%;">
+                            <span ng-repeat="t in [template]"> <!-- force thumbnail update when selection is modified -->
+                                <thumbnail img-src="{{::imageDir}}/{{t.FILENAME}}"
+                                           box-x="t.FACE_X"
+                                           box-y="t.FACE_Y"
+                                           box-width="t.FACE_WIDTH"
+                                           box-height="t.FACE_HEIGHT"
+                                           display-width="200"
+                                           display-height="200"
+                                           crop=true
+                                           class="img-thumbnail"
+                                           style="cursor: pointer">
+
+                                </thumbnail>
+                            </span>
+                        </td>
+                        <td>
+                            <thumbnail ng-repeat="t in subject_templates | limitTo: 12"
+                                    img-src="{{::imageDir}}/{{t.FILENAME}}"
+                                       box-x="t.FACE_X"
+                                       box-y="t.FACE_Y"
+                                       box-width="t.FACE_WIDTH"
+                                       box-height="t.FACE_HEIGHT"
+                                       display-width="50"
+                                       display-height="50"
+                                       crop=true
+                                       class="img-thumbnail"
+                                       style="cursor: pointer">
+
+                            </thumbnail>
+                            <button ng-if="subject_templates.length > 12" type="button" class="btn btn-primary btn-xs" ng-click="more(cluster_id)" style="vertical-align: bottom;">{{subject_templates.length-12}} more</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <thumbnail ng-repeat="t in cluster_templates | limitTo: 12"
+                                       img-src="{{::imageDir}}/{{t.FILENAME}}"
+                                       box-x="t.FACE_X"
+                                       box-y="t.FACE_Y"
+                                       box-width="t.FACE_WIDTH"
+                                       box-height="t.FACE_HEIGHT"
+                                       display-width="50"
+                                       display-height="50"
+                                       crop=true
+                                       class="img-thumbnail"
+                                       style="cursor: pointer">
+
+                            </thumbnail>
+                            <button ng-if="cluster_templates.length > 12" type="button" class="btn btn-primary btn-xs" ng-click="more(cluster_id)" style="vertical-align: bottom;">{{cluster_templates.length-12}} more</button>
+                        </td>
+                    </tr>
+                </table>
+            </div>
         </div>
+
     </div>
 
 </body>
