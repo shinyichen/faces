@@ -11,82 +11,146 @@
     <script src="../scripts/ui-bootstrap-tpls-2.3.2.min.js"></script>
     <script src="../common/fileInput.js"></script>
     <script src="../common/thumbnail.js"></script>
+    <script src="../common/modalComponent.js"></script>
     <script src="d3.js"></script>
     <script src="analysis.js"></script>
 </head>
 <body>
 
     <div ng-controller="analysisController" class="container-fluid">
-        <!--<div class="form-group">-->
-            <!--<label class="col-form-label">Features file</label>-->
-            <!--<input class="form-control" type="file" name="file" fileread="featuresText">-->
-        <!--</div>-->
-        <!--<button type="button" class="btn btn-primary" ng-disabled="loading" ng-click="open()">-->
-            <!--<span ng-show="loading" class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span>-->
-            <!--Open-->
-        <!--</button>-->
-        <div class="row" ng-if="data_ready" >
-            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
-                <plot dataset="dataset"></plot>
-            </div>
-            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
-                <table class="table">
-                    <tr>
-                        <td style="width: 40%;">
-                            <span ng-repeat="t in [template]"> <!-- force thumbnail update when selection is modified -->
-                                <thumbnail img-src="{{::imageDir}}/{{t.FILENAME}}"
-                                           box-x="t.FACE_X"
-                                           box-y="t.FACE_Y"
-                                           box-width="t.FACE_WIDTH"
-                                           box-height="t.FACE_HEIGHT"
-                                           display-width="200"
-                                           display-height="200"
-                                           crop=true
-                                           class="img-thumbnail"
-                                           style="cursor: pointer">
-
-                                </thumbnail>
-                            </span>
-                        </td>
-                        <td>
-                            <thumbnail ng-repeat="t in subject_templates | limitTo: 12"
-                                    img-src="{{::imageDir}}/{{t.FILENAME}}"
-                                       box-x="t.FACE_X"
-                                       box-y="t.FACE_Y"
-                                       box-width="t.FACE_WIDTH"
-                                       box-height="t.FACE_HEIGHT"
-                                       display-width="50"
-                                       display-height="50"
-                                       crop=true
-                                       class="img-thumbnail"
-                                       style="cursor: pointer">
-
-                            </thumbnail>
-                            <button ng-if="subject_templates.length > 12" type="button" class="btn btn-primary btn-xs" ng-click="more(cluster_id)" style="vertical-align: bottom;">{{subject_templates.length-12}} more</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td colspan="2">
-                            <thumbnail ng-repeat="t in cluster_templates | limitTo: 12"
-                                       img-src="{{::imageDir}}/{{t.FILENAME}}"
-                                       box-x="t.FACE_X"
-                                       box-y="t.FACE_Y"
-                                       box-width="t.FACE_WIDTH"
-                                       box-height="t.FACE_HEIGHT"
-                                       display-width="50"
-                                       display-height="50"
-                                       crop=true
-                                       class="img-thumbnail"
-                                       style="cursor: pointer">
-
-                            </thumbnail>
-                            <button ng-if="cluster_templates.length > 12" type="button" class="btn btn-primary btn-xs" ng-click="more(cluster_id)" style="vertical-align: bottom;">{{cluster_templates.length-12}} more</button>
-                        </td>
-                    </tr>
-                </table>
+        <div ng-if="view=='opener'">
+            <div class="row">
+                <div class="col-lg-offset-4 col-md-offset-4 col-lg-4 col-md-4">
+                    <h4>Open a preset:</h4>
+                    <select class="form-control" ng-model="formModel.preset" ng-change="open()">
+                        <option value="">Select Preset</option>
+                        <option ng-repeat="p in presets track by $index" ng-value="p">{{p}}</option>
+                    </select>
+                </div>
             </div>
         </div>
 
+        <div class="row" ng-if="data_ready && view=='overview'" >
+            <div class="col-lg-10 col-md-10 col-sm-10 col-xs-10">
+                <plot dataset="dataset"></plot>
+            </div>
+            <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
+                <div ng-if="template" style="width:90%;margin: 0 auto;">
+                    <span ng-repeat="t in [template]"> <!-- force thumbnail update when selection is modified -->
+                        <thumbnail img-src="{{::imageDir}}/{{t.FILENAME}}"
+                                   box-x="t.FACE_X"
+                                   box-y="t.FACE_Y"
+                                   box-width="t.FACE_WIDTH"
+                                   box-height="t.FACE_HEIGHT"
+                                   display-width="200"
+                                   display-height="200"
+                                   crop=true
+                                   class="img-thumbnail"
+                                   ng-click="showImage(t, true)"
+                                   style="cursor: pointer">
+
+                        </thumbnail>
+                    </span>
+                    <div class="btn-group" data-toggle="buttons">
+                        <button class="btn btn-xs" ng-class="{'btn-primary': bySubject, 'btn-default': !bySubject}" ng-click="bySubject = true">
+                            By Subject
+                        </button>
+                        <button class="btn btn-xs" ng-class="{'btn-primary': !bySubject, 'btn-default': bySubject}" ng-click="bySubject = false">
+                            By Cluster
+                        </button>
+                    </div>
+                    <div ng-show="bySubject">
+                        <thumbnail ng-repeat="t in subject_templates | limitTo: 8"
+                                   img-src="{{::imageDir}}/{{t.FILENAME}}"
+                                   box-x="t.FACE_X"
+                                   box-y="t.FACE_Y"
+                                   box-width="t.FACE_WIDTH"
+                                   box-height="t.FACE_HEIGHT"
+                                   display-width="50"
+                                   display-height="50"
+                                   crop=true
+                                   class="img-thumbnail"
+                                   ng-click="showImage(t, true)"
+                                   style="cursor: pointer">
+
+                        </thumbnail>
+                        <button ng-if="subject_templates.length > 8" type="button" class="btn btn-primary btn-xs" ng-click="showSubject()" style="vertical-align: bottom;">{{subject_templates.length-8}} more</button>
+                    </div>
+                    <div ng-show="!bySubject">
+                        <thumbnail ng-repeat="t in cluster_templates | limitTo: 8"
+                               img-src="{{::imageDir}}/{{t.FILENAME}}"
+                               box-x="t.FACE_X"
+                               box-y="t.FACE_Y"
+                               box-width="t.FACE_WIDTH"
+                               box-height="t.FACE_HEIGHT"
+                               display-width="50"
+                               display-height="50"
+                               crop=true
+                               class="img-thumbnail"
+                               ng-click="showImage(t, true)"
+                               style="cursor: pointer">
+
+                        </thumbnail>
+                        <button ng-if="cluster_templates.length > 8" type="button" class="btn btn-primary btn-xs" ng-click="showCluster()" style="vertical-align: bottom;">{{cluster_templates.length-8}} more</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- subject view TODO -->
+        <div ng-if="data_ready && view=='subject'">
+            <div class="row">
+                <div class="col-lg-4 col-md-4">
+                    <button type="button" class="btn btn-primary btn-sm" ng-click="showOverview()">Back</button>
+                </div>
+                <div class="col-lg-4 col-md-4 text-center">
+                    <h4>Subject {{subject_id}} has {{subject_templates.length}} images</h4>
+                </div>
+            </div>
+
+            <div>
+                <thumbnail ng-repeat="t in subject_templates | orderBy: '-CONFIDENCE' track by $index"
+                           img-src="{{::imageDir}}/{{::t.FILENAME}}"
+                           box-x="t.FACE_X"
+                           box-y="t.FACE_Y"
+                           box-width="t.FACE_WIDTH"
+                           box-height="t.FACE_HEIGHT"
+                           display-width="200"
+                           display-height="200"
+                           crop=true
+                           ng-click="showImage(t, true)"
+                           class="img-thumbnail"
+                           style="cursor: pointer"></thumbnail>
+            </div>
+        </div>
+
+
+        <!-- cluster view -->
+        <div ng-if="data_ready && view=='cluster'">
+            <div class="row">
+                <div class="col-lg-4 col-md-4">
+                    <button type="button" class="btn btn-primary btn-sm" ng-click="showOverview()">Back</button>
+                </div>
+                <div class="col-lg-4 col-md-4 text-center">
+                    <h4>Cluster {{cluster_id}} has {{cluster_templates.length}} images</h4>
+                </div>
+            </div>
+
+            <div>
+                <thumbnail ng-repeat="t in cluster_templates | orderBy: '-CONFIDENCE' track by $index"
+                           img-src="{{::imageDir}}/{{::t.FILENAME}}"
+                           box-x="t.FACE_X"
+                           box-y="t.FACE_Y"
+                           box-width="t.FACE_WIDTH"
+                           box-height="t.FACE_HEIGHT"
+                           display-width="200"
+                           display-height="200"
+                           crop=true
+                           ng-click="showImage(t, true)"
+                           class="img-thumbnail"
+                           style="cursor: pointer"></thumbnail>
+            </div>
+        </div>
     </div>
 
 </body>

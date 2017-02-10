@@ -10,7 +10,7 @@ if __name__ == "__main__":
     output_path = sys.argv[2];
     X = np.loadtxt(features_path, delimiter=',');
     #pprint(X);
-    model = TSNE(n_components=2, random_state=0)
+    model = TSNE(n_components=2, random_state=50, perplexity=50)
     Y = model.fit_transform(X)
     np.savetxt(output_path, Y, delimiter=',');
 
