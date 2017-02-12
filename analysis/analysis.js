@@ -18,7 +18,9 @@
 
             $scope.subject_id = null; // template's subject
 
-            $scope.bySubject = true;
+            $scope.plotInfo = {
+                isBySubject : true
+            }
 
             $scope.view = "opener"; // opener, overview, cluster, subject
 
@@ -129,11 +131,11 @@
             };
 
             $scope.bySubject = function() {
-                $scope.bySubject = true;
+                $scope.plotInfo.isBySubject = true;
             };
 
             $scope.byCluster = function() {
-                $scope.bySubject = false;
+                $scope.plotInfo.isBySubject = false;
             };
 
 
@@ -210,7 +212,7 @@
                 }
             }
 
-            var inputHeaders = ["FILENAME", "FACE_X", "FACE_Y", "FACE_WIDTH", "FACE_HEIGHT"];
+            var inputHeaders = ["TEMPLATE_ID", "FILENAME", "FACE_X", "FACE_Y", "FACE_WIDTH", "FACE_HEIGHT"];
             function parseTemplates(csv) {
 
                 var lines=csv.split("\n");
@@ -305,10 +307,13 @@
 
                     // combine vector and label and create dataset
                     for (var r = 0; r < vector.length; r++) { // rows
+
+                        var sid = filenameToTemplate[ids[r]]["SUBJECT_ID"];
                         $scope.dataset[r] = {
                             "x": vector[r][0],
                             "y": vector[r][1],
                             "group": groups[r],
+                            "subject": sid,
                             "id": ids[r]
                         }
                     }
@@ -362,15 +367,18 @@
                 restrict: 'E',
                 scope: {
                     dataset: "=",
-                    labels: "="
+                    plotInfo: "="
                 },
                 link: function(scope, element, attrs) {
 
+                    var isBySubject = true;
+
                     d3Service.d3().then(function(d3) {
 
-                        var colors = {};
+                        var clusterColors = {};
+                        var subjectColors = {};
 
-                        var w = (window.innerWidth/12)*10, h = window.innerHeight, padding = 100, transform = d3.zoomIdentity;
+                        var w = (window.innerWidth/12)*9, h = window.innerHeight, padding = 100, transform = d3.zoomIdentity;
 
                         // scale functions to make data fit in the viewport
                         var xScale = d3.scaleLinear()
@@ -385,16 +393,29 @@
 
                         // color function (label->color)
                         var letters = '0123456789ABCDEF';
-                        function getColor(label) { // label is string of integer
-                            if (!colors[label]) {
-                                var color = '#';
-                                for (var i = 0; i < 6; i++ ) {
-                                    color += letters[Math.floor(Math.random() * 16)];
+                        function getColor(datapoint) { // label is string of integer
+                            var color, i;
+                            if (!isBySubject) {
+                                if (!clusterColors[datapoint.group]) {
+                                    color = '#';
+                                    for (i = 0; i < 6; i++) {
+                                        color += letters[Math.floor(Math.random() * 16)];
+                                    }
+                                    clusterColors[datapoint.group] = color
                                 }
-                                colors[label] = color
-                            }
 
-                            return colors[label];
+                                return clusterColors[datapoint.group];
+                            } else {
+                                if (!subjectColors[datapoint.subject]) {
+                                    color = '#';
+                                    for (i = 0; i < 6; i++) {
+                                        color += letters[Math.floor(Math.random() * 16)];
+                                    }
+                                    subjectColors[datapoint.subject] = color
+                                }
+
+                                return subjectColors[datapoint.subject];
+                            }
                         }
 
                         var svg = d3.select(element[0]).append("svg");
@@ -414,7 +435,7 @@
 
                         var g = svg.append("g");
 
-                        g.selectAll("circle")
+                        var circles = g.selectAll("circle")
                             .data(scope.dataset)
                             .enter().append("circle")
                             .attr("cx", function(d) {
@@ -425,7 +446,7 @@
                             })
                             .attr("r", 1)
                             .attr('fill', function(d) {
-                                return getColor(d.group);
+                                return getColor(d);
                             })
                             .on("click", clicked)
                             .call(d3.drag().on("drag", dragged));
@@ -438,11 +459,16 @@
                         svg.call(zoom);
 
                         // clicked on a dot
+                        var selectedDot;
                         function clicked(d, i) {
+                            if (selectedDot)
+                                d3.select(selectedDot).attr("r", 1)
+                                    .style("fill", null); // reset previous selection
+                            selectedDot = this;
+                            d3.select(this).moveToBack();
                             d3.select(this).transition()
+                                .attr("r", 3)
                                 .style("fill", "black")
-                                .transition()
-                                .style("fill", getColor(d.group));
 
                             scope.$emit('selection', d.id);
                         }
@@ -455,7 +481,32 @@
                             d3.select(this).attr("cx", d.x = d3.event.x).attr("cy", d.y = d3.event.y);
                         }
 
+                        function update() {
+                            g.selectAll("circle")
+                                .attr('fill', function(d) {
+                                    return getColor(d);
+                                });
+                        }
+
+                        d3.selection.prototype.moveToBack = function() {
+                            return this.each(function() {
+                                var firstChild = this.parentNode.firstChild;
+                                if (firstChild) {
+                                    this.parentNode.insertBefore(this, firstChild);
+                                }
+                            });
+                        };
+
+                        scope.$watch('plotInfo.isBySubject', function(newValue, oldValue) {
+                            if (newValue !== undefined && newValue !== null) {
+                                isBySubject = newValue;
+                                update();
+                            }
+                        })
+
                     });
+
+
                 }
             }
             
