@@ -19,8 +19,9 @@
             $scope.subject_id = null; // template's subject
 
             $scope.plotInfo = {
-                isBySubject : true
-            }
+                isBySubject : true,
+                viewSingleGroup: false
+            };
 
             $scope.view = "opener"; // opener, overview, cluster, subject
 
@@ -373,12 +374,18 @@
 
                     var isBySubject = true;
 
+                    var viewSingleGroup = false;
+
+                    var selectedDot;
+
+                    var selectedData;
+
                     d3Service.d3().then(function(d3) {
 
                         var clusterColors = {};
                         var subjectColors = {};
 
-                        var w = (window.innerWidth/12)*9, h = window.innerHeight, padding = 100, transform = d3.zoomIdentity;
+                        var w = (window.innerWidth/12)*9, h = window.innerHeight-50, padding = 50, transform = d3.zoomIdentity;
 
                         // scale functions to make data fit in the viewport
                         var xScale = d3.scaleLinear()
@@ -395,26 +402,37 @@
                         var letters = '0123456789ABCDEF';
                         function getColor(datapoint) { // label is string of integer
                             var color, i;
-                            if (!isBySubject) {
-                                if (!clusterColors[datapoint.group]) {
-                                    color = '#';
-                                    for (i = 0; i < 6; i++) {
-                                        color += letters[Math.floor(Math.random() * 16)];
+                            if (isBySubject) { // by subject
+                                if (selectedData !== null && viewSingleGroup) { // only show subject
+                                    if (datapoint.subject !== selectedData.subject) {
+                                        return "#FFFFFF";
                                     }
-                                    clusterColors[datapoint.group] = color
                                 }
-
-                                return clusterColors[datapoint.group];
-                            } else {
                                 if (!subjectColors[datapoint.subject]) {
                                     color = '#';
                                     for (i = 0; i < 6; i++) {
                                         color += letters[Math.floor(Math.random() * 16)];
                                     }
-                                    subjectColors[datapoint.subject] = color
+                                    subjectColors[datapoint.subject] = color;
                                 }
 
                                 return subjectColors[datapoint.subject];
+
+                            } else { // by cluster
+                                if (selectedData !== null && viewSingleGroup) { // only show cluster
+                                    if (datapoint.subject !== selectedData.subject) {
+                                        return "#FFFFFF";
+                                    }
+                                }
+                                if (!clusterColors[datapoint.group]) {
+                                    color = '#';
+                                    for (i = 0; i < 6; i++) {
+                                        color += letters[Math.floor(Math.random() * 16)];
+                                    }
+                                    clusterColors[datapoint.group] = color;
+                                }
+
+                                return clusterColors[datapoint.group];
                             }
                         }
 
@@ -459,16 +477,16 @@
                         svg.call(zoom);
 
                         // clicked on a dot
-                        var selectedDot;
                         function clicked(d, i) {
                             if (selectedDot)
                                 d3.select(selectedDot).attr("r", 1)
-                                    .style("fill", null); // reset previous selection
+                                    .style("fill-opacity", null); // reset previous selection
                             selectedDot = this;
+                            selectedData = d;
                             d3.select(this).moveToBack();
                             d3.select(this).transition()
                                 .attr("r", 3)
-                                .style("fill", "black")
+                                .style("fill-opacity", .8);
 
                             scope.$emit('selection', d.id);
                         }
@@ -500,6 +518,13 @@
                         scope.$watch('plotInfo.isBySubject', function(newValue, oldValue) {
                             if (newValue !== undefined && newValue !== null) {
                                 isBySubject = newValue;
+                                update();
+                            }
+                        });
+
+                        scope.$watch('plotInfo.viewSingleGroup', function(newValue, oldValue) {
+                            if (newValue !== undefined && newValue !== null) {
+                                viewSingleGroup = newValue;
                                 update();
                             }
                         })

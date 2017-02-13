@@ -32,6 +32,7 @@
 
         <div class="row" ng-if="data_ready && view=='overview'" >
             <div class="col-lg-9 col-md-9 col-sm-9 col-xs-9">
+                <h4 class="text-center">Feature Vectors {{formModel.preset}}</h4>
                 <plot plot-info="plotInfo" dataset="dataset"></plot>
             </div>
             <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
@@ -45,7 +46,7 @@
                         </button>
                     </div>
                     <div ng-if="template">
-                        <span ng-repeat="t in [template]"> <!-- force thumbnail update when selection is modified -->
+                        <div ng-repeat="t in [template]"> <!-- force thumbnail update when selection is modified -->
                             <thumbnail img-src="{{::imageDir}}/{{t.FILENAME}}"
                                        box-x="t.FACE_X"
                                        box-y="t.FACE_Y"
@@ -59,7 +60,18 @@
                                        style="cursor: pointer">
 
                             </thumbnail>
-                        </span>
+                        </div>
+                        <div ng-switch="plotInfo.isBySubject">
+                            <span ng-switch-when="true"><b>Subject ID: {{subject_id}}</b>, Cluster ID: {{cluster_id}}</span>
+                            <span ng-switch-when="false">Subject ID: {{subject_id}}, <b>Cluster ID: {{cluster_id}}</b></span>
+                        </div>
+                        <div>
+                            <input type="checkbox" id="cbviewall" ng-model="plotInfo.viewSingleGroup">
+                            <label for="cbviewall" ng-switch="plotInfo.isBySubject">
+                                <span ng-switch-when="true">Show only this subject on plot</span>
+                                <span ng-switch-when="false">Show only this cluster on plot</span>
+                            </label>
+                        </div>
                         <div ng-show="plotInfo.isBySubject">
                             <thumbnail ng-repeat="t in subject_templates | limitTo: 8"
                                        img-src="{{::imageDir}}/{{t.FILENAME}}"
@@ -75,7 +87,9 @@
                                        style="cursor: pointer">
 
                             </thumbnail>
-                            <button ng-if="subject_templates.length > 8" type="button" class="btn btn-primary btn-xs" ng-click="showSubject()" style="vertical-align: bottom;">{{subject_templates.length-8}} more</button>
+                            <div>
+                                <button ng-if="subject_templates.length > 8" type="button" class="btn btn-primary btn-xs" ng-click="showSubject()" style="vertical-align: bottom;">{{subject_templates.length-8}} more</button>
+                            </div>
                         </div>
                         <div ng-show="!plotInfo.isBySubject">
                             <thumbnail ng-repeat="t in cluster_templates | limitTo: 8"
@@ -92,7 +106,9 @@
                                    style="cursor: pointer">
 
                             </thumbnail>
-                            <button ng-if="cluster_templates.length > 8" type="button" class="btn btn-primary btn-xs" ng-click="showCluster()" style="vertical-align: bottom;">{{cluster_templates.length-8}} more</button>
+                            <div>
+                                <button ng-if="cluster_templates.length > 8" type="button" class="btn btn-primary btn-xs" ng-click="showCluster()" style="vertical-align: bottom;">{{cluster_templates.length-8}} more</button>
+                            </div>
                         </div>
                     </div>
                 </div>
