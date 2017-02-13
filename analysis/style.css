@@ -19,3 +19,11 @@
     color: white;
     box-shadow: 2px 2px 2px #666;
 }
+
+div.paddedBox {
+    padding: 25px 25px 0 25px;
+}
+
+div.paddedLinear {
+    padding-bottom: 5px;
+}

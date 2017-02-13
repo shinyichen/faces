@@ -31,6 +31,7 @@
 
             $scope.clusters = {};
 
+            $scope.subjectClusters = {};
 
             var template_file;
 
@@ -55,8 +56,6 @@
             var clusterIDs;
 
             var subjectIDs;
-
-            var subjectClusters;
 
             var vector, groups, ids;
 
@@ -139,6 +138,50 @@
                 $scope.plotInfo.isBySubject = false;
             };
 
+            var averagePrecisions = {};
+            $scope.averagePrecision = function(subject_id) {
+                if (!averagePrecisions[subject_id]) {
+                    var total = 0.0;
+                    var clusters = $scope.subjectClusters[subject_id];
+                    clusters.forEach(function(cluster_id) {
+                        total += $scope.clusters[cluster_id].precision;
+                    });
+
+                    averagePrecisions[subject_id] = round(total/clusters.length, 2);
+                }
+
+                return averagePrecisions[subject_id];
+            };
+
+            var averageRecalls = {};
+            $scope.averageRecall = function(subject_id) {
+                if (!averageRecalls[subject_id]) {
+                    var total = 0.0;
+                    var clusters = $scope.subjectClusters[subject_id];
+                    clusters.forEach(function(cluster_id) {
+                        total += $scope.clusters[cluster_id].recall;
+                    });
+
+                    averageRecalls[subject_id] = round(total/clusters.length, 2);
+                }
+
+                return averageRecalls[subject_id];
+            };
+
+            var totalRecalls = {};
+            $scope.totalRecall = function(subject_id) {
+                if (!totalRecalls[subject_id]) {
+                    var total = 0.0;
+                    var clusters = $scope.subjectClusters[subject_id];
+                    clusters.forEach(function(cluster_id) {
+                        total += $scope.clusters[cluster_id].recall;
+                    });
+
+                    totalRecalls[subject_id] = round(total, 3);
+                }
+
+                return totalRecalls[subject_id];
+            };
 
             function loadPreset() {
                 $http.get(template_file).then(function(response) {
@@ -253,7 +296,7 @@
                 var headers=lines[0].split(",");
                 var id_col = -1, subject_col = -1;
                 $scope.subjects = {};
-                subjectClusters = {};
+                $scope.subjectClusters = {};
 
                 headers.forEach(function(value, index, array) {
                     var col = value.trim();
@@ -282,7 +325,7 @@
                         }
                         else {
                             $scope.subjects[subject_id] = [template_id]; // create new entry
-                            subjectClusters[subject_id] = [];
+                            $scope.subjectClusters[subject_id] = [];
                         }
                     }
                 }
@@ -383,10 +426,10 @@
                     }
 
                     // map clusters to subject
-                    if (subjectClusters[mainSubject]) {
-                        subjectClusters[mainSubject].push(cid);
+                    if ($scope.subjectClusters[mainSubject]) {
+                        $scope.subjectClusters[mainSubject].push(cid);
                     } else {
-                        subjectClusters[mainSubject] = [cid];
+                        $scope.subjectClusters[mainSubject] = [cid];
                     }
                 }
             }

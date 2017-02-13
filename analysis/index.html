@@ -36,8 +36,8 @@
                 <plot plot-info="plotInfo" dataset="dataset"></plot>
             </div>
             <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
-                <div class="pager">
-                    <div class="btn-group" data-toggle="buttons">
+                <div class="paddedBox">
+                    <div class="btn-group paddedLinear" data-toggle="buttons">
                         <button class="btn btn-xs" ng-class="{'btn-primary': plotInfo.isBySubject, 'btn-default': !plotInfo.isBySubject}" ng-click="plotInfo.isBySubject = true">
                             By Subject
                         </button>
@@ -46,7 +46,10 @@
                         </button>
                     </div>
                     <div ng-if="template">
-                        <div ng-repeat="t in [template]"> <!-- force thumbnail update when selection is modified -->
+                        <div class="paddedLinear">
+                            <b>Image ID: {{template.TEMPLATE_ID}}</b>
+                        </div>
+                        <div ng-repeat="t in [template]" class="paddedLinear"> <!-- force thumbnail update when selection is modified -->
                             <thumbnail img-src="{{::imageDir}}/{{t.FILENAME}}"
                                        box-x="t.FACE_X"
                                        box-y="t.FACE_Y"
@@ -61,9 +64,9 @@
 
                             </thumbnail>
                         </div>
-                        <div ng-switch="plotInfo.isBySubject">
-                            <span ng-switch-when="true"><b>Subject ID: {{subject_id}}</b>, Cluster ID: {{cluster_id}}</span>
-                            <span ng-switch-when="false">Subject ID: {{subject_id}}, <b>Cluster ID: {{cluster_id}}</b></span>
+                        <div ng-switch="plotInfo.isBySubject" class="paddedLinear">
+                            <span ng-switch-when="true"><b>Subject ID: {{subject_id}}</b></span>
+                            <span ng-switch-when="false"><b>Cluster ID: {{cluster_id}}</b></span>
                         </div>
                         <div>
                             <input type="checkbox" id="cbviewall" ng-model="plotInfo.viewSingleGroup">
@@ -87,8 +90,14 @@
                                        style="cursor: pointer">
 
                             </thumbnail>
-                            <div>
+                            <div class="paddedLinear">
                                 <button ng-if="subject_templates.length > 8" type="button" class="btn btn-primary btn-xs" ng-click="showSubject()" style="vertical-align: bottom;">{{subject_templates.length-8}} more</button>
+                            </div>
+                            <div class="paddedLinear"> <!-- subject stats -->
+                                <div>Total Clusters: <span>{{subjectClusters[subject_id].length}}</span></div>
+                                <div>Average Precision: {{averagePrecision(subject_id)}}</div>
+                                <div>Average Recall: {{averageRecall(subject_id)}}</div>
+                                <div>Total Recall: {{totalRecall(subject_id)}}</div>
                             </div>
                         </div>
                         <div ng-show="!plotInfo.isBySubject">
@@ -106,8 +115,13 @@
                                    style="cursor: pointer">
 
                             </thumbnail>
-                            <div>
+                            <div class="paddedLinear">
                                 <button ng-if="cluster_templates.length > 8" type="button" class="btn btn-primary btn-xs" ng-click="showCluster()" style="vertical-align: bottom;">{{cluster_templates.length-8}} more</button>
+                            </div>
+                            <div class="paddedLinear"> <!-- subject stats -->
+                                <div>Total Images: {{clusters[cluster_id].templates.length}}</div>
+                                <div>Precision: {{clusters[cluster_id].precision}}</div>
+                                <div>Recall: {{clusters[cluster_id].recall}}</div>
                             </div>
                         </div>
                     </div>
