@@ -168,6 +168,7 @@
                 // ground truth
                 parseGroundTruth(groundTruthText);
                 subjectIDs = Object.keys($scope.subjects);
+                calculatePrecision();
             }
 
             function parseClusters(csv) {
@@ -281,6 +282,7 @@
                         }
                         else {
                             $scope.subjects[subject_id] = [template_id]; // create new entry
+                            subjectClusters[subject_id] = [];
                         }
                     }
                 }
@@ -309,19 +311,84 @@
                     // combine vector and label and create dataset
                     for (var r = 0; r < vector.length; r++) { // rows
 
-                        var sid = filenameToTemplate[ids[r]]["SUBJECT_ID"];
                         $scope.dataset[r] = {
                             "x": vector[r][0],
                             "y": vector[r][1],
                             "group": groups[r],
-                            "subject": sid,
+                            "cluster": filenameToTemplate[ids[r]]["CLUSTER_INDEX"],
                             "id": ids[r]
                         }
                     }
 
+                    console.log($scope.dataset);
+
                     // allow drawing to begin
                     $scope.data_ready = true;
                 });
+            }
+
+            function calculatePrecision() {
+
+                var i;
+
+                for (var cid in $scope.clusters) {
+
+                    var cluster = $scope.clusters[cid];
+
+                    // find subjects in the cluster
+                    var subjects = {};
+                    for (i = 0; i < cluster.templates.length; i++) {
+                        var template_id = cluster.templates[i]["TEMPLATE_ID"];
+                        var subject_id = $scope.templates[template_id]["SUBJECT_ID"];
+                        if (subjects[subject_id])
+                            subjects[subject_id] = subjects[subject_id] += 1;
+                        else
+                            subjects[subject_id] = 1;
+                    }
+
+                    // find main subject
+                    var mainSubjects = []; // count equal then cluster has more than one main subject
+                    var clusterSubjectCount = -1; // max
+                    for (var s in subjects) {
+                        if (mainSubjects.length === 0 || subjects[s] > clusterSubjectCount) { // first s or found a new max count
+                            mainSubjects = [s];
+                            clusterSubjectCount = subjects[s];
+                        } else if (subjects[s] === clusterSubjectCount) { // equal max count, add subject
+                            mainSubjects.push(s);
+                        }
+                    }
+
+                    var mainSubject = null;
+                    if (mainSubjects.length > 1) {
+                        // TODO determine the main subject
+                        mainSubject = mainSubjects[0];
+                    } else {
+                        mainSubject = mainSubjects[0];
+                    }
+
+                    for (i = 0; i < cluster.templates.length; i++) {
+                        $scope.templates[template_id].guessed_subject = mainSubject;
+                    }
+
+                    // calculate precision
+                    var subjectCount = $scope.subjects[mainSubject].length;
+                    cluster.precision = round(clusterSubjectCount / cluster.templates.length, 2);
+
+                    // calculate recall
+                    cluster.recall = round(clusterSubjectCount / subjectCount, 2);
+
+                    // mark correctness
+                    for (i = 0; i < cluster.templates.length; i++) {
+                        cluster.templates[i].match = $scope.templates[cluster.templates[i]['TEMPLATE_ID']]['SUBJECT_ID'] === mainSubject;
+                    }
+
+                    // map clusters to subject
+                    if (subjectClusters[mainSubject]) {
+                        subjectClusters[mainSubject].push(cid);
+                    } else {
+                        subjectClusters[mainSubject] = [cid];
+                    }
+                }
             }
 
             function parse2D(csv) {
@@ -360,6 +427,10 @@
                 }
 
                 return labels;
+            }
+
+            function round(value, decimals) {
+                return Number(Math.round(value+'e'+decimals)+'e-'+decimals);
             }
         }])
 
@@ -403,36 +474,26 @@
                         function getColor(datapoint) { // label is string of integer
                             var color, i;
                             if (isBySubject) { // by subject
-                                if (selectedData !== null && viewSingleGroup) { // only show subject
-                                    if (datapoint.subject !== selectedData.subject) {
-                                        return "#FFFFFF";
-                                    }
-                                }
-                                if (!subjectColors[datapoint.subject]) {
+                                if (!subjectColors[datapoint.group]) {
                                     color = '#';
                                     for (i = 0; i < 6; i++) {
                                         color += letters[Math.floor(Math.random() * 16)];
                                     }
-                                    subjectColors[datapoint.subject] = color;
+                                    subjectColors[datapoint.group] = color;
                                 }
 
-                                return subjectColors[datapoint.subject];
+                                return subjectColors[datapoint.group];
 
                             } else { // by cluster
-                                if (selectedData !== null && viewSingleGroup) { // only show cluster
-                                    if (datapoint.subject !== selectedData.subject) {
-                                        return "#FFFFFF";
-                                    }
-                                }
-                                if (!clusterColors[datapoint.group]) {
+                                if (!clusterColors[datapoint.cluster]) {
                                     color = '#';
                                     for (i = 0; i < 6; i++) {
                                         color += letters[Math.floor(Math.random() * 16)];
                                     }
-                                    clusterColors[datapoint.group] = color;
+                                    clusterColors[datapoint.cluster] = color;
                                 }
 
-                                return clusterColors[datapoint.group];
+                                return clusterColors[datapoint.cluster];
                             }
                         }
 
@@ -501,6 +562,22 @@
 
                         function update() {
                             g.selectAll("circle")
+                                .attr("r", function(d) {
+                                    if (selectedData && viewSingleGroup) { // only show subject
+                                        if (isBySubject && (d.group !== selectedData.group))
+                                            return 0;
+                                        if (!isBySubject && (d.cluster !== selectedData.cluster))
+                                            return 0;
+                                    }
+                                    if (selectedData && d.id === selectedData.id)
+                                        return 3;
+                                    return 1;
+                                })
+                                .attr("fill-opacity", function(d) {
+                                    if (selectedData && d.id === selectedData.id)
+                                        return 0.8;
+                                    return 1;
+                                })
                                 .attr('fill', function(d) {
                                     return getColor(d);
                                 });
