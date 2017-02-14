@@ -592,10 +592,7 @@
                             selectedDot = this;
                             selectedData = d;
                             d3.select(this).moveToBack();
-                            d3.select(this).transition()
-                                .attr("r", 3)
-                                .style("fill-opacity", .8);
-
+                            update();
                             scope.$emit('selection', d.id);
                         }
 
@@ -610,14 +607,24 @@
                         function update() {
                             g.selectAll("circle")
                                 .attr("r", function(d) {
-                                    if (selectedData && viewSingleGroup) { // only show subject or cluster
-                                        if (isBySubject && (d.group !== selectedData.group))
-                                            return 0;
-                                        if (!isBySubject && (d.cluster !== selectedData.cluster))
-                                            return 0;
+                                    if (selectedData) {
+                                        if (viewSingleGroup) { // only show subject or cluster
+                                            if (isBySubject && (d.group !== selectedData.group))
+                                                return 0;
+                                            if (!isBySubject && (d.cluster !== selectedData.cluster))
+                                                return 0;
+                                        }
+                                        if (d.id === selectedData.id)
+                                            return 10;
+                                        // if in the same cluster of subject, indicate as well
+                                        if (isBySubject && (d.group === selectedData.group)) {
+                                            return 3;
+                                        } else if (!isBySubject && (d.cluster === selectedData.cluster)) {
+                                            return 3;
+                                        }
+                                        return 1;
                                     }
-                                    if (selectedData && d.id === selectedData.id)
-                                        return 3;
+
                                     return 1;
                                 })
                                 .attr("fill-opacity", function(d) {
