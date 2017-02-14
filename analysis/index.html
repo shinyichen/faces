@@ -316,7 +316,171 @@
                                style="cursor: pointer"></thumbnail>
                 </div>
             </div>
+        </div> <!-- end table app -->
 
+        <!-- table with gt app -->
+        <div ng-if="app=='table_gt'">
+
+            <!-- overview -->
+            <div ng-show="gtView==='overview'">
+
+                <div class="row">
+                    <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
+                        <nav aria-label="Page navigation">
+                            <ul class="pagination pagination-sm">
+                                <li ng-class="{'disabled':gtPage.number === 1}" style="cursor: pointer;" ng-click="previous()"><span aria-hidden="true">&laquo;</span></li>
+                                <li ng-class="{'active': gtPage.number === gtPages[0]}" style="cursor: pointer;" ng-click="gotoPage(gtPages[0])"><span>{{gtPages[0]}}</span></li>
+                                <li ng-if="gtLastPage >= 2" ng-class="{'active': gtPage.number === gtPages[1]}" style="cursor: pointer;" ng-click="gotoPage(gtPages[1])"><span>{{gtPages[1]}}</span></li>
+                                <li ng-if="gtLastPage >= 3" ng-class="{'active': gtPage.number === gtPages[2]}" style="cursor: pointer;" ng-click="gotoPage(gtPages[2])"><span>{{gtPages[2]}}</span></li>
+                                <li ng-if="gtLastPage >= 4" ng-class="{'active': gtPage.number === gtPages[3]}" style="cursor: pointer;" ng-click="gotoPage(gtPages[3])"><span>{{gtPages[3]}}</span></li>
+                                <li ng-if="gtLastPage >= 5" ng-class="{'active': gtPage.number === gtPages[4]}" style="cursor: pointer;" ng-click="gotoPage(gtPages[4])"><span>{{gtPages[4]}}</span></li>
+                                <li ng-if="gtLastPage >= 6" ng-class="{'active': gtPage.number === gtPages[5]}" style="cursor: pointer;" ng-click="gotoPage(gtPages[5])"><span>{{gtPages[5]}}</span></li>
+                                <li ng-if="gtLastPage >= 7" ng-class="{'active': gtPage.number === gtPages[6]}" style="cursor: pointer;" ng-click="gotoPage(gtPages[6])"><span>{{gtPages[6]}}</span></li>
+                                <li ng-if="gtLastPage >= 8" ng-class="{'active': gtPage.number === gtPages[7]}" style="cursor: pointer;" ng-click="gotoPage(gtPages[7])"><span>{{gtPages[7]}}</span></li>
+                                <li ng-if="gtLastPage >= 9" ng-class="{'active': gtPage.number === gtPages[8]}" style="cursor: pointer;" ng-click="gotoPage(gtPages[8])"><span>{{gtPages[8]}}</span></li>
+                                <li ng-if="gtLastPage >= 10" ng-class="{'active': gtPage.number === gtPages[9]}" style="cursor: pointer;" ng-click="gotoPage(gtPages[9])"><span>{{gtPages[9]}}</span></li>
+                                <li ng-class="{'disabled':gtPage.number === gtLastPage}" style="cursor: pointer;" ng-click="next()"><span aria-hidden="true">&raquo;</span></li>
+                            </ul>
+                        </nav>
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4 text-center pagination"><h4>{{::subjectIDs.length}} subjects, {{::clusterIDs.length}} clusters, {{::gtLastPage}} pages</h4></div>
+                    <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4 pagination">
+                        <div class="pull-right">
+                            <button ng-switch="expanded" type="button" class="btn btn-primary btn-sm" ng-click="toggleCollapse()">
+                                <span ng-switch-when="true">Collapse All</span>
+                                <span ng-switch-default>Expand All</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div ng-repeat="subject_id in gtPage.subjects track by $index">
+
+                    <uib-accordion>
+                        <div uib-accordion-group class="panel-default" is-open="gtPage.open[$index]">
+                            <uib-accordion-heading>
+                                <table class="subject-table">
+                                    <thead>
+                                    <tr>
+                                        <th style="width: 20%"><a>Subject ID: {{subject_id}}</a></th>
+                                        <th>Total Clusters</th>
+                                        <th>Average Precision</th>
+                                        <th>Average Recall</th>
+                                        <th>Total Recall</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                        <td>
+                                            <i class="glyphicon text-primary" ng-class="{'glyphicon-chevron-down': gtPage.open[$index], 'glyphicon-chevron-right': !gtPage.open[$index]}"></i>
+                                        </td>
+                                        <td ng-switch="subjectClusters[subject_id].length > 0">
+                                            <span ng-switch-when="true"> {{subjectClusters[subject_id].length}}</span>
+                                            <span ng-switch-default> 0</span>
+                                        </td>
+                                        <td ng-switch="subjectClusters[subject_id].length > 0">
+                                            <span ng-switch-when="true"> {{averagePrecision(subject_id)}}</span>
+                                            <span ng-switch-default> --</span>
+                                        </td>
+                                        <td ng-switch="subjectClusters[subject_id].length > 0">
+                                            <span ng-switch-when="true"> {{averageRecall(subject_id)}}</span>
+                                            <span ng-switch-default> --</span>
+                                        </td>
+                                        <td ng-switch="subjectClusters[subject_id].length > 0">
+                                            <span ng-switch-when="true"> {{totalRecall(subject_id)}}</span>
+                                            <span ng-switch-default> --</span>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </uib-accordion-heading>
+                            <table ng-if="subjectClusters[subject_id].length > 0" class="table table-bordered table-striped table-hover">
+                                <thead class="table-heading">
+                                <tr>
+                                    <th style="width: 1px; white-space: nowrap;">Cluster ID</th>
+                                    <th style="width: 1px; white-space: nowrap;">Image Count</th>
+                                    <th style="width: 1px; white-space: nowrap;">Precision</th>
+                                    <th style="width: 1px; white-space: nowrap;">Recall</th>
+                                    <!--<th style="width: 200px">Mean Image</th>-->
+                                    <th>Cluster</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr ng-repeat="cid in subjectClusters[subject_id]">
+                                    <td>{{cid}}</td>
+                                    <td>{{clusters[cid].templates.length}}</td>
+                                    <td>{{clusters[cid].precision}}</td>
+                                    <td>{{clusters[cid].recall}}</td>
+                                    <td>
+                                        <thumbnail ng-repeat="s in clusters[cid].templates | orderBy: '-CONFIDENCE' | limitTo: 3"
+                                                   class="img-thumbnail"
+                                                   ng-attr-id="{{s.FILENAME}}"
+                                                   img-src="{{::imageDir}}/{{s.FILENAME}}"
+                                                   box-x="templates[s.TEMPLATE_ID].FACE_X"
+                                                   box-y="templates[s.TEMPLATE_ID].FACE_Y"
+                                                   box-width="templates[s.TEMPLATE_ID].FACE_WIDTH"
+                                                   box-height="templates[s.TEMPLATE_ID].FACE_HEIGHT"
+                                                   display-width="150"
+                                                   display-height="150"
+                                                   crop=true
+                                                   ng-click="showImage(templates[s.TEMPLATE_ID], s.match)"
+                                                   ng-class="{'no-mark-thumbnail': s.match, 'mark-thumbnail': !s.match}"
+                                                   style="vertical-align: bottom; cursor: pointer"></thumbnail>
+                                        <button ng-if="clusters[cid].templates.length > 3" type="button" class="btn btn-primary btn-xs" ng-click="goGtCluster(cid)" style="vertical-align: bottom;">{{clusters[cid].templates.length-3}} more</button>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </uib-accordion>
+                    <!--</div>-->
+                </div>
+
+                <nav aria-label="Page navigation">
+                    <ul class="pagination pagination-sm">
+                        <li ng-class="{'disabled':gtPage.number === 1}" style="cursor: pointer;" ng-click="previous()"><span aria-hidden="true">&laquo;</span></li>
+                        <li ng-class="{'active': gtPage.number === gtPages[0]}" style="cursor: pointer;" ng-click="gotoPage(gtPages[0])"><span>{{gtPages[0]}}</span></li>
+                        <li ng-if="gtLastPage >= 2" ng-class="{'active': gtPage.number === gtPages[1]}" style="cursor: pointer;" ng-click="gotoPage(gtPages[1])"><span>{{gtPages[1]}}</span></li>
+                        <li ng-if="gtLastPage >= 3" ng-class="{'active': gtPage.number === gtPages[2]}" style="cursor: pointer;" ng-click="gotoPage(gtPages[2])"><span>{{gtPages[2]}}</span></li>
+                        <li ng-if="gtLastPage >= 4" ng-class="{'active': gtPage.number === gtPages[3]}" style="cursor: pointer;" ng-click="gotoPage(gtPages[3])"><span>{{gtPages[3]}}</span></li>
+                        <li ng-if="gtLastPage >= 5" ng-class="{'active': gtPage.number === gtPages[4]}" style="cursor: pointer;" ng-click="gotoPage(gtPages[4])"><span>{{gtPages[4]}}</span></li>
+                        <li ng-if="gtLastPage >= 6" ng-class="{'active': gtPage.number === gtPages[5]}" style="cursor: pointer;" ng-click="gotoPage(gtPages[5])"><span>{{gtPages[5]}}</span></li>
+                        <li ng-if="gtLastPage >= 7" ng-class="{'active': gtPage.number === gtPages[6]}" style="cursor: pointer;" ng-click="gotoPage(gtPages[6])"><span>{{gtPages[6]}}</span></li>
+                        <li ng-if="gtLastPage >= 8" ng-class="{'active': gtPage.number === gtPages[7]}" style="cursor: pointer;" ng-click="gotoPage(gtPages[7])"><span>{{gtPages[7]}}</span></li>
+                        <li ng-if="gtLastPage >= 9" ng-class="{'active': gtPage.number === gtPages[8]}" style="cursor: pointer;" ng-click="gotoPage(gtPages[8])"><span>{{gtPages[8]}}</span></li>
+                        <li ng-if="gtLastPage >= 10" ng-class="{'active': gtPage.number === gtPages[9]}" style="cursor: pointer;" ng-click="gotoPage(gtPages[9])"><span>{{gtPages[9]}}</span></li>
+                        <li ng-class="{'disabled':gtPage.number === gtLastPage}" style="cursor: pointer;" ng-click="next()"><span aria-hidden="true">&raquo;</span></li>
+                    </ul>
+                </nav>
+            </div>
+
+            <!-- detailed view -->
+            <div ng-show="gtView=='cluster'">
+                <div class="row">
+                    <div class="col-lg-4 col-md-4">
+                        <button type="button" class="btn btn-primary btn-sm" ng-click="goGtOverview()">Back to clusters</button>
+                    </div>
+                    <div class="col-lg-4 col-md-4 text-center">
+                        <h4>Cluster {{gtClusterId}} has {{clusters[gtClusterId].templates.length}} images</h4>
+                    </div>
+                </div>
+
+                <div>
+                    <thumbnail ng-repeat="s in clusters[gtClusterId].templates | orderBy: '-CONFIDENCE' track by $index"
+                               img-src="{{::imageDir}}/{{::s.FILENAME}}"
+                               box-x="templates[s.TEMPLATE_ID].FACE_X"
+                               box-y="templates[s.TEMPLATE_ID].FACE_Y"
+                               box-width="templates[s.TEMPLATE_ID].FACE_WIDTH"
+                               box-height="templates[s.TEMPLATE_ID].FACE_HEIGHT"
+                               display-width="200"
+                               display-height="200"
+                               crop=true
+                               ng-click="showImage(templates[s.TEMPLATE_ID], s.match)"
+                               class="img-thumbnail"
+                               ng-class="{'no-mark-thumbnail': s.match, 'mark-thumbnail': !s.match}"
+                               style="cursor: pointer"></thumbnail>
+                </div>
+            </div>
         </div>
 
     </div> <!-- end of controller -->

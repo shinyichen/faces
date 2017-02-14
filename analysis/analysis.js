@@ -80,6 +80,8 @@
 
             $scope.gtPages = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]; // pagination being shown
 
+            $scope.gtClusterId = null; // selected cluster to view
+
             var pageSize = 12;         // number of clusters per page
 
             var template_file;
@@ -301,8 +303,8 @@
                 $scope.gtPage = {
                     "open": []
                 };          // current page info {number: 1, clusters: [0, 1, 2]}
-
                 $scope.gtPages = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]; // pagination being shown
+                $scope.gtClusterId = null;
 
                 templateText = null;
                 filenameToTemplate = {};
@@ -418,9 +420,23 @@
                 window.scrollTo(0, 0);
             };
 
+            $scope.goGtCluster = function(cluster_id) {
+                windowPosition.x = window.scrollX;
+                windowPosition.y = window.scrollY;
+                $scope.gtClusterId = cluster_id;
+                $scope.gtView = "cluster";
+                window.scrollTo(0, 0);
+            };
+
             $scope.goTableOverview = function() {
                 $scope.tableClusterId = null;
                 $scope.tableView = "overview";
+                window.scrollTo(windowPosition.x, windowPosition.y);
+            };
+
+            $scope.goGtOverview = function() {
+                $scope.gtClusterId = null;
+                $scope.gtView = "overview";
                 window.scrollTo(windowPosition.x, windowPosition.y);
             };
 
