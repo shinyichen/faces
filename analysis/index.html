@@ -113,7 +113,7 @@
 
                                     </thumbnail>
                                     <div class="paddedLinear">
-                                        <button ng-if="subject_templates.length > 8" type="button" class="btn btn-primary btn-xs" ng-click="showSubject()" style="vertical-align: bottom;">{{subject_templates.length-8}} more</button>
+                                        <button ng-if="subject_templates.length > 8" type="button" class="btn btn-primary btn-xs" ng-click="showPlotSubject()" style="vertical-align: bottom;">{{subject_templates.length-8}} more</button>
                                     </div>
                                     <div class="paddedLinear"> <!-- subject stats -->
                                         <div>Total Clusters: <span>{{subjectClusters[subject_id].length}}</span></div>
@@ -138,7 +138,7 @@
 
                                     </thumbnail>
                                     <div class="paddedLinear">
-                                        <button ng-if="cluster_templates.length > 8" type="button" class="btn btn-primary btn-xs" ng-click="showCluster()" style="vertical-align: bottom;">{{cluster_templates.length-8}} more</button>
+                                        <button ng-if="cluster_templates.length > 8" type="button" class="btn btn-primary btn-xs" ng-click="showPlotCluster()" style="vertical-align: bottom;">{{cluster_templates.length-8}} more</button>
                                     </div>
                                     <div class="paddedLinear"> <!-- subject stats -->
                                         <div>Total Images: {{clusters[cluster_id].templates.length}}</div>
@@ -153,10 +153,10 @@
             </div>
 
             <!-- subject view -->
-            <div ng-if="plotView=='subject'">
+            <div ng-show="plotView=='subject'">
                 <div class="row">
                     <div class="col-lg-4 col-md-4">
-                        <button type="button" class="btn btn-primary btn-sm" ng-click="showOverview()">Back</button>
+                        <button type="button" class="btn btn-primary btn-sm" ng-click="showPlotOverview()">Back</button>
                     </div>
                     <div class="col-lg-4 col-md-4 text-center">
                         <h4>Subject {{subject_id}} has {{subject_templates.length}} images</h4>
@@ -184,7 +184,7 @@
             <div ng-show="plotView=='cluster'">
                 <div class="row">
                     <div class="col-lg-4 col-md-4">
-                        <button type="button" class="btn btn-primary btn-sm" ng-click="showOverview()">Back</button>
+                        <button type="button" class="btn btn-primary btn-sm" ng-click="showPlotOverview()">Back</button>
                     </div>
                     <div class="col-lg-4 col-md-4 text-center">
                         <h4>Cluster {{cluster_id}} has {{cluster_templates.length}} images</h4>
