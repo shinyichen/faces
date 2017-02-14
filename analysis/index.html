@@ -18,7 +18,7 @@
 <body>
 
     <div ng-controller="analysisController" class="container-fluid">
-        <div ng-if="view=='opener'">
+        <div ng-if="app=='opener'">
             <div class="row">
                 <div class="col-lg-offset-4 col-md-offset-4 col-lg-4 col-md-4">
                     <h4>Open a preset:</h4>
@@ -30,164 +30,296 @@
             </div>
         </div>
 
-        <div class="row" ng-if="data_ready && view=='overview'" >
-            <div class="col-lg-9 col-md-9 col-sm-9 col-xs-9">
-                <h4 class="text-center">Feature Vectors {{formModel.preset}}</h4>
-                <plot plot-info="plotInfo" dataset="dataset"></plot>
+        <div ng-show="app !== 'opener'" class="paddedVertical">
+            <div class="btn-group" data-toggle="buttons">
+                <button class="btn btn-xs" ng-class="{'btn-primary': app == 'plot', 'btn-default': app !== 'plot'}" ng-click="openPlotApp()">
+                    Plot View
+                </button>
+                <button class="btn btn-xs" ng-class="{'btn-primary': app == 'table', 'btn-default': app !== 'table'}" ng-click="openTableApp()">
+                    Table View
+                </button>
+                <button class="btn btn-xs" ng-class="{'btn-primary': app == 'table_gt', 'btn-default': app !== 'table_gt'}" ng-click="openTableGtApp()">
+                    Table View with Ground Truth
+                </button>
             </div>
-            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
-                <div class="paddedBox">
-                    <div class="btn-group paddedLinear" data-toggle="buttons">
-                        <button class="btn btn-xs" ng-class="{'btn-primary': plotInfo.isBySubject, 'btn-default': !plotInfo.isBySubject}" ng-click="plotInfo.isBySubject = true">
-                            By Subject
-                        </button>
-                        <button class="btn btn-xs" ng-class="{'btn-primary': !plotInfo.isBySubject, 'btn-default': plotInfo.isBySubject}" ng-click="plotInfo.isBySubject = false">
-                            By Cluster
-                        </button>
+            <button type="button" class="btn btn-primary btn-xs" ng-click="restart()">Open New Cluster</button>
+        </div>
+
+        <!-- plot view -->
+        <div ng-if="app == 'plot'">
+            <div ng-if="plotView == 'overview' && data_ready">
+                <div class="row">
+                    <div class="col-lg-9 col-md-9 col-sm-9 col-xs-9">
+                        <h4 class="text-center">Feature Vectors {{formModel.preset}}</h4>
+                        <plot plot-info="plotInfo" dataset="dataset"></plot>
                     </div>
-                    <div ng-if="template">
-                        <div class="paddedLinear">
-                            <b>Image ID: {{template.TEMPLATE_ID}}</b>
-                        </div>
-                        <div ng-repeat="t in [template]" class="paddedLinear"> <!-- force thumbnail update when selection is modified -->
-                            <thumbnail img-src="{{::imageDir}}/{{t.FILENAME}}"
-                                       box-x="t.FACE_X"
-                                       box-y="t.FACE_Y"
-                                       box-width="t.FACE_WIDTH"
-                                       box-height="t.FACE_HEIGHT"
-                                       display-width="200"
-                                       display-height="200"
-                                       crop=true
-                                       class="img-thumbnail"
-                                       ng-click="showImage(t, true)"
-                                       style="cursor: pointer">
-
-                            </thumbnail>
-                        </div>
-                        <div ng-switch="plotInfo.isBySubject" class="paddedLinear">
-                            <span ng-switch-when="true"><b>Subject ID: {{subject_id}}</b></span>
-                            <span ng-switch-when="false"><b>Cluster ID: {{cluster_id}}</b></span>
-                        </div>
-                        <div>
-                            <input type="checkbox" id="cbviewall" ng-model="plotInfo.viewSingleGroup">
-                            <label for="cbviewall" ng-switch="plotInfo.isBySubject">
-                                <span ng-switch-when="true">Show only this subject on plot</span>
-                                <span ng-switch-when="false">Show only this cluster on plot</span>
-                            </label>
-                        </div>
-                        <div ng-show="plotInfo.isBySubject && plotInfo.viewSingleGroup">
-                            <input type="checkbox" id="cbsc" ng-model="plotInfo.viewSubjectClusters">
-                            <label for="cbsc">Color by clusters</label>
-                        </div>
-                        <div ng-show="plotInfo.isBySubject">
-                            <thumbnail ng-repeat="t in subject_templates | limitTo: 8"
-                                       img-src="{{::imageDir}}/{{t.FILENAME}}"
-                                       box-x="t.FACE_X"
-                                       box-y="t.FACE_Y"
-                                       box-width="t.FACE_WIDTH"
-                                       box-height="t.FACE_HEIGHT"
-                                       display-width="50"
-                                       display-height="50"
-                                       crop=true
-                                       class="img-thumbnail"
-                                       ng-click="showImage(t, true)"
-                                       style="cursor: pointer">
-
-                            </thumbnail>
-                            <div class="paddedLinear">
-                                <button ng-if="subject_templates.length > 8" type="button" class="btn btn-primary btn-xs" ng-click="showSubject()" style="vertical-align: bottom;">{{subject_templates.length-8}} more</button>
+                    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                        <div class="paddedBox">
+                            <div class="btn-group paddedLinear" data-toggle="buttons">
+                                <button class="btn btn-xs" ng-class="{'btn-primary': plotInfo.isBySubject, 'btn-default': !plotInfo.isBySubject}" ng-click="plotInfo.isBySubject = true">
+                                    By Subject
+                                </button>
+                                <button class="btn btn-xs" ng-class="{'btn-primary': !plotInfo.isBySubject, 'btn-default': plotInfo.isBySubject}" ng-click="plotInfo.isBySubject = false">
+                                    By Cluster
+                                </button>
                             </div>
-                            <div class="paddedLinear"> <!-- subject stats -->
-                                <div>Total Clusters: <span>{{subjectClusters[subject_id].length}}</span></div>
-                                <div>Average Precision: {{averagePrecision(subject_id)}}</div>
-                                <div>Average Recall: {{averageRecall(subject_id)}}</div>
-                                <div>Total Recall: {{totalRecall(subject_id)}}</div>
-                            </div>
-                        </div>
-                        <div ng-show="!plotInfo.isBySubject">
-                            <thumbnail ng-repeat="t in cluster_templates | limitTo: 8"
-                                   img-src="{{::imageDir}}/{{t.FILENAME}}"
-                                   box-x="t.FACE_X"
-                                   box-y="t.FACE_Y"
-                                   box-width="t.FACE_WIDTH"
-                                   box-height="t.FACE_HEIGHT"
-                                   display-width="50"
-                                   display-height="50"
-                                   crop=true
-                                   class="img-thumbnail"
-                                   ng-click="showImage(t, true)"
-                                   style="cursor: pointer">
+                            <div ng-if="template">
+                                <div class="paddedLinear">
+                                    <b>Image ID: {{template.TEMPLATE_ID}}</b>
+                                </div>
+                                <div ng-repeat="t in [template]" class="paddedLinear"> <!-- force thumbnail update when selection is modified -->
+                                    <thumbnail img-src="{{::imageDir}}/{{t.FILENAME}}"
+                                               box-x="t.FACE_X"
+                                               box-y="t.FACE_Y"
+                                               box-width="t.FACE_WIDTH"
+                                               box-height="t.FACE_HEIGHT"
+                                               display-width="200"
+                                               display-height="200"
+                                               crop=true
+                                               class="img-thumbnail"
+                                               ng-click="showImage(t, true)"
+                                               style="cursor: pointer">
 
-                            </thumbnail>
-                            <div class="paddedLinear">
-                                <button ng-if="cluster_templates.length > 8" type="button" class="btn btn-primary btn-xs" ng-click="showCluster()" style="vertical-align: bottom;">{{cluster_templates.length-8}} more</button>
-                            </div>
-                            <div class="paddedLinear"> <!-- subject stats -->
-                                <div>Total Images: {{clusters[cluster_id].templates.length}}</div>
-                                <div>Precision: {{clusters[cluster_id].precision}}</div>
-                                <div>Recall: {{clusters[cluster_id].recall}}</div>
+                                    </thumbnail>
+                                </div>
+                                <div ng-switch="plotInfo.isBySubject" class="paddedLinear">
+                                    <span ng-switch-when="true"><b>Subject ID: {{subject_id}}</b></span>
+                                    <span ng-switch-when="false"><b>Cluster ID: {{cluster_id}}</b></span>
+                                </div>
+                                <div>
+                                    <input type="checkbox" id="cbviewall" ng-model="plotInfo.viewSingleGroup">
+                                    <label for="cbviewall" ng-switch="plotInfo.isBySubject">
+                                        <span ng-switch-when="true">Show only this subject on plot</span>
+                                        <span ng-switch-when="false">Show only this cluster on plot</span>
+                                    </label>
+                                </div>
+                                <div ng-show="plotInfo.isBySubject && plotInfo.viewSingleGroup">
+                                    <input type="checkbox" id="cbsc" ng-model="plotInfo.viewSubjectClusters">
+                                    <label for="cbsc">Color by clusters</label>
+                                </div>
+                                <div ng-show="plotInfo.isBySubject">
+                                    <thumbnail ng-repeat="t in subject_templates | limitTo: 8"
+                                               img-src="{{::imageDir}}/{{t.FILENAME}}"
+                                               box-x="t.FACE_X"
+                                               box-y="t.FACE_Y"
+                                               box-width="t.FACE_WIDTH"
+                                               box-height="t.FACE_HEIGHT"
+                                               display-width="50"
+                                               display-height="50"
+                                               crop=true
+                                               class="img-thumbnail"
+                                               ng-click="showImage(t, true)"
+                                               style="cursor: pointer">
+
+                                    </thumbnail>
+                                    <div class="paddedLinear">
+                                        <button ng-if="subject_templates.length > 8" type="button" class="btn btn-primary btn-xs" ng-click="showSubject()" style="vertical-align: bottom;">{{subject_templates.length-8}} more</button>
+                                    </div>
+                                    <div class="paddedLinear"> <!-- subject stats -->
+                                        <div>Total Clusters: <span>{{subjectClusters[subject_id].length}}</span></div>
+                                        <div>Average Precision: {{averagePrecision(subject_id)}}</div>
+                                        <div>Average Recall: {{averageRecall(subject_id)}}</div>
+                                        <div>Total Recall: {{totalRecall(subject_id)}}</div>
+                                    </div>
+                                </div>
+                                <div ng-show="!plotInfo.isBySubject">
+                                    <thumbnail ng-repeat="t in cluster_templates | limitTo: 8"
+                                               img-src="{{::imageDir}}/{{t.FILENAME}}"
+                                               box-x="t.FACE_X"
+                                               box-y="t.FACE_Y"
+                                               box-width="t.FACE_WIDTH"
+                                               box-height="t.FACE_HEIGHT"
+                                               display-width="50"
+                                               display-height="50"
+                                               crop=true
+                                               class="img-thumbnail"
+                                               ng-click="showImage(t, true)"
+                                               style="cursor: pointer">
+
+                                    </thumbnail>
+                                    <div class="paddedLinear">
+                                        <button ng-if="cluster_templates.length > 8" type="button" class="btn btn-primary btn-xs" ng-click="showCluster()" style="vertical-align: bottom;">{{cluster_templates.length-8}} more</button>
+                                    </div>
+                                    <div class="paddedLinear"> <!-- subject stats -->
+                                        <div>Total Images: {{clusters[cluster_id].templates.length}}</div>
+                                        <div>Precision: {{clusters[cluster_id].precision}}</div>
+                                        <div>Recall: {{clusters[cluster_id].recall}}</div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+
+            <!-- subject view -->
+            <div ng-if="plotView=='subject'">
+                <div class="row">
+                    <div class="col-lg-4 col-md-4">
+                        <button type="button" class="btn btn-primary btn-sm" ng-click="showOverview()">Back</button>
+                    </div>
+                    <div class="col-lg-4 col-md-4 text-center">
+                        <h4>Subject {{subject_id}} has {{subject_templates.length}} images</h4>
+                    </div>
+                </div>
+
+                <div>
+                    <thumbnail ng-repeat="t in subject_templates | orderBy: '-CONFIDENCE' track by $index"
+                               img-src="{{::imageDir}}/{{::t.FILENAME}}"
+                               box-x="t.FACE_X"
+                               box-y="t.FACE_Y"
+                               box-width="t.FACE_WIDTH"
+                               box-height="t.FACE_HEIGHT"
+                               display-width="200"
+                               display-height="200"
+                               crop=true
+                               ng-click="showImage(t, true)"
+                               class="img-thumbnail"
+                               style="cursor: pointer"></thumbnail>
+                </div>
+            </div>
+
+
+            <!-- cluster view -->
+            <div ng-show="plotView=='cluster'">
+                <div class="row">
+                    <div class="col-lg-4 col-md-4">
+                        <button type="button" class="btn btn-primary btn-sm" ng-click="showOverview()">Back</button>
+                    </div>
+                    <div class="col-lg-4 col-md-4 text-center">
+                        <h4>Cluster {{cluster_id}} has {{cluster_templates.length}} images</h4>
+                    </div>
+                </div>
+
+                <div>
+                    <thumbnail ng-repeat="t in cluster_templates | orderBy: '-CONFIDENCE' track by $index"
+                               img-src="{{::imageDir}}/{{::t.FILENAME}}"
+                               box-x="t.FACE_X"
+                               box-y="t.FACE_Y"
+                               box-width="t.FACE_WIDTH"
+                               box-height="t.FACE_HEIGHT"
+                               display-width="200"
+                               display-height="200"
+                               crop=true
+                               ng-click="showImage(t, true)"
+                               class="img-thumbnail"
+                               style="cursor: pointer"></thumbnail>
+                </div>
+            </div>
+        </div> <!-- end of plot app -->
+
+        <!-- table app -->
+        <div ng-if="app == 'table'">
+
+            <!-- overview -->
+            <div ng-show="tableView==='overview'">
+                <div class="row">
+                    <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
+                        <nav aria-label="Page navigation">
+                            <ul class="pagination pagination-sm">
+                                <li ng-class="{'disabled':tablePage.number === 1}" style="cursor: pointer;" ng-click="previous()"><span aria-hidden="true">&laquo;</span></li>
+                                <li ng-class="{'active': tablePage.number === tablePages[0]}" style="cursor: pointer;" ng-click="gotoPage(tablePages[0])"><span>{{tablePages[0]}}</span></li>
+                                <li ng-if="tableLastPage >= 2" ng-class="{'active': tablePage.number === tablePages[1]}" style="cursor: pointer;" ng-click="gotoPage(tablePages[1])"><span>{{tablePages[1]}}</span></li>
+                                <li ng-if="tableLastPage >= 3" ng-class="{'active': tablePage.number === tablePages[2]}" style="cursor: pointer;" ng-click="gotoPage(tablePages[2])"><span>{{tablePages[2]}}</span></li>
+                                <li ng-if="tableLastPage >= 4" ng-class="{'active': tablePage.number === tablePages[3]}" style="cursor: pointer;" ng-click="gotoPage(tablePages[3])"><span>{{tablePages[3]}}</span></li>
+                                <li ng-if="tableLastPage >= 5" ng-class="{'active': tablePage.number === tablePages[4]}" style="cursor: pointer;" ng-click="gotoPage(tablePages[4])"><span>{{tablePages[4]}}</span></li>
+                                <li ng-if="tableLastPage >= 6" ng-class="{'active': tablePage.number === tablePages[5]}" style="cursor: pointer;" ng-click="gotoPage(tablePages[5])"><span>{{tablePages[5]}}</span></li>
+                                <li ng-if="tableLastPage >= 7" ng-class="{'active': tablePage.number === tablePages[6]}" style="cursor: pointer;" ng-click="gotoPage(tablePages[6])"><span>{{tablePages[6]}}</span></li>
+                                <li ng-if="tableLastPage >= 8" ng-class="{'active': tablePage.number === tablePages[7]}" style="cursor: pointer;" ng-click="gotoPage(tablePages[7])"><span>{{tablePages[7]}}</span></li>
+                                <li ng-if="tableLastPage >= 9" ng-class="{'active': tablePage.number === tablePages[8]}" style="cursor: pointer;" ng-click="gotoPage(tablePages[8])"><span>{{tablePages[8]}}</span></li>
+                                <li ng-if="tableLastPage >= 10" ng-class="{'active': tablePage.number === tablePages[9]}" style="cursor: pointer;" ng-click="gotoPage(tablePages[9])"><span>{{tablePages[9]}}</span></li>
+                                <li ng-class="{'disabled':tablePage.number === tableLastPage}" style="cursor: pointer;" ng-click="next()"><span aria-hidden="true">&raquo;</span></li>
+                            </ul>
+                        </nav>
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4 text-center pagination"><h4>{{::clusterIDs.length}} clusters, {{::tableLastPage}} pages</h4></div>
+                    <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4 pagination">
+                    </div>
+                </div>
+
+                <table class="table table-striped table-bordered table-hover">
+                    <!-- sortable column header -->
+                    <thead class="table-heading">
+                    <tr>
+                        <th style="width: 1px; white-space: nowrap; align-content: center">Cluster ID</th>
+                        <th style="width: 1px; white-space: nowrap">Image Count</th>
+                        <th>Cluster</th>
+                    </tr>
+                    </thead>
+
+                    <!-- rows -->
+                    <tbody>
+                    <tr class="table-row" ng-repeat="cid in tablePage.clusters track by $index">
+                        <td align="center">{{cid}}</td>
+                        <td align="center">{{clusters[cid].templates.length}}</td>
+                        <td>
+                            <thumbnail ng-repeat="s in clusters[cid].templates | orderBy: '-CONFIDENCE' | limitTo: 3"
+                                       class="img-thumbnail no-mark-thumbnail"
+                                       ng-attr-id="{{s.FILENAME}}"
+                                       img-src="{{::imageDir}}/{{s.FILENAME}}"
+                                       box-x="templates[s.TEMPLATE_ID].FACE_X"
+                                       box-y="templates[s.TEMPLATE_ID].FACE_Y"
+                                       box-width="templates[s.TEMPLATE_ID].FACE_WIDTH"
+                                       box-height="templates[s.TEMPLATE_ID].FACE_HEIGHT"
+                                       display-width="150"
+                                       display-height="150"
+                                       crop=true
+                                       ng-click="showImage(templates[s.TEMPLATE_ID], true)"
+                                       style="vertical-align: bottom; cursor: pointer"></thumbnail>
+                            <button ng-if="clusters[cid].templates.length > 3" type="button" class="btn btn-primary btn-xs" ng-click="goTableCluster(cid)" style="vertical-align: bottom;">{{clusters[cid].templates.length-3}} more</button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <nav aria-label="Page navigation">
+                    <ul class="pagination pagination-sm">
+                        <li ng-class="{'disabled':tablePage.number === 1}" style="cursor: pointer;" ng-click="previous()"><span aria-hidden="true">&laquo;</span></li>
+                        <li ng-class="{'active': tablePage.number === tablePages[0]}" style="cursor: pointer;" ng-click="gotoPage(tablePages[0])"><span>{{tablePages[0]}}</span></li>
+                        <li ng-if="tableLastPage >= 2" ng-class="{'active': tablePage.number === tablePages[1]}" style="cursor: pointer;" ng-click="gotoPage(tablePages[1])"><span>{{tablePages[1]}}</span></li>
+                        <li ng-if="tableLastPage >= 3" ng-class="{'active': tablePage.number === tablePages[2]}" style="cursor: pointer;" ng-click="gotoPage(tablePages[2])"><span>{{tablePages[2]}}</span></li>
+                        <li ng-if="tableLastPage >= 4" ng-class="{'active': tablePage.number === tablePages[3]}" style="cursor: pointer;" ng-click="gotoPage(tablePages[3])"><span>{{tablePages[3]}}</span></li>
+                        <li ng-if="tableLastPage >= 5" ng-class="{'active': tablePage.number === tablePages[4]}" style="cursor: pointer;" ng-click="gotoPage(tablePages[4])"><span>{{tablePages[4]}}</span></li>
+                        <li ng-if="tableLastPage >= 6" ng-class="{'active': tablePage.number === tablePages[5]}" style="cursor: pointer;" ng-click="gotoPage(tablePages[5])"><span>{{tablePages[5]}}</span></li>
+                        <li ng-if="tableLastPage >= 7" ng-class="{'active': tablePage.number === tablePages[6]}" style="cursor: pointer;" ng-click="gotoPage(tablePages[6])"><span>{{tablePages[6]}}</span></li>
+                        <li ng-if="tableLastPage >= 8" ng-class="{'active': tablePage.number === tablePages[7]}" style="cursor: pointer;" ng-click="gotoPage(tablePages[7])"><span>{{tablePages[7]}}</span></li>
+                        <li ng-if="tableLastPage >= 9" ng-class="{'active': tablePage.number === tablePages[8]}" style="cursor: pointer;" ng-click="gotoPage(tablePages[8])"><span>{{tablePages[8]}}</span></li>
+                        <li ng-if="tableLastPage >= 10" ng-class="{'active': tablePage.number === tablePages[9]}" style="cursor: pointer;" ng-click="gotoPage(tablePages[9])"><span>{{tablePages[9]}}</span></li>
+                        <li ng-class="{'disabled':tablePage.number === tableLastPage}" style="cursor: pointer;" ng-click="next()"><span aria-hidden="true">&raquo;</span></li>
+                    </ul>
+                </nav>
+            </div>
+
+            <!-- detailed view -->
+            <div ng-show="tableView=='cluster'">
+                <div class="row">
+                    <div class="col-lg-4 col-md-4">
+                        <button type="button" class="btn btn-primary btn-sm" ng-click="goTableOverview()">Back to clusters</button>
+                    </div>
+                    <div class="col-lg-4 col-md-4 text-center">
+                        <h4>Cluster {{::tableClusterId}} has {{clusters[tableClusterId].templates.length}} images</h4>
+                    </div>
+                </div>
+
+                <div>
+                    <thumbnail ng-repeat="s in clusters[tableClusterId].templates | orderBy: '-CONFIDENCE'"
+                               img-src="{{::imageDir}}/{{::s.FILENAME}}"
+                               box-x="templates[s.TEMPLATE_ID].FACE_X"
+                               box-y="templates[s.TEMPLATE_ID].FACE_Y"
+                               box-width="templates[s.TEMPLATE_ID].FACE_WIDTH"
+                               box-height="templates[s.TEMPLATE_ID].FACE_HEIGHT"
+                               display-width="200"
+                               display-height="200"
+                               crop=true
+                               ng-click="showImage(templates[s.TEMPLATE_ID], true)"
+                               class="img-thumbnail"
+                               style="cursor: pointer"></thumbnail>
+                </div>
+            </div>
+
         </div>
 
-        <!-- subject view -->
-        <div ng-if="data_ready && view=='subject'">
-            <div class="row">
-                <div class="col-lg-4 col-md-4">
-                    <button type="button" class="btn btn-primary btn-sm" ng-click="showOverview()">Back</button>
-                </div>
-                <div class="col-lg-4 col-md-4 text-center">
-                    <h4>Subject {{subject_id}} has {{subject_templates.length}} images</h4>
-                </div>
-            </div>
-
-            <div>
-                <thumbnail ng-repeat="t in subject_templates | orderBy: '-CONFIDENCE' track by $index"
-                           img-src="{{::imageDir}}/{{::t.FILENAME}}"
-                           box-x="t.FACE_X"
-                           box-y="t.FACE_Y"
-                           box-width="t.FACE_WIDTH"
-                           box-height="t.FACE_HEIGHT"
-                           display-width="200"
-                           display-height="200"
-                           crop=true
-                           ng-click="showImage(t, true)"
-                           class="img-thumbnail"
-                           style="cursor: pointer"></thumbnail>
-            </div>
-        </div>
-
-
-        <!-- cluster view -->
-        <div ng-if="data_ready && view=='cluster'">
-            <div class="row">
-                <div class="col-lg-4 col-md-4">
-                    <button type="button" class="btn btn-primary btn-sm" ng-click="showOverview()">Back</button>
-                </div>
-                <div class="col-lg-4 col-md-4 text-center">
-                    <h4>Cluster {{cluster_id}} has {{cluster_templates.length}} images</h4>
-                </div>
-            </div>
-
-            <div>
-                <thumbnail ng-repeat="t in cluster_templates | orderBy: '-CONFIDENCE' track by $index"
-                           img-src="{{::imageDir}}/{{::t.FILENAME}}"
-                           box-x="t.FACE_X"
-                           box-y="t.FACE_Y"
-                           box-width="t.FACE_WIDTH"
-                           box-height="t.FACE_HEIGHT"
-                           display-width="200"
-                           display-height="200"
-                           crop=true
-                           ng-click="showImage(t, true)"
-                           class="img-thumbnail"
-                           style="cursor: pointer"></thumbnail>
-            </div>
-        </div>
-    </div>
+    </div> <!-- end of controller -->
 
 </body>
 </html>

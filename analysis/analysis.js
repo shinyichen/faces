@@ -1,8 +1,16 @@
 (function() {
 
     angular.module('analysis', ['ui.bootstrap', 'd3', 'fileInput', 'images', 'modals'])
+        .constant('views', {
+            "plot": "plot",
+            "overview": "overview", // table without ground truth
+            "cluster": "cluster"    // table with ground truth
+        })
 
-        .controller('analysisController', ['$scope', '$http', '$uibModal', function($scope, $http, $uibModal) {
+        .controller('analysisController', ['$scope', '$http', '$uibModal', 'views', function($scope, $http, $uibModal, views) {
+
+
+            $scope.app = "opener"; // opener, plot, table, table_gt
 
             $scope.imageDir = "../..";
 
@@ -12,27 +20,65 @@
                 preset: null
             };
 
-            $scope.template = null; // selected template
+            $scope.clusters = {};  // all clusters
 
-            $scope.cluster_id = null; // template's cluster
+            $scope.templates = {}; // all images
 
-            $scope.subject_id = null; // template's subject
+            $scope.subjects = {};  // all subjects {subject_id: [template_ids...], ...}
 
-            $scope.plotInfo = {
+            $scope.subjectClusters = {}; // <subject: [cluster id's]>
+
+            $scope.clusterIDs = []; // list of cluster ID's
+
+            $scope.subjectIDs = []; // list of subject ID's
+
+            /** plot app data **/
+
+            $scope.plotView = "overview";
+
+            $scope.template = null; // selected image
+
+            $scope.cluster_id = null; // selected image's cluster
+
+            $scope.subject_id = null; // selected image's subject
+
+            $scope.plotInfo = { // for plot
                 isBySubject : true,
                 viewSingleGroup: false,
                 viewSubjectClusters: false
             };
 
-            $scope.view = "opener"; // opener, overview, cluster, subject
-
-            $scope.dataset = [];
+            $scope.dataset = []; // for plot
 
             $scope.data_ready = false;
 
-            $scope.clusters = {};
+            /** table app data **/
 
-            $scope.subjectClusters = {};
+            $scope.tableView = "overview";
+
+            $scope.tableLastPage = 0;       // last page number
+
+            $scope.tablePage = {
+                "open": []
+            };          // current page info {number: 1, clusters: [0, 1, 2]}
+
+            $scope.tablePages = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]; // pagination being shown
+
+            $scope.tableClusterId = null; // selected cluster to view
+
+            /** table gt app data **/
+
+            $scope.gtView = "overview";
+
+            $scope.gtLastPage = 0;       // last page number
+
+            $scope.gtPage = {
+                "open": []
+            };          // current page info {number: 1, clusters: [0, 1, 2]}
+
+            $scope.gtPages = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]; // pagination being shown
+
+            var pageSize = 12;         // number of clusters per page
 
             var template_file;
 
@@ -54,11 +100,30 @@
 
             var groundTruthText = null;
 
-            var clusterIDs;
-
-            var subjectIDs;
-
             var vector, groups, ids;
+
+            //$scope.loading = false;
+            //
+            //$scope.inputs = {
+            //    "inputText": null,   // string of text from input file
+            //    "resultText": null,  // string of text from result file
+            //    "groundTruthText": null // string of text from ground truth file, optional
+            //};
+            //
+            //$scope.useGroundTruth = false;
+
+            //$scope.cluster_id = null;  // current cluster being displayed
+
+
+            //$scope.expanded = false;
+
+            //$scope.alerts = [];
+
+            var windowPosition = {
+                "x": 0,
+                "y": 0
+            };
+
 
             $scope.open = function() {
                 $scope.preset = $scope.formModel.preset;
@@ -70,7 +135,7 @@
 
                 loadPreset();
                 initGraph();
-                $scope.view = "overview";
+                $scope.app = "plot";
             };
 
             $scope.$on("selection", function(event, image_name) {
@@ -119,16 +184,28 @@
                 });
             };
 
-            $scope.showOverview = function() {
-                $scope.view = "overview";
+            $scope.openPlotApp = function() {
+                $scope.app = "plot";
             };
 
-            $scope.showCluster = function() {
-                $scope.view = "cluster";
+            $scope.openTableApp = function() {
+                $scope.app = "table";
             };
 
-            $scope.showSubject = function() {
-                $scope.view = "subject";
+            $scope.openTableGtApp = function() {
+                $scope.app = "table_gt";
+            };
+
+            $scope.showPlotOverview = function() {
+                $scope.plotView = "overview";
+            };
+
+            $scope.showPlotCluster = function() {
+                $scope.plotView = "cluster";
+            };
+
+            $scope.showPlotSubject = function() {
+                $scope.plotView = "subject";
             };
 
             $scope.bySubject = function() {
@@ -184,6 +261,109 @@
                 return totalRecalls[subject_id];
             };
 
+            $scope.restart = function() {
+                //$scope.useGroundTruth = false;
+                //$scope.inputs.inputText = null;
+                //$scope.inputs.resultText = null;
+                //$scope.inputs.groundTruthText = null;
+                $scope.formModel.preset = "";
+                $scope.tablePages = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+                $scope.gtPages = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+                $scope.expanded = false;
+                $scope.data_ready = false;
+                $scope.dataset = [];
+
+                $scope.app = "opener";
+            };
+
+            /**
+             * previous page
+             */
+            $scope.previous = function() {
+                if ($scope.app == "table") {
+                    if ($scope.tablePage.number !== 1) { // starts at 1
+                        $scope.gotoPage($scope.tablePage.number - 1);
+                    }
+                } else if ($scope.app == "table_gt") {
+                    if ($scope.gtPage.number !== 1) { // starts at 1
+                        $scope.gotoPage($scope.gtPage.number - 1);
+                    }
+                }
+
+
+            };
+
+            /**
+             * next page
+             */
+            $scope.next = function() {
+                if ($scope.app == "table") {
+                    if ($scope.tablePage.number !== $scope.tableLastPage) {
+                        $scope.gotoPage($scope.tablePage.number + 1);
+                    }
+                } else if ($scope.app == "table_gt") {
+                    if ($scope.gtPage.number !== $scope.gtLastPage) {
+                        $scope.gotoPage($scope.gtPage.number + 1);
+                    }
+                }
+
+            };
+
+            $scope.gotoPage = function(pageNumber) {
+                if ($scope.app == "table") {
+                    $scope.tablePage.number = pageNumber;
+                    if ($scope.tableLastPage > 10 && $scope.tablePage.number > 6 && $scope.tablePage.number < ($scope.tableLastPage - 4)) {
+                        $scope.tablePages.forEach(function(element, index, array) {
+                            array[index] = $scope.tablePage.number - (5 - index);
+                        });
+                    } else if ($scope.tableLastPage > 10 && $scope.tablePage.number >= ($scope.tableLastPage - 4)) {
+                        $scope.tablePages.forEach(function(element, index, array) {
+                            array[index] = $scope.tableLastPage - (9 - index);
+                        });
+                    } else {
+                        $scope.tablePages = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+                    }
+                    $scope.tablePage.clusters =
+                        $scope.clusterIDs.slice(($scope.tablePage.number - 1) * pageSize, Math.min($scope.clusterIDs.length, $scope.tablePage.number * pageSize));
+                } else {
+                    $scope.gtPage.number = pageNumber;
+                    if ($scope.gtLastPage > 10 && $scope.gtPage.number > 6 && $scope.gtPage.number < ($scope.gtLastPage - 4)) {
+                        $scope.gtPages.forEach(function(element, index, array) {
+                            array[index] = $scope.gtPage.number - (5 - index);
+                        });
+                    } else if ($scope.gtLastPage > 10 && $scope.gtPage.number >= ($scope.gtLastPage - 4)) {
+                        $scope.gtPages.forEach(function(element, index, array) {
+                            array[index] = $scope.gtLastPage - (9 - index);
+                        });
+                    } else {
+                        $scope.gtPages = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+                    }
+
+                    $scope.gtPage.subjects =
+                        $scope.subjectIDs.slice(($scope.gtPage.number - 1) * pageSize, Math.min($scope.subjectIDs.length, $scope.gtPage.number * pageSize));
+                    $scope.page.open = [];
+                    for (var i = 0; i < $scope.gtPage.subjects.length; i++) {
+                        $scope.gtPage.open.push($scope.expanded);
+                    }
+                }
+
+                window.scrollTo(0, 0);
+            };
+
+            $scope.goTableCluster = function(cluster_id) {
+                windowPosition.x = window.scrollX;
+                windowPosition.y = window.scrollY;
+                $scope.tableClusterId = cluster_id;
+                $scope.tableView = "cluster";
+                window.scrollTo(0, 0);
+            };
+
+            $scope.goTableOverview = function() {
+                $scope.tableClusterId = null;
+                $scope.tableView = "overview";
+                window.scrollTo(windowPosition.x, windowPosition.y);
+            };
+
             function loadPreset() {
                 $http.get(template_file).then(function(response) {
                     templateText = response.data;
@@ -204,22 +384,41 @@
             function load() {
                 // result file
                 parseClusters(clustersText);
-                clusterIDs = Object.keys($scope.clusters);
+                $scope.clusterIDs = Object.keys($scope.clusters);
 
                 // input file
                 parseTemplates(templateText);
 
                 // ground truth
                 parseGroundTruth(groundTruthText);
-                subjectIDs = Object.keys($scope.subjects);
+                $scope.subjectIDs = Object.keys($scope.subjects);
                 calculatePrecision();
+
+                // table
+                $scope.tablePage = {
+                    "number": 1,
+                    "clusters": $scope.clusterIDs.slice(0, Math.min($scope.clusterIDs.length, pageSize))
+                };
+                $scope.tableLastPage = Math.ceil($scope.clusterIDs.length / pageSize);
+
+                // table gt
+                $scope.gtPage = {
+                    "number": 1,
+                    "subjects": $scope.subjectIDs.slice(0, Math.min($scope.subjectIDs.length, pageSize))
+                };
+
+                // table gt
+                $scope.gtPage.open = [];
+                for (var i = 0; i < $scope.gtPage.subjects.length; i++) {
+                    $scope.gtPage.open.push(false);
+                }
+                $scope.gtLastPage = Math.ceil($scope.subjectIDs.length / pageSize);
+
             }
 
             function parseClusters(csv) {
 
                 var lines=csv.split("\n");
-                $scope.clusters = {};
-                $scope.templates = {};
                 var headers=lines[0].split(",");
 
                 headers.forEach(function(value, index, array) {
@@ -296,8 +495,6 @@
                 var lines=csv.split("\n");
                 var headers=lines[0].split(",");
                 var id_col = -1, subject_col = -1;
-                $scope.subjects = {};
-                $scope.subjectClusters = {};
 
                 headers.forEach(function(value, index, array) {
                     var col = value.trim();
