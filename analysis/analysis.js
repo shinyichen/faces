@@ -20,7 +20,8 @@
 
             $scope.plotInfo = {
                 isBySubject : true,
-                viewSingleGroup: false
+                viewSingleGroup: false,
+                viewSubjectClusters: false
             };
 
             $scope.view = "opener"; // opener, overview, cluster, subject
@@ -490,6 +491,8 @@
 
                     var viewSingleGroup = false;
 
+                    var viewSubjectCluster = false;
+
                     var selectedDot;
 
                     var selectedData;
@@ -516,7 +519,18 @@
                         var letters = '0123456789ABCDEF';
                         function getColor(datapoint) { // label is string of integer
                             var color, i;
-                            if (isBySubject) { // by subject
+                            // if viewing by clusters, or a single subject and color by cluster
+                            if ((selectedData && viewSingleGroup && isBySubject && viewSubjectCluster) || !isBySubject) {
+                                if (!clusterColors[datapoint.cluster]) {
+                                    color = '#';
+                                    for (i = 0; i < 6; i++) {
+                                        color += letters[Math.floor(Math.random() * 16)];
+                                    }
+                                    clusterColors[datapoint.cluster] = color;
+                                }
+
+                                return clusterColors[datapoint.cluster];
+                            } else { // viewing by subject color by subject
                                 if (!subjectColors[datapoint.group]) {
                                     color = '#';
                                     for (i = 0; i < 6; i++) {
@@ -527,16 +541,6 @@
 
                                 return subjectColors[datapoint.group];
 
-                            } else { // by cluster
-                                if (!clusterColors[datapoint.cluster]) {
-                                    color = '#';
-                                    for (i = 0; i < 6; i++) {
-                                        color += letters[Math.floor(Math.random() * 16)];
-                                    }
-                                    clusterColors[datapoint.cluster] = color;
-                                }
-
-                                return clusterColors[datapoint.cluster];
                             }
                         }
 
@@ -606,7 +610,7 @@
                         function update() {
                             g.selectAll("circle")
                                 .attr("r", function(d) {
-                                    if (selectedData && viewSingleGroup) { // only show subject
+                                    if (selectedData && viewSingleGroup) { // only show subject or cluster
                                         if (isBySubject && (d.group !== selectedData.group))
                                             return 0;
                                         if (!isBySubject && (d.cluster !== selectedData.cluster))
@@ -647,7 +651,14 @@
                                 viewSingleGroup = newValue;
                                 update();
                             }
-                        })
+                        });
+
+                        scope.$watch('plotInfo.viewSubjectClusters', function(newValue, oldValue) {
+                            if (newValue !== undefined && newValue !== null) {
+                                viewSubjectCluster = newValue;
+                                update();
+                            }
+                        });
 
                     });
 

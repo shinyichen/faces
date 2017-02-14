@@ -75,6 +75,10 @@
                                 <span ng-switch-when="false">Show only this cluster on plot</span>
                             </label>
                         </div>
+                        <div ng-show="plotInfo.isBySubject && plotInfo.viewSingleGroup">
+                            <input type="checkbox" id="cbsc" ng-model="plotInfo.viewSubjectClusters">
+                            <label for="cbsc">Color by clusters</label>
+                        </div>
                         <div ng-show="plotInfo.isBySubject">
                             <thumbnail ng-repeat="t in subject_templates | limitTo: 8"
                                        img-src="{{::imageDir}}/{{t.FILENAME}}"
