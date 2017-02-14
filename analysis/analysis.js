@@ -20,6 +20,8 @@
                 preset: null
             };
 
+            /** data for all apps **/
+
             $scope.clusters = {};  // all clusters
 
             $scope.templates = {}; // all images
@@ -133,9 +135,8 @@
                 id_file = "../data/analysis/" + $scope.preset + "_img.txt";
                 cluster_file = "../data/" + $scope.preset + "/clusters.txt";
 
-                loadPreset();
-                initGraph();
-                $scope.app = "plot";
+                loadPreset(); //load/parse file, init plot data, set app to plot
+
             };
 
             $scope.$on("selection", function(event, image_name) {
@@ -262,16 +263,75 @@
             };
 
             $scope.restart = function() {
-                //$scope.useGroundTruth = false;
-                //$scope.inputs.inputText = null;
-                //$scope.inputs.resultText = null;
-                //$scope.inputs.groundTruthText = null;
-                $scope.formModel.preset = "";
-                $scope.tablePages = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-                $scope.gtPages = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-                $scope.expanded = false;
+
+                /** data for all apps **/
+                $scope.formModel.preset = null;
+                $scope.clusters = {};  // all clusters
+                $scope.templates = {}; // all images
+                $scope.subjects = {};  // all subjects {subject_id: [template_ids...], ...}
+                $scope.subjectClusters = {}; // <subject: [cluster id's]>
+                $scope.clusterIDs = []; // list of cluster ID's
+                $scope.subjectIDs = []; // list of subject ID's
+
+                /** plot app data **/
+                $scope.plotView = "overview";
+                $scope.template = null; // selected image
+                $scope.cluster_id = null; // selected image's cluster
+                $scope.subject_id = null; // selected image's subject
+                $scope.plotInfo = { // for plot
+                    isBySubject : true,
+                    viewSingleGroup: false,
+                    viewSubjectClusters: false
+                };
+                $scope.dataset = []; // for plot
                 $scope.data_ready = false;
-                $scope.dataset = [];
+
+                /** table app data **/
+                $scope.tableView = "overview";
+                $scope.tableLastPage = 0;       // last page number
+                $scope.tablePage = {
+                    "open": []
+                };          // current page info {number: 1, clusters: [0, 1, 2]}
+                $scope.tablePages = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]; // pagination being shown
+                $scope.tableClusterId = null; // selected cluster to view
+
+                /** table gt app data **/
+                $scope.gtView = "overview";
+                $scope.gtLastPage = 0;       // last page number
+                $scope.gtPage = {
+                    "open": []
+                };          // current page info {number: 1, clusters: [0, 1, 2]}
+
+                $scope.gtPages = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]; // pagination being shown
+
+                templateText = null;
+                filenameToTemplate = {};
+                clustersText = null;
+                groundTruthText = null;
+                vector = null, groups = null, ids = null;
+
+                //$scope.loading = false;
+                //
+                //$scope.inputs = {
+                //    "inputText": null,   // string of text from input file
+                //    "resultText": null,  // string of text from result file
+                //    "groundTruthText": null // string of text from ground truth file, optional
+                //};
+                //
+                //$scope.useGroundTruth = false;
+
+                //$scope.cluster_id = null;  // current cluster being displayed
+
+
+                //$scope.expanded = false;
+
+                //$scope.alerts = [];
+
+                windowPosition = {
+                    "x": 0,
+                    "y": 0
+                };
+
 
                 $scope.app = "opener";
             };
@@ -375,6 +435,8 @@
                     $http.get(gt_file).then(function(r) {
                         groundTruthText = r.data;
                         load();
+                        initGraph();
+                        $scope.app = "plot";
                     }, function(error) {
                     });
                 }, function(error) {
@@ -436,9 +498,9 @@
 
                     for(var j = 0; j < headers.length; j++){
                         if (headers[j] == "CLUSTER_INDEX") {
-                            cluster_index = currentline[j];
+                            cluster_index = currentline[j].trim();
                         } else {
-                            obj[headers[j]] = currentline[j];
+                            obj[headers[j]] = currentline[j].trim();
                         }
                     }
                     obj["CONFIDENCE"] = Number(obj["CONFIDENCE"]); // convert confidence to number
@@ -477,11 +539,11 @@
                         continue;
 
                     var currentline = lines[i].split(",");
-                    var template_id = currentline[id_col];
+                    var template_id = currentline[id_col].trim();
                     if ($scope.templates[template_id]) { // only process if template is used by clusters
                         for (var j = 0; j < headers.length; j++) {
                             if (inputHeaders.indexOf(headers[j]) !== -1) {
-                                $scope.templates[template_id][headers[j]] = currentline[j];
+                                $scope.templates[template_id][headers[j]] = currentline[j].trim();
                             }
                         }
                         var filename = $scope.templates[template_id]["FILENAME"].match(/([^.]+)..*/)[1];
@@ -511,8 +573,8 @@
                         continue;
 
                     var currentline = lines[i].split(",");
-                    var template_id = currentline[id_col];
-                    var subject_id = currentline[subject_col];
+                    var template_id = currentline[id_col].trim();
+                    var subject_id = currentline[subject_col].trim();
 
                     // append subject to templates
                     if ($scope.templates[template_id]) { // only care if template is used
@@ -551,7 +613,6 @@
 
                     // combine vector and label and create dataset
                     for (var r = 0; r < vector.length; r++) { // rows
-
                         $scope.dataset[r] = {
                             "x": vector[r][0],
                             "y": vector[r][1],

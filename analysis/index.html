@@ -50,7 +50,7 @@
             <div ng-if="plotView == 'overview' && data_ready">
                 <div class="row">
                     <div class="col-lg-9 col-md-9 col-sm-9 col-xs-9">
-                        <h4 class="text-center">Feature Vectors {{formModel.preset}}</h4>
+                        <h4 class="text-center">{{subjectIDs.length}} Subjects, {{clusterIDs.length}} Clusters</h4>
                         <plot plot-info="plotInfo" dataset="dataset"></plot>
                     </div>
                     <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
