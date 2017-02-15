@@ -52,7 +52,17 @@
                     <div class="col-lg-9 col-md-9 col-sm-9 col-xs-9">
                         <h4 class="text-center">{{subjectIDs.length}} Subjects, {{clusterIDs.length}} Clusters</h4>
                         <plot plot-info="plotInfo" dataset="dataset"></plot>
+                        <div>
+                            <b>Poses: </b>
+                            <input type="checkbox" id="front" ng-model="plotInfo.showFaceFront">
+                            <label for="front">Front</label>
+                            <input type="checkbox" id="profile" ng-model="plotInfo.showFaceProfile">
+                            <label for="profile">Profile</label>
+                            <input type="checkbox" id="angled" ng-model="plotInfo.showFaceAngled">
+                            <label for="angled">Angled</label>
+                        </div>
                     </div>
+
                     <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
                         <div class="paddedBox">
                             <div class="btn-group paddedLinear" data-toggle="buttons">

@@ -28,6 +28,11 @@ div.paddedLinear {
     padding-bottom: 5px;
 }
 
+div.paddedHorizontal {
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
 div.paddedVertical {
     padding-top: 5px;
     padding-bottom: 5px;

@@ -7,14 +7,13 @@
             "cluster": "cluster"    // table with ground truth
         })
 
-        .controller('analysisController', ['$scope', '$http', '$uibModal', 'views', function($scope, $http, $uibModal, views) {
-
+        .controller('analysisController', ['$scope', '$rootScope', '$http', '$uibModal', 'views', function($scope, $rootScope, $http, $uibModal, views) {
 
             $scope.app = "opener"; // opener, plot, table, table_gt
 
             $scope.imageDir = "../..";
 
-            $scope.presets = ["clusters_32", "clusters_32_avg", "clusters_32_min", "clusters_64", "clusters_128", "clusters_256", "clusters_512", "clusters_1024", "clusters_1870"];
+            $scope.presets = ["clusters_32", "clusters_32_avg", "clusters_32_min", "clusters_32_af01", "clusters_64", "clusters_128", "clusters_256", "clusters_512", "clusters_1024", "clusters_1870"];
 
             $scope.formModel = {
                 preset: null
@@ -47,7 +46,10 @@
             $scope.plotInfo = { // for plot
                 isBySubject : true,
                 viewSingleGroup: false,
-                viewSubjectClusters: false
+                viewSubjectClusters: false,
+                showFaceFront: true,
+                showFaceProfile: true,
+                showFaceAngled: true
             };
 
             $scope.dataset = []; // for plot
@@ -88,8 +90,6 @@
 
             var vector_file;
 
-            var group_file;
-
             var id_file;
 
             var cluster_file;
@@ -104,7 +104,7 @@
 
             var groundTruthText = null;
 
-            var vector, groups, ids;
+            var vector, ids;
 
             //$scope.loading = false;
             //
@@ -133,7 +133,6 @@
                 $scope.preset = $scope.formModel.preset;
                 template_file = "../data/" + $scope.preset + "/hint.csv";
                 vector_file = "../data/analysis/" + $scope.preset + "_2d.txt";
-                group_file = "../data/analysis/" + $scope.preset + "_labels.txt";
                 id_file = "../data/analysis/" + $scope.preset + "_img.txt";
                 cluster_file = "../data/" + $scope.preset + "/clusters.txt";
 
@@ -283,7 +282,10 @@
                 $scope.plotInfo = { // for plot
                     isBySubject : true,
                     viewSingleGroup: false,
-                    viewSubjectClusters: false
+                    viewSubjectClusters: false,
+                    showFaceFront: true,
+                    showFaceProfile: true,
+                    showFaceAngled: true
                 };
                 $scope.dataset = []; // for plot
                 $scope.data_ready = false;
@@ -310,7 +312,7 @@
                 filenameToTemplate = {};
                 clustersText = null;
                 groundTruthText = null;
-                vector = null, groups = null, ids = null;
+                vector = null, ids = null;
 
                 //$scope.loading = false;
                 //
@@ -448,6 +450,7 @@
                 }).then(function(response) {
 
                     clustersText = response.data;
+
                     $http.get(gt_file).then(function(r) {
                         groundTruthText = r.data;
                         load();
@@ -556,14 +559,17 @@
 
                     var currentline = lines[i].split(",");
                     var template_id = currentline[id_col].trim();
-                    if ($scope.templates[template_id]) { // only process if template is used by clusters
+                    var template = $scope.templates[template_id];
+                    if (template) { // only process if template is used by clusters
                         for (var j = 0; j < headers.length; j++) {
                             if (inputHeaders.indexOf(headers[j]) !== -1) {
-                                $scope.templates[template_id][headers[j]] = currentline[j].trim();
+                                template[headers[j]] = currentline[j].trim();
                             }
                         }
-                        var filename = $scope.templates[template_id]["FILENAME"].match(/([^.]+)..*/)[1];
-                        filenameToTemplate[filename] = $scope.templates[template_id];
+                        var img_id = template["FILENAME"].match(/([^.]+)..*/)[1];
+                        filenameToTemplate[img_id] = template;
+                        template.yaw = $rootScope.yaw[img_id];
+
                     }
                 }
             }
@@ -612,28 +618,30 @@
                     // parse array
                     vector = parse2D(response.data);
 
-                    return $http.get(group_file);
-
-                }, function (error) {
-                    // parse 2d.txt failed
-                }).then(function (response) {
-                    // parse labels
-                    groups = parseLabels(response.data);
-
                     return $http.get(id_file);
                 }, function (error) {
-                    // parse labels.txt failed
+                    // parse 2d.txt failed
                 }).then(function (response) {
 
                     ids = parseLabels(response.data);
 
                     // combine vector and label and create dataset
                     for (var r = 0; r < vector.length; r++) { // rows
+                        var template = filenameToTemplate[ids[r]];
+                        var pose;
+                        var y = Math.abs(template.yaw);
+                        if (y <= 30)
+                            pose = "front";
+                        else if (y <= 70)
+                            pose = "angled";
+                        else
+                            pose = "profile";
                         $scope.dataset[r] = {
                             "x": vector[r][0],
                             "y": vector[r][1],
-                            "group": groups[r],
-                            "cluster": filenameToTemplate[ids[r]]["CLUSTER_INDEX"],
+                            "pose": pose,
+                            "subject": template["SUBJECT_ID"],
+                            "cluster": template["CLUSTER_INDEX"],
                             "id": ids[r]
                         }
                     }
@@ -678,7 +686,6 @@
 
                     var mainSubject = null;
                     if (mainSubjects.length > 1) {
-                        // TODO determine the main subject
                         mainSubject = mainSubjects[0];
                     } else {
                         mainSubject = mainSubjects[0];
@@ -752,6 +759,33 @@
             }
         }])
 
+        .run(['$http', '$rootScope', function($http, $rootScope) {
+
+            $rootScope.yaw = {}; // this remains unchanged with each preset
+
+            var pose_file = "../data/poses.txt";
+            return $http.get(pose_file).then(function(response) {
+                var posesText = response.data;
+                var lines=posesText.split("\n");
+                var id_col = 0, yaw_col = 1;
+
+                for(var i = 0; i < lines.length; i++){
+
+                    if (lines[i] === "")
+                        continue;
+
+                    var currentline = lines[i].split(",");
+                    var img_id = currentline[id_col].trim();
+                    var yaw = currentline[yaw_col].trim();
+
+                    $rootScope.yaw[img_id] = parseInt(yaw);
+                }
+            }, function(error) {
+                console.log(error)
+            });
+
+        }])
+
         .directive('plot', ['d3Service', function (d3Service) {
             return {
                 restrict: 'E',
@@ -771,12 +805,18 @@
 
                     var selectedData;
 
+                    var showFaceFront = true;
+
+                    var showFaceProfile = true;
+
+                    var showFaceAngled = true;
+
                     d3Service.d3().then(function(d3) {
 
                         var clusterColors = {};
                         var subjectColors = {};
 
-                        var w = (window.innerWidth/12)*9, h = window.innerHeight-50, padding = 50, transform = d3.zoomIdentity;
+                        var w = (window.innerWidth/12)*9, h = window.innerHeight-150, padding = 50, transform = d3.zoomIdentity;
 
                         // scale functions to make data fit in the viewport
                         var xScale = d3.scaleLinear()
@@ -805,15 +845,15 @@
 
                                 return clusterColors[datapoint.cluster];
                             } else { // viewing by subject color by subject
-                                if (!subjectColors[datapoint.group]) {
+                                if (!subjectColors[datapoint.subject]) {
                                     color = '#';
                                     for (i = 0; i < 6; i++) {
                                         color += letters[Math.floor(Math.random() * 16)];
                                     }
-                                    subjectColors[datapoint.group] = color;
+                                    subjectColors[datapoint.subject] = color;
                                 }
 
-                                return subjectColors[datapoint.group];
+                                return subjectColors[datapoint.subject];
 
                             }
                         }
@@ -881,9 +921,13 @@
                         function update() {
                             g.selectAll("circle")
                                 .attr("r", function(d) {
+                                    if (!((d.pose === "front" && showFaceFront) ||
+                                        (d.pose === "profile" && showFaceProfile) ||
+                                        (d.pose === "angled" && showFaceAngled)))
+                                        return 0;
                                     if (selectedData) {
                                         if (viewSingleGroup) { // only show subject or cluster
-                                            if (isBySubject && (d.group !== selectedData.group))
+                                            if (isBySubject && (d.subject !== selectedData.subject))
                                                 return 0;
                                             if (!isBySubject && (d.cluster !== selectedData.cluster))
                                                 return 0;
@@ -891,7 +935,7 @@
                                         if (d.id === selectedData.id)
                                             return 10;
                                         // if in the same cluster of subject, indicate as well
-                                        if (isBySubject && (d.group === selectedData.group)) {
+                                        if (isBySubject && (d.subject === selectedData.subject)) {
                                             return 3;
                                         } else if (!isBySubject && (d.cluster === selectedData.cluster)) {
                                             return 3;
@@ -937,6 +981,27 @@
                         scope.$watch('plotInfo.viewSubjectClusters', function(newValue, oldValue) {
                             if (newValue !== undefined && newValue !== null) {
                                 viewSubjectCluster = newValue;
+                                update();
+                            }
+                        });
+
+                        scope.$watch('plotInfo.showFaceFront', function(newValue, oldValue) {
+                            if (newValue !== undefined && newValue !== null) {
+                                showFaceFront = newValue;
+                                update();
+                            }
+                        });
+
+                        scope.$watch('plotInfo.showFaceProfile', function(newValue, oldValue) {
+                            if (newValue !== undefined && newValue !== null) {
+                                showFaceProfile = newValue;
+                                update();
+                            }
+                        });
+
+                        scope.$watch('plotInfo.showFaceAngled', function(newValue, oldValue) {
+                            if (newValue !== undefined && newValue !== null) {
+                                showFaceAngled = newValue;
                                 update();
                             }
                         });
