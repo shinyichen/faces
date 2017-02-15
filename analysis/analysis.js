@@ -807,8 +807,6 @@
 
                     var viewSubjectCluster = false;
 
-                    var selectedDot;
-
                     var selectedData;
 
                     var showFaceFront = true;
@@ -816,6 +814,12 @@
                     var showFaceProfile = true;
 
                     var showFaceAngled = true;
+
+                    var scale = 1;
+
+                    var radius = 3;
+
+                    var stroke = 1;
 
                     d3Service.d3().then(function(d3) {
 
@@ -882,7 +886,7 @@
 
                         var g = svg.append("g");
 
-                        var circles = g.selectAll("circle")
+                        g.selectAll("circle")
                             .data(scope.dataset)
                             .enter().append("circle")
                             .attr("cx", function(d) {
@@ -891,7 +895,7 @@
                             .attr("cy", function(d) {
                                 return yScale(d.y);
                             })
-                            .attr("r", 1)
+                            .attr("r", radius)
                             .attr('fill', function(d) {
                                 return getColor(d);
                             })
@@ -907,10 +911,6 @@
 
                         // clicked on a dot
                         function clicked(d, i) {
-                            if (selectedDot)
-                                d3.select(selectedDot).attr("r", 1)
-                                    .style("fill-opacity", null); // reset previous selection
-                            selectedDot = this;
                             selectedData = d;
                             d3.select(this).moveToFront();
                             update();
@@ -919,46 +919,64 @@
                         }
 
                         function clear() {
-                            selectedDot = null;
                             selectedData = null;
                             update();
                             scope.$emit('selection', "-1");
                         }
 
                         function zoomed() {
+                            scale = d3.event.transform.k;
                             g.attr("transform", d3.event.transform);
+                            g.selectAll("circle")
+                                .attr("r", function(d) {
+                                    return getRadius(d)/scale;
+                                })
+                                .attr("stroke-width", function(d) {
+                                    return getStrokeWidth(d);
+                                });
                         }
 
                         function dragged(d) {
                             d3.select(this).attr("cx", d.x = d3.event.x).attr("cy", d.y = d3.event.y);
                         }
 
+                        var getRadius = function(d) {
+                            if (!((d.pose === "front" && showFaceFront) ||
+                                (d.pose === "profile" && showFaceProfile) ||
+                                (d.pose === "angled" && showFaceAngled)))
+                                return 0;
+                            if (selectedData) {
+                                if (viewSingleGroup) { // only show subject or cluster
+                                    if (isBySubject && (d.subject !== selectedData.subject))
+                                        return 0;
+                                    if (!isBySubject && (d.cluster !== selectedData.cluster))
+                                        return 0;
+                                }
+                                if (d.id === selectedData.id)
+                                    return 6;
+                                // if in the same cluster of subject, indicate as well
+                                if (isBySubject && (d.subject === selectedData.subject)) {
+                                    return 6;
+                                } else if (!isBySubject && (d.cluster === selectedData.cluster)) {
+                                    return 6;
+                                }
+                                return radius;
+                            }
+
+                            return radius;
+                        };
+
+                        var getStrokeWidth = function(d) {
+                            if (selectedData && d.id === selectedData.id)
+                                return stroke/scale;
+                            else
+                                return 0;
+                        };
+
                         function update() {
                             g.selectAll("circle")
                                 .attr("r", function(d) {
-                                    if (!((d.pose === "front" && showFaceFront) ||
-                                        (d.pose === "profile" && showFaceProfile) ||
-                                        (d.pose === "angled" && showFaceAngled)))
-                                        return 0;
-                                    if (selectedData) {
-                                        if (viewSingleGroup) { // only show subject or cluster
-                                            if (isBySubject && (d.subject !== selectedData.subject))
-                                                return 0;
-                                            if (!isBySubject && (d.cluster !== selectedData.cluster))
-                                                return 0;
-                                        }
-                                        if (d.id === selectedData.id)
-                                            return 3;
-                                        // if in the same cluster of subject, indicate as well
-                                        if (isBySubject && (d.subject === selectedData.subject)) {
-                                            return 3;
-                                        } else if (!isBySubject && (d.cluster === selectedData.cluster)) {
-                                            return 3;
-                                        }
-                                        return 1;
-                                    }
-
-                                    return 1;
+                                    return getRadius(d)/scale;
                                 })
                                 .attr("fill-opacity", function(d) {
                                     if (selectedData) {
@@ -974,10 +992,7 @@
                                         return "black";
                                 })
                                 .attr("stroke-width", function(d) {
-                                    if (selectedData && d.id === selectedData.id)
-                                        return 1;
-                                    else
-                                        return 0;
+                                    return getStrokeWidth(d);
                                 })
                                 .attr('fill', function(d) {
                                     return getColor(d);
