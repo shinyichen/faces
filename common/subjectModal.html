@@ -1,0 +1,100 @@
+<div class="modal-header">
+    <button class="btn btn-default pull-right modal-close" type="button" ng-click="$ctrl.close()">X</button>
+    <table class="table" ng-show="$ctrl.view=='overview'">
+        <thead>
+        <tr>
+            <th>Subject ID</th>
+            <th>Total Clusters</th>
+            <th>Average Precision</th>
+            <th>Average Recall</th>
+            <th>Total Recall</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>
+                {{$ctrl.subject_id}}
+            </td>
+            <td ng-switch="$ctrl.subjectClusters.length > 0">
+                <span ng-switch-when="true"> {{$ctrl.subjectClusters.length}}</span>
+                <span ng-switch-default> 0</span>
+            </td>
+            <td ng-switch="$ctrl.subjectClusters.length > 0">
+                <span ng-switch-when="true"> {{$ctrl.averagePrecision}}</span>
+                <span ng-switch-default> --</span>
+            </td>
+            <td ng-switch="$ctrl.subjectClusters.length > 0">
+                <span ng-switch-when="true"> {{$ctrl.averageRecall}}</span>
+                <span ng-switch-default> --</span>
+            </td>
+            <td ng-switch="$ctrl.subjectClusters.length > 0">
+                <span ng-switch-when="true"> {{$ctrl.totalRecall}}</span>
+                <span ng-switch-default> --</span>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<div class="modal-body">
+    <table ng-if="$ctrl.view=='overview' && $ctrl.subjectClusters.length > 0" class="table table-bordered table-striped table-hover">
+        <thead class="table-heading">
+            <tr>
+                <th style="width: 1px; white-space: nowrap;">Cluster ID</th>
+                <th style="width: 1px; white-space: nowrap;">Image Count</th>
+                <th style="width: 1px; white-space: nowrap;">Precision</th>
+                <th style="width: 1px; white-space: nowrap;">Recall</th>
+                <th>Cluster</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="cluster_id in $ctrl.subjectClusters">
+                <td>{{cluster_id}}</td>
+                <td>{{$ctrl.clusters[cluster_id].templates.length}}</td>
+                <td>{{$ctrl.clusters[cluster_id].precision}}</td>
+                <td>{{$ctrl.clusters[cluster_id].recall}}</td>
+                <td>
+                    <thumbnail ng-repeat="s in $ctrl.clusters[cluster_id].templates | orderBy: '-CONFIDENCE' | limitTo: 3"
+                    class="img-thumbnail"
+                    ng-attr-id="{{s.FILENAME}}"
+                    img-src="{{::imageDir}}/{{s.FILENAME}}"
+                    box-x="$ctrl.templates[s.TEMPLATE_ID].FACE_X"
+                    box-y="$ctrl.templates[s.TEMPLATE_ID].FACE_Y"
+                    box-width="$ctrl.templates[s.TEMPLATE_ID].FACE_WIDTH"
+                    box-height="$ctrl.templates[s.TEMPLATE_ID].FACE_HEIGHT"
+                    display-width="100"
+                    display-height="100"
+                    crop=true
+                    ng-class="{'no-mark-thumbnail': s.match, 'mark-thumbnail': !s.match}"
+                    style="vertical-align: bottom;"></thumbnail>
+                <button ng-if="$ctrl.clusters[cluster_id].templates.length > 3" type="button" class="btn btn-primary btn-xs" ng-click="$ctrl.goCluster(cluster_id)" style="vertical-align: bottom;">{{$ctrl.clusters[cluster_id].templates.length-3}} more</button>
+            </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- detailed view -->
+    <div ng-show="$ctrl.view=='cluster'">
+        <div class="row">
+            <div class="col-lg-4 col-md-4">
+                <button type="button" class="btn btn-primary btn-sm" ng-click="$ctrl.goOverview()">Back</button>
+            </div>
+            <div class="col-lg-4 col-md-4 text-center">
+                <h4>Cluster {{$ctrl.selectedCid}} has {{$ctrl.clusters[$ctrl.selectedCid].templates.length}} images</h4>
+            </div>
+        </div>
+
+        <div>
+            <thumbnail ng-repeat="s in $ctrl.clusters[$ctrl.selectedCid].templates | orderBy: '-CONFIDENCE' track by $index"
+                       img-src="{{::imageDir}}/{{::s.FILENAME}}"
+                       box-x="$ctrl.templates[s.TEMPLATE_ID].FACE_X"
+                       box-y="$ctrl.templates[s.TEMPLATE_ID].FACE_Y"
+                       box-width="$ctrl.templates[s.TEMPLATE_ID].FACE_WIDTH"
+                       box-height="$ctrl.templates[s.TEMPLATE_ID].FACE_HEIGHT"
+                       display-width="100"
+                       display-height="100"
+                       crop=true
+                       class="img-thumbnail"
+                       ng-class="{'no-mark-thumbnail': s.match, 'mark-thumbnail': !s.match}"></thumbnail>
+        </div>
+    </div>
+</div>

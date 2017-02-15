@@ -430,24 +430,34 @@
                 window.scrollTo(0, 0);
             };
 
-            $scope.goGtCluster = function(cluster_id) {
-                windowPosition.x = window.scrollX;
-                windowPosition.y = window.scrollY;
-                $scope.gtClusterId = cluster_id;
-                $scope.gtView = "cluster";
-                window.scrollTo(0, 0);
-            };
-
             $scope.goTableOverview = function() {
                 $scope.tableClusterId = null;
                 $scope.tableView = "overview";
                 window.scrollTo(windowPosition.x, windowPosition.y);
             };
 
-            $scope.goGtOverview = function() {
-                $scope.gtClusterId = null;
-                $scope.gtView = "overview";
-                window.scrollTo(windowPosition.x, windowPosition.y);
+            $scope.showGtSubject = function(subject_id) {
+                $uibModal.open({
+                    animation: true,
+                    backdrop: true,
+                    keyboard: true,
+                    size: 'lg',
+                    component: 'subjectModalComponent',
+                    resolve: {
+                        params: function () {
+                            return {
+                                "subject_id": subject_id,
+                                "imageDir": $scope.imageDir,
+                                "subjectClusters": $scope.subjectClusters[subject_id],
+                                "clusters": $scope.clusters,
+                                "templates": $scope.templates,
+                                "averagePrecision": $scope.averagePrecision(subject_id),
+                                "averageRecall": $scope.averageRecall(subject_id),
+                                "totalRecall": $scope.totalRecall(subject_id)
+                            }
+                        }
+                    }
+                });
             };
 
             function loadPreset() {
