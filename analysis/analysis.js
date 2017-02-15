@@ -142,23 +142,31 @@
 
             $scope.$on("selection", function(event, image_name) {
 
-                // find matching template
-                $scope.template = filenameToTemplate[image_name];
-                $scope.subject_id = $scope.template["SUBJECT_ID"];
-                $scope.cluster_id = $scope.template["CLUSTER_INDEX"];
-                var s_t = $scope.subjects[$scope.subject_id]; // images in of the same subject
+                if (image_name == -1) {
+                    $scope.template = null;
+                    $scope.subject_id = null;
+                    $scope.cluster_id = null;
+                    $scope.subject_templates = [];
+                    $scope.cluster_templates = [];
+                } else {
+                    // find matching template
+                    $scope.template = filenameToTemplate[image_name];
+                    $scope.subject_id = $scope.template["SUBJECT_ID"];
+                    $scope.cluster_id = $scope.template["CLUSTER_INDEX"];
+                    var s_t = $scope.subjects[$scope.subject_id]; // images in of the same subject
 
-                // templates of the same subject
-                $scope.subject_templates = [];
-                for (var i = 0; i < s_t.length; i++) {
-                    $scope.subject_templates.push($scope.templates[s_t[i]]);
-                }
+                    // templates of the same subject
+                    $scope.subject_templates = [];
+                    for (var i = 0; i < s_t.length; i++) {
+                        $scope.subject_templates.push($scope.templates[s_t[i]]);
+                    }
 
-                // same cluster
-                $scope.cluster_templates = [];
-                var c_t = $scope.clusters[$scope.cluster_id].templates;
-                for (var j = 0; j < c_t.length; j++) {
-                    $scope.cluster_templates.push($scope.templates[c_t[j]["TEMPLATE_ID"]]);
+                    // same cluster
+                    $scope.cluster_templates = [];
+                    var c_t = $scope.clusters[$scope.cluster_id].templates;
+                    for (var j = 0; j < c_t.length; j++) {
+                        $scope.cluster_templates.push($scope.templates[c_t[j]["TEMPLATE_ID"]]);
+                    }
                 }
                 $scope.$apply();
             });
@@ -646,8 +654,6 @@
                         }
                     }
 
-                    console.log($scope.dataset);
-
                     // allow drawing to begin
                     $scope.data_ready = true;
                 });
@@ -860,7 +866,8 @@
 
                         var svg = d3.select(element[0]).append("svg");
                         svg.attr("width", w)
-                            .attr("height", h);
+                            .attr("height", h)
+                            .on("click", clear);
 
                         // border
                         svg.append("rect")
@@ -905,9 +912,17 @@
                                     .style("fill-opacity", null); // reset previous selection
                             selectedDot = this;
                             selectedData = d;
-                            d3.select(this).moveToBack();
+                            d3.select(this).moveToFront();
                             update();
                             scope.$emit('selection', d.id);
+                            d3.event.stopPropagation();
+                        }
+
+                        function clear() {
+                            selectedDot = null;
+                            selectedData = null;
+                            update();
+                            scope.$emit('selection', "-1");
                         }
 
                         function zoomed() {
@@ -933,7 +948,7 @@
                                                 return 0;
                                         }
                                         if (d.id === selectedData.id)
-                                            return 10;
+                                            return 3;
                                         // if in the same cluster of subject, indicate as well
                                         if (isBySubject && (d.subject === selectedData.subject)) {
                                             return 3;
@@ -946,9 +961,23 @@
                                     return 1;
                                 })
                                 .attr("fill-opacity", function(d) {
-                                    if (selectedData && d.id === selectedData.id)
+                                    if (selectedData) {
+                                        if ((d.id === selectedData.id) ||
+                                        (isBySubject && (d.subject === selectedData.subject)) ||
+                                        (!isBySubject && (d.cluster === selectedData.cluster)))
                                         return 0.8;
+                                    }
                                     return 1;
+                                })
+                                .attr("stroke", function(d) {
+                                    if (selectedData && d.id === selectedData.id)
+                                        return "black";
+                                })
+                                .attr("stroke-width", function(d) {
+                                    if (selectedData && d.id === selectedData.id)
+                                        return 1;
+                                    else
+                                        return 0;
                                 })
                                 .attr('fill', function(d) {
                                     return getColor(d);
@@ -961,6 +990,12 @@
                                 if (firstChild) {
                                     this.parentNode.insertBefore(this, firstChild);
                                 }
+                            });
+                        };
+
+                        d3.selection.prototype.moveToFront = function() {
+                            return this.each(function(){
+                                this.parentNode.appendChild(this);
                             });
                         };
 
