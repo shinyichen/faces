@@ -106,23 +106,6 @@
 
             var vector, ids;
 
-            //$scope.loading = false;
-            //
-            //$scope.inputs = {
-            //    "inputText": null,   // string of text from input file
-            //    "resultText": null,  // string of text from result file
-            //    "groundTruthText": null // string of text from ground truth file, optional
-            //};
-            //
-            //$scope.useGroundTruth = false;
-
-            //$scope.cluster_id = null;  // current cluster being displayed
-
-
-            //$scope.expanded = false;
-
-            //$scope.alerts = [];
-
             var windowPosition = {
                 "x": 0,
                 "y": 0
