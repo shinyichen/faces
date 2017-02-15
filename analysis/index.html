@@ -46,7 +46,7 @@
         </div>
 
         <!-- plot view -->
-        <div ng-if="app == 'plot'">
+        <div ng-show="app == 'plot'">
             <div ng-if="plotView == 'overview' && data_ready">
                 <div class="row">
                     <div class="col-lg-9 col-md-9 col-sm-9 col-xs-9">
@@ -219,7 +219,7 @@
         </div> <!-- end of plot app -->
 
         <!-- table app -->
-        <div ng-if="app == 'table'">
+        <div ng-show="app == 'table'">
 
             <!-- overview -->
             <div ng-show="tableView==='overview'">
@@ -329,7 +329,7 @@
         </div> <!-- end table app -->
 
         <!-- table with gt app -->
-        <div ng-if="app=='table_gt'">
+        <div ng-show="app=='table_gt'">
 
             <!-- overview -->
             <div ng-show="gtView==='overview'">
