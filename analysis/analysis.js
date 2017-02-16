@@ -49,7 +49,8 @@
                 viewSubjectClusters: false,
                 showFaceFront: true,
                 showFaceProfile: true,
-                showFaceAngled: true
+                showFaceAngled: true,
+                highlight: null
             };
 
             $scope.dataset = []; // for plot
@@ -129,11 +130,11 @@
 
             };
 
-            $scope.$on("selection", function(event, image_name) {
+            $scope.$on("selection", function(event, template_id) {
 
                 $scope.plotImageSubjectBucket = [];
                 $scope.plotImageClusterBucket = [];
-                if (image_name == -1) {
+                if (template_id == -1) {
                     $scope.template = null;
                     $scope.subject_id = null;
                     $scope.cluster_id = null;
@@ -141,7 +142,7 @@
                     $scope.cluster_templates = [];
                 } else {
                     // find matching template
-                    $scope.template = filenameToTemplate[image_name];
+                    $scope.template = $scope.templates[template_id];
                     $scope.subject_id = $scope.template["SUBJECT_ID"];
                     $scope.cluster_id = $scope.template["CLUSTER_INDEX"];
                     var s_t = $scope.subjects[$scope.subject_id]; // images in of the same subject
@@ -185,6 +186,10 @@
                         }
                     }
                 });
+            };
+
+            $scope.highlightImage = function(template_id) {
+                $scope.plotInfo.highlight = template_id;
             };
 
             $scope.plotAddToSubjectBucket = function() {
@@ -308,7 +313,8 @@
                     viewSubjectClusters: false,
                     showFaceFront: true,
                     showFaceProfile: true,
-                    showFaceAngled: true
+                    showFaceAngled: true,
+                    highlight: null
                 };
                 $scope.dataset = []; // for plot
                 $scope.data_ready = false;
@@ -674,7 +680,7 @@
                             "pose": pose,
                             "subject": template["SUBJECT_ID"],
                             "cluster": template["CLUSTER_INDEX"],
-                            "id": ids[r]
+                            "id": template["TEMPLATE_ID"]
                         }
                     }
 
@@ -833,6 +839,8 @@
 
                     var selectedData;
 
+                    var selectedDot;
+
                     var showFaceFront = true;
 
                     var showFaceProfile = true;
@@ -843,7 +851,7 @@
 
                     var radius = 3;
 
-                    var stroke = 1;
+                    var stroke = 2;
 
                     d3Service.d3().then(function(d3) {
 
@@ -913,6 +921,9 @@
                         g.selectAll("circle")
                             .data(scope.dataset)
                             .enter().append("circle")
+                            .attr("id", function(d) {
+                                return d.id;
+                            })
                             .attr("cx", function(d) {
                                 return xScale(d.x);
                             })
@@ -936,7 +947,7 @@
                         // clicked on a dot
                         function clicked(d, i) {
                             selectedData = d;
-                            d3.select(this).moveToFront();
+                            selectedDot = d3.select(this).moveToFront();
                             update();
                             scope.$emit('selection', d.id);
                             d3.event.stopPropagation();
@@ -956,7 +967,7 @@
                                     return getRadius(d)/scale;
                                 })
                                 .attr("stroke-width", function(d) {
-                                    return getStrokeWidth(d);
+                                    return getStrokeWidth(d)/scale;
                                 });
                         }
 
@@ -977,13 +988,14 @@
                                         return 0;
                                 }
                                 if (d.id === selectedData.id)
-                                    return 6;
+                                    return 8;
                                 // if in the same cluster of subject, indicate as well
                                 if (isBySubject && (d.subject === selectedData.subject)) {
                                     return 6;
                                 } else if (!isBySubject && (d.cluster === selectedData.cluster)) {
                                     return 6;
                                 }
+
                                 return radius;
                             }
 
@@ -991,8 +1003,8 @@
                         };
 
                         var getStrokeWidth = function(d) {
-                            if (selectedData && d.id === selectedData.id)
-                                return stroke/scale;
+                            if ((selectedData && d.id === selectedData.id))
+                                return stroke;
                             else
                                 return 0;
                         };
@@ -1016,7 +1028,7 @@
                                         return "black";
                                 })
                                 .attr("stroke-width", function(d) {
-                                    return getStrokeWidth(d);
+                                    return getStrokeWidth(d)/scale;
                                 })
                                 .attr('fill', function(d) {
                                     return getColor(d);
@@ -1077,6 +1089,29 @@
                             if (newValue !== undefined && newValue !== null) {
                                 showFaceAngled = newValue;
                                 update();
+                            }
+                        });
+
+                        var highlight_id;
+                        scope.$watch('plotInfo.highlight', function(newValue, oldValue) {
+                            if (newValue !== undefined && newValue !== null) {
+                                if (highlight_id) {
+                                    d3.select("[id='" + highlight_id + "']").attr("r", function(d) {
+                                            return getRadius(d)/scale;
+                                        })
+                                        .attr("stroke-width", function(d) {
+                                            return getStrokeWidth(d)/scale;
+                                        })
+                                        .attr("stroke", null)
+                                }
+                                selectedDot.moveToFront();
+                                d3.select("[id='" + newValue + "']")
+                                    .moveToFront()
+                                    .attr("stroke", "black")
+                                    .attr("stroke-width", 2/scale)
+                                    .transition().delay(1)
+                                    .attr("r", 10/scale)
+                                highlight_id = newValue;
                             }
                         });
 
