@@ -1,6 +1,6 @@
 (function() {
 
-    angular.module('analysis', ['ui.bootstrap', 'd3', 'fileInput', 'images', 'modals'])
+    angular.module('analysis', ['ui.bootstrap', 'd3', 'fileInput', 'images', 'modals', 'infinite-scroll'])
         .constant('views', {
             "plot": "plot",
             "overview": "overview", // table without ground truth
@@ -55,6 +55,10 @@
             $scope.dataset = []; // for plot
 
             $scope.data_ready = false;
+
+            $scope.plotImageSubjectBucket = []; // hold the lazy load images, changing dynamically
+
+            $scope.plotImageClusterBucket = []; // hold the lazy load images, changing dynamically
 
             /** table app data **/
 
@@ -125,6 +129,8 @@
 
             $scope.$on("selection", function(event, image_name) {
 
+                $scope.plotImageSubjectBucket = [];
+                $scope.plotImageClusterBucket = [];
                 if (image_name == -1) {
                     $scope.template = null;
                     $scope.subject_id = null;
@@ -141,16 +147,23 @@
                     // templates of the same subject
                     $scope.subject_templates = [];
                     for (var i = 0; i < s_t.length; i++) {
-                        $scope.subject_templates.push($scope.templates[s_t[i]]);
+                        var t = $scope.templates[s_t[i]];
+                        $scope.subject_templates.push(t);
+                        if (i < 6) {
+                            $scope.plotImageSubjectBucket.push(t);
+                        }
                     }
 
                     // same cluster
                     $scope.cluster_templates = [];
                     var c_t = $scope.clusters[$scope.cluster_id].templates;
                     for (var j = 0; j < c_t.length; j++) {
-                        $scope.cluster_templates.push($scope.templates[c_t[j]["TEMPLATE_ID"]]);
+                        var t = $scope.templates[c_t[j]["TEMPLATE_ID"]];
+                        $scope.cluster_templates.push(t);
+                        $scope.plotImageClusterBucket.push(t);
                     }
                 }
+                //$scope.$emit('bucket:updated');
                 $scope.$apply();
             });
 
@@ -175,6 +188,28 @@
                         }
                     }
                 });
+            };
+
+            $scope.plotAddToSubjectBucket = function() {
+                var bucketSize = $scope.plotImageSubjectBucket.length;
+                var totalSize, i;
+                totalSize = $scope.subject_templates.length;
+                if (bucketSize < totalSize) { // more images
+                    for (i = bucketSize; i < (Math.min(bucketSize + 6, totalSize)); i++) {
+                        $scope.plotImageSubjectBucket.push($scope.subject_templates[i]);
+                    }
+                }
+            };
+
+            $scope.plotAddToClusterBucket = function() {
+                var bucketSize = $scope.plotImageClusterBucket.length;
+                var totalSize, i;
+                totalSize = $scope.cluster_templates.length;
+                if (bucketSize < totalSize) { // more images
+                    for (i = bucketSize; i < (Math.min(bucketSize + 6, totalSize)); i++) {
+                        $scope.plotImageClusterBucket.push($scope.cluster_templates[i]);
+                    }
+                }
             };
 
             $scope.openPlotApp = function() {
@@ -280,6 +315,8 @@
                 };
                 $scope.dataset = []; // for plot
                 $scope.data_ready = false;
+                $scope.plotImageSubjectBucket = [];
+                $scope.plotImageClusterBucket = [];
 
                 /** table app data **/
                 $scope.tableView = "overview";

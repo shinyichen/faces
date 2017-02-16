@@ -5,10 +5,11 @@
     <title>Analysis</title>
     <link rel="stylesheet" type="text/css" href="../styles/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="style.css">
-    <script src="../scripts/angular.min.js"></script>
     <script src="../scripts/jquery-3.1.1.min.js"></script>
+    <script src="../scripts/angular.min.js"></script>
     <script src="../styles/bootstrap/js/bootstrap.min.js"></script>
     <script src="../scripts/ui-bootstrap-tpls-2.3.2.min.js"></script>
+    <script src="../scripts/ng-infinite-scroll.min.js"></script>
     <script src="../common/fileInput.js"></script>
     <script src="../common/thumbnail.js"></script>
     <script src="../common/modalComponent.js"></script>
@@ -108,52 +109,54 @@
                                     <label for="cbsc">Color by clusters</label>
                                 </div>
                                 <div ng-show="plotInfo.isBySubject">
-                                    <thumbnail ng-repeat="t in subject_templates | limitTo: 8"
-                                               img-src="{{::imageDir}}/{{t.FILENAME}}"
-                                               box-x="t.FACE_X"
-                                               box-y="t.FACE_Y"
-                                               box-width="t.FACE_WIDTH"
-                                               box-height="t.FACE_HEIGHT"
-                                               display-width="50"
-                                               display-height="50"
-                                               crop=true
-                                               class="img-thumbnail"
-                                               ng-click="showImage(t, true)"
-                                               style="cursor: pointer">
-
-                                    </thumbnail>
-                                    <div class="paddedLinear">
-                                        <button ng-if="subject_templates.length > 8" type="button" class="btn btn-primary btn-xs" ng-click="showPlotSubject()" style="vertical-align: bottom;">{{subject_templates.length-8}} more</button>
-                                    </div>
                                     <div class="paddedLinear"> <!-- subject stats -->
                                         <div>Total Clusters: <span>{{subjectClusters[subject_id].length}}</span></div>
                                         <div>Average Precision: {{averagePrecision(subject_id)}}</div>
                                         <div>Average Recall: {{averageRecall(subject_id)}}</div>
                                         <div>Total Recall: {{totalRecall(subject_id)}}</div>
                                     </div>
+                                    <div ng-repeat="t in [template]"> <!-- this forces infinite scroll to update when template is changed -->
+                                        <div infinite-scroll="plotAddToSubjectBucket()" infinite-scroll-distance="3">
+                                            <thumbnail ng-repeat="t in plotImageSubjectBucket"
+                                                       img-src="{{::imageDir}}/{{t.FILENAME}}"
+                                                       box-x="t.FACE_X"
+                                                       box-y="t.FACE_Y"
+                                                       box-width="t.FACE_WIDTH"
+                                                       box-height="t.FACE_HEIGHT"
+                                                       display-width="50"
+                                                       display-height="50"
+                                                       crop=true
+                                                       class="img-thumbnail"
+                                                       ng-click="showImage(t, true)"
+                                                       style="cursor: pointer">
+
+                                            </thumbnail>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div ng-show="!plotInfo.isBySubject">
-                                    <thumbnail ng-repeat="t in cluster_templates | limitTo: 8"
-                                               img-src="{{::imageDir}}/{{t.FILENAME}}"
-                                               box-x="t.FACE_X"
-                                               box-y="t.FACE_Y"
-                                               box-width="t.FACE_WIDTH"
-                                               box-height="t.FACE_HEIGHT"
-                                               display-width="50"
-                                               display-height="50"
-                                               crop=true
-                                               class="img-thumbnail"
-                                               ng-click="showImage(t, true)"
-                                               style="cursor: pointer">
-
-                                    </thumbnail>
-                                    <div class="paddedLinear">
-                                        <button ng-if="cluster_templates.length > 8" type="button" class="btn btn-primary btn-xs" ng-click="showPlotCluster()" style="vertical-align: bottom;">{{cluster_templates.length-8}} more</button>
-                                    </div>
                                     <div class="paddedLinear"> <!-- subject stats -->
                                         <div>Total Images: {{clusters[cluster_id].templates.length}}</div>
                                         <div>Precision: {{clusters[cluster_id].precision}}</div>
                                         <div>Recall: {{clusters[cluster_id].recall}}</div>
+                                    </div>
+                                    <div ng-repeat="t in [template]"> <!-- this forces infinite scroll to update when template is changed -->
+                                        <div infinite-scroll="plotAddToClusterBucket()" infinite-scroll-distance="3">
+                                            <thumbnail ng-repeat="t in plotImageClusterBucket"
+                                                       img-src="{{::imageDir}}/{{t.FILENAME}}"
+                                                       box-x="t.FACE_X"
+                                                       box-y="t.FACE_Y"
+                                                       box-width="t.FACE_WIDTH"
+                                                       box-height="t.FACE_HEIGHT"
+                                                       display-width="50"
+                                                       display-height="50"
+                                                       crop=true
+                                                       class="img-thumbnail"
+                                                       ng-click="showImage(t, true)"
+                                                       style="cursor: pointer">
+
+                                            </thumbnail>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
