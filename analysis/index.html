@@ -116,7 +116,7 @@
                                         <div>Total Recall: {{totalRecall(subject_id)}}</div>
                                     </div>
                                     <div ng-repeat="t in [template]"> <!-- this forces infinite scroll to update when template is changed -->
-                                        <div infinite-scroll="plotAddToSubjectBucket()" infinite-scroll-distance="3">
+                                        <div infinite-scroll="plotAddToSubjectBucket()">
                                             <thumbnail ng-repeat="t in plotImageSubjectBucket"
                                                        img-src="{{::imageDir}}/{{t.FILENAME}}"
                                                        box-x="t.FACE_X"
@@ -166,59 +166,59 @@
             </div>
 
             <!-- subject view -->
-            <div ng-show="plotView=='subject'">
-                <div class="row">
-                    <div class="col-lg-4 col-md-4">
-                        <button type="button" class="btn btn-primary btn-sm" ng-click="showPlotOverview()">Back</button>
-                    </div>
-                    <div class="col-lg-4 col-md-4 text-center">
-                        <h4>Subject {{subject_id}} has {{subject_templates.length}} images</h4>
-                    </div>
-                </div>
+            <!--<div ng-show="plotView=='subject'">-->
+                <!--<div class="row">-->
+                    <!--<div class="col-lg-4 col-md-4">-->
+                        <!--<button type="button" class="btn btn-primary btn-sm" ng-click="showPlotOverview()">Back</button>-->
+                    <!--</div>-->
+                    <!--<div class="col-lg-4 col-md-4 text-center">-->
+                        <!--<h4>Subject {{subject_id}} has {{subject_templates.length}} images</h4>-->
+                    <!--</div>-->
+                <!--</div>-->
 
-                <div>
-                    <thumbnail ng-repeat="t in subject_templates | orderBy: '-CONFIDENCE' track by $index"
-                               img-src="{{::imageDir}}/{{::t.FILENAME}}"
-                               box-x="t.FACE_X"
-                               box-y="t.FACE_Y"
-                               box-width="t.FACE_WIDTH"
-                               box-height="t.FACE_HEIGHT"
-                               display-width="100"
-                               display-height="100"
-                               crop=true
-                               ng-click="showImage(t, true)"
-                               class="img-thumbnail"
-                               style="cursor: pointer"></thumbnail>
-                </div>
-            </div>
+                <!--<div>-->
+                    <!--<thumbnail ng-repeat="t in subject_templates | orderBy: '-CONFIDENCE' track by $index"-->
+                               <!--img-src="{{::imageDir}}/{{::t.FILENAME}}"-->
+                               <!--box-x="t.FACE_X"-->
+                               <!--box-y="t.FACE_Y"-->
+                               <!--box-width="t.FACE_WIDTH"-->
+                               <!--box-height="t.FACE_HEIGHT"-->
+                               <!--display-width="100"-->
+                               <!--display-height="100"-->
+                               <!--crop=true-->
+                               <!--ng-click="showImage(t, true)"-->
+                               <!--class="img-thumbnail"-->
+                               <!--style="cursor: pointer"></thumbnail>-->
+                <!--</div>-->
+            <!--</div>-->
 
 
-            <!-- cluster view -->
-            <div ng-show="plotView=='cluster'">
-                <div class="row">
-                    <div class="col-lg-4 col-md-4">
-                        <button type="button" class="btn btn-primary btn-sm" ng-click="showPlotOverview()">Back</button>
-                    </div>
-                    <div class="col-lg-4 col-md-4 text-center">
-                        <h4>Cluster {{cluster_id}} has {{cluster_templates.length}} images</h4>
-                    </div>
-                </div>
+            <!--&lt;!&ndash; cluster view &ndash;&gt;-->
+            <!--<div ng-show="plotView=='cluster'">-->
+                <!--<div class="row">-->
+                    <!--<div class="col-lg-4 col-md-4">-->
+                        <!--<button type="button" class="btn btn-primary btn-sm" ng-click="showPlotOverview()">Back</button>-->
+                    <!--</div>-->
+                    <!--<div class="col-lg-4 col-md-4 text-center">-->
+                        <!--<h4>Cluster {{cluster_id}} has {{cluster_templates.length}} images</h4>-->
+                    <!--</div>-->
+                <!--</div>-->
 
-                <div>
-                    <thumbnail ng-repeat="t in cluster_templates | orderBy: '-CONFIDENCE' track by $index"
-                               img-src="{{::imageDir}}/{{::t.FILENAME}}"
-                               box-x="t.FACE_X"
-                               box-y="t.FACE_Y"
-                               box-width="t.FACE_WIDTH"
-                               box-height="t.FACE_HEIGHT"
-                               display-width="100"
-                               display-height="100"
-                               crop=true
-                               ng-click="showImage(t, true)"
-                               class="img-thumbnail"
-                               style="cursor: pointer"></thumbnail>
-                </div>
-            </div>
+                <!--<div>-->
+                    <!--<thumbnail ng-repeat="t in cluster_templates | orderBy: '-CONFIDENCE' track by $index"-->
+                               <!--img-src="{{::imageDir}}/{{::t.FILENAME}}"-->
+                               <!--box-x="t.FACE_X"-->
+                               <!--box-y="t.FACE_Y"-->
+                               <!--box-width="t.FACE_WIDTH"-->
+                               <!--box-height="t.FACE_HEIGHT"-->
+                               <!--display-width="100"-->
+                               <!--display-height="100"-->
+                               <!--crop=true-->
+                               <!--ng-click="showImage(t, true)"-->
+                               <!--class="img-thumbnail"-->
+                               <!--style="cursor: pointer"></thumbnail>-->
+                <!--</div>-->
+            <!--</div>-->
         </div> <!-- end of plot app -->
 
         <!-- table app -->
@@ -304,7 +304,7 @@
             </div>
 
             <!-- detailed view -->
-            <div ng-show="tableView=='cluster'">
+            <div id="tableDetailedView" ng-if="tableView=='cluster' && tableClusterId">
                 <div class="row">
                     <div class="col-lg-4 col-md-4">
                         <button type="button" class="btn btn-primary btn-sm" ng-click="goTableOverview()">Back to clusters</button>
@@ -314,8 +314,8 @@
                     </div>
                 </div>
 
-                <div>
-                    <thumbnail ng-repeat="s in clusters[tableClusterId].templates | orderBy: '-CONFIDENCE'"
+                <div infinite-scroll="tableAddToBucket()" infinite-scroll-distance="1" infinite-scroll--check="true" infinite-scroll-listen-for-event="tableList:update">
+                    <thumbnail ng-repeat="s in tableImageBucket | orderBy: '-CONFIDENCE'"
                                img-src="{{::imageDir}}/{{::s.FILENAME}}"
                                box-x="templates[s.TEMPLATE_ID].FACE_X"
                                box-y="templates[s.TEMPLATE_ID].FACE_Y"

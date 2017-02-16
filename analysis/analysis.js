@@ -74,6 +74,8 @@
 
             $scope.tableClusterId = null; // selected cluster to view
 
+            $scope.tableImageBucket = [];
+
             /** table gt app data **/
 
             $scope.gtView = "overview";
@@ -149,9 +151,6 @@
                     for (var i = 0; i < s_t.length; i++) {
                         var t = $scope.templates[s_t[i]];
                         $scope.subject_templates.push(t);
-                        if (i < 6) {
-                            $scope.plotImageSubjectBucket.push(t);
-                        }
                     }
 
                     // same cluster
@@ -160,10 +159,8 @@
                     for (var j = 0; j < c_t.length; j++) {
                         var t = $scope.templates[c_t[j]["TEMPLATE_ID"]];
                         $scope.cluster_templates.push(t);
-                        $scope.plotImageClusterBucket.push(t);
                     }
                 }
-                //$scope.$emit('bucket:updated');
                 $scope.$apply();
             });
 
@@ -195,7 +192,7 @@
                 var totalSize, i;
                 totalSize = $scope.subject_templates.length;
                 if (bucketSize < totalSize) { // more images
-                    for (i = bucketSize; i < (Math.min(bucketSize + 6, totalSize)); i++) {
+                    for (i = bucketSize; i < (Math.min(bucketSize + 15, totalSize)); i++) {
                         $scope.plotImageSubjectBucket.push($scope.subject_templates[i]);
                     }
                 }
@@ -206,7 +203,7 @@
                 var totalSize, i;
                 totalSize = $scope.cluster_templates.length;
                 if (bucketSize < totalSize) { // more images
-                    for (i = bucketSize; i < (Math.min(bucketSize + 6, totalSize)); i++) {
+                    for (i = bucketSize; i < (Math.min(bucketSize + 15, totalSize)); i++) {
                         $scope.plotImageClusterBucket.push($scope.cluster_templates[i]);
                     }
                 }
@@ -326,6 +323,7 @@
                 };          // current page info {number: 1, clusters: [0, 1, 2]}
                 $scope.tablePages = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]; // pagination being shown
                 $scope.tableClusterId = null; // selected cluster to view
+                $scope.tableImageBucket = [];
 
                 /** table gt app data **/
                 $scope.gtView = "overview";
@@ -341,23 +339,6 @@
                 clustersText = null;
                 groundTruthText = null;
                 vector = null, ids = null;
-
-                //$scope.loading = false;
-                //
-                //$scope.inputs = {
-                //    "inputText": null,   // string of text from input file
-                //    "resultText": null,  // string of text from result file
-                //    "groundTruthText": null // string of text from ground truth file, optional
-                //};
-                //
-                //$scope.useGroundTruth = false;
-
-                //$scope.cluster_id = null;  // current cluster being displayed
-
-
-                //$scope.expanded = false;
-
-                //$scope.alerts = [];
 
                 windowPosition = {
                     "x": 0,
@@ -446,6 +427,7 @@
                 windowPosition.x = window.scrollX;
                 windowPosition.y = window.scrollY;
                 $scope.tableClusterId = cluster_id;
+                $scope.tableImageBucket = [];
                 $scope.tableView = "cluster";
                 window.scrollTo(0, 0);
             };
@@ -453,7 +435,19 @@
             $scope.goTableOverview = function() {
                 $scope.tableClusterId = null;
                 $scope.tableView = "overview";
+                $scope.tableImageBucket = [];
                 window.scrollTo(windowPosition.x, windowPosition.y);
+            };
+
+            $scope.tableAddToBucket = function() {
+                var bucketSize = $scope.tableImageBucket.length;
+                var cluster_templates = $scope.clusters[$scope.tableClusterId].templates;
+                var totalSize = cluster_templates.length;
+                if (bucketSize < totalSize) {
+                    for (var i = bucketSize; i < Math.min(bucketSize + 80, totalSize); i++) {
+                        $scope.tableImageBucket.push(cluster_templates[i]);
+                    }
+                }
             };
 
             $scope.showGtSubject = function(subject_id) {
