@@ -836,9 +836,11 @@
 
                     var scale = 1;
 
-                    var radius = 3;
+                    var stroke = 1;
 
-                    var stroke = 2;
+                    var largeSet = scope.dataset.length > 10000;
+
+                    var radius = 1;
 
                     d3Service.d3().then(function(d3) {
 
@@ -928,7 +930,8 @@
                             .scaleExtent([1, 32])
                             .translateExtent([[0, 0], [w, h]])
                             .extent([[0, 0], [w, h]])
-                            .on("zoom", zoomed);
+                            .on("zoom", zoomed)
+                            .on("end", zoomEnd);
                         svg.call(zoom);
 
                         // clicked on a dot
@@ -947,8 +950,19 @@
                         }
 
                         function zoomed() {
-                            scale = d3.event.transform.k;
+                            scale = (d3.event.transform.k);
                             g.attr("transform", d3.event.transform);
+                        }
+
+                        function zoomEnd() {
+                            if (scale == 1) radius = 1;
+                            else if (scale < 5) radius = 2;
+                            else if (scale < 10) radius = 3;
+                            else if (scale < 20) radius = 4;
+                            else radius = 5;
+
+                            console.log(scale + ': ' + radius);
+
                             g.selectAll("circle")
                                 .attr("r", function(d) {
                                     return getRadius(d)/scale;
@@ -975,12 +989,12 @@
                                         return 0;
                                 }
                                 if (d.id === selectedData.id)
-                                    return 8;
+                                    return radius * 4;
                                 // if in the same cluster of subject, indicate as well
                                 if (isBySubject && (d.subject === selectedData.subject)) {
-                                    return 6;
+                                    return radius * 3;
                                 } else if (!isBySubject && (d.cluster === selectedData.cluster)) {
-                                    return 6;
+                                    return radius * 3;
                                 }
 
                                 return radius;
@@ -1097,7 +1111,7 @@
                                     .attr("stroke", "black")
                                     .attr("stroke-width", 2/scale)
                                     .transition().delay(1)
-                                    .attr("r", 10/scale)
+                                    .attr("r", 10/scale);
                                 highlight_id = newValue;
                             }
                         });
