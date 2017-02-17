@@ -52,6 +52,7 @@
                 showFaceFront: true,
                 showFaceProfile: true,
                 showFaceAngled: true,
+                noSelection: true,
                 highlight: null
             };
 
@@ -282,6 +283,11 @@
                 return totalRecalls[subject_id];
             };
 
+            $scope.clearPlotTemplate = function() {
+                $scope.template = null;
+                $scope.plotInfo.noSelection = true;
+            };
+
             $scope.restart = function() {
 
                 /** data for all apps **/
@@ -305,6 +311,7 @@
                     showFaceFront: true,
                     showFaceProfile: true,
                     showFaceAngled: true,
+                    noSelection: true,
                     highlight: null
                 };
                 $scope.dataset = []; // for plot
@@ -938,6 +945,7 @@
                         function clicked(d, i) {
                             selectedData = d;
                             selectedDot = d3.select(this).moveToFront();
+                            scope.plotInfo.noSelection = false;
                             update();
                             scope.$emit('selection', d.id);
                             d3.event.stopPropagation();
@@ -946,7 +954,7 @@
                         function clear() {
                             selectedData = null;
                             update();
-                            scope.$emit('selection', "-1");
+                            //scope.$emit('selection', "-1");
                         }
 
                         function zoomed() {
@@ -1090,6 +1098,13 @@
                             if (newValue !== undefined && newValue !== null) {
                                 showFaceAngled = newValue;
                                 update();
+                            }
+                        });
+
+                        scope.$watch('plotInfo.noSelection', function(newValue, oldValue) {
+                            if (newValue !== undefined && newValue !== null) {
+                                if (newValue == true)
+                                    clear();
                             }
                         });
 
