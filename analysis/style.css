@@ -21,7 +21,7 @@
 }
 
 div.paddedBox {
-    padding: 25px 25px 0 25px;
+    padding: 0 25px 0 25px;
 }
 
 div.paddedLinear {
@@ -101,4 +101,12 @@ main div {
 
 .subject-table td{
     padding-top: 10px;
+}
+
+.infiniteImageListContainer {
+    margin: 0px;
+    padding: 0px;
+    height: 700px;
+    min-height: 100%;
+    overflow: auto;
 }

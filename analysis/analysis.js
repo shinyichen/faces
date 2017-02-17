@@ -21,6 +21,8 @@
 
             /** data for all apps **/
 
+            $scope.title = null;
+
             $scope.clusters = {};  // all clusters
 
             $scope.templates = {}; // all images
@@ -57,9 +59,9 @@
 
             $scope.data_ready = false;
 
-            $scope.plotImageSubjectBucket = []; // hold the lazy load images, changing dynamically
+            $scope.plotImageSubjectBucketSz = 0; // hold the lazy load images, changing dynamically
 
-            $scope.plotImageClusterBucket = []; // hold the lazy load images, changing dynamically
+            $scope.plotImageClusterBucketSz = 0; // hold the lazy load images, changing dynamically
 
             /** table app data **/
 
@@ -75,7 +77,7 @@
 
             $scope.tableClusterId = null; // selected cluster to view
 
-            $scope.tableImageBucket = [];
+            $scope.tableImageBucketSz = 0;
 
             /** table gt app data **/
 
@@ -132,8 +134,8 @@
 
             $scope.$on("selection", function(event, template_id) {
 
-                $scope.plotImageSubjectBucket = [];
-                $scope.plotImageClusterBucket = [];
+                $scope.plotImageSubjectBucketSz = 0;
+                $scope.plotImageClusterBucketSz = 0;
                 if (template_id == -1) {
                     $scope.template = null;
                     $scope.subject_id = null;
@@ -153,6 +155,7 @@
                         var t = $scope.templates[s_t[i]];
                         $scope.subject_templates.push(t);
                     }
+                    $scope.plotImageSubjectBucketSz = Math.min(15, $scope.subject_templates.length);
 
                     // same cluster
                     $scope.cluster_templates = [];
@@ -161,6 +164,7 @@
                         var t = $scope.templates[c_t[j]["TEMPLATE_ID"]];
                         $scope.cluster_templates.push(t);
                     }
+                    $scope.plotImageClusterBucketSz = Math.min(15, $scope.cluster_templates.length);
                 }
                 $scope.$apply();
             });
@@ -193,25 +197,13 @@
             };
 
             $scope.plotAddToSubjectBucket = function() {
-                var bucketSize = $scope.plotImageSubjectBucket.length;
-                var totalSize, i;
-                totalSize = $scope.subject_templates.length;
-                if (bucketSize < totalSize) { // more images
-                    for (i = bucketSize; i < (Math.min(bucketSize + 15, totalSize)); i++) {
-                        $scope.plotImageSubjectBucket.push($scope.subject_templates[i]);
-                    }
-                }
+                var totalSize = $scope.subject_templates.length;
+                $scope.plotImageSubjectBucketSz = Math.min($scope.plotImageSubjectBucketSz + 15, totalSize)
             };
 
             $scope.plotAddToClusterBucket = function() {
-                var bucketSize = $scope.plotImageClusterBucket.length;
-                var totalSize, i;
-                totalSize = $scope.cluster_templates.length;
-                if (bucketSize < totalSize) { // more images
-                    for (i = bucketSize; i < (Math.min(bucketSize + 15, totalSize)); i++) {
-                        $scope.plotImageClusterBucket.push($scope.cluster_templates[i]);
-                    }
-                }
+                var totalSize = $scope.cluster_templates.length;
+                $scope.plotImageClusterBucketSz = Math.min($scope.plotImageClusterBucketSz + 15, totalSize);
             };
 
             $scope.openPlotApp = function() {
@@ -265,11 +257,10 @@
             $scope.averageRecall = function(subject_id) {
                 if (!averageRecalls[subject_id]) {
                     var total = 0.0;
-                    var clusters = $scope.subjectClusters[subject_id];
+                    var clusters = $scope.subjectClusters[subject_id]
                     clusters.forEach(function(cluster_id) {
                         total += $scope.clusters[cluster_id].recall;
                     });
-
                     averageRecalls[subject_id] = round(total/clusters.length, 2);
                 }
 
@@ -318,8 +309,8 @@
                 };
                 $scope.dataset = []; // for plot
                 $scope.data_ready = false;
-                $scope.plotImageSubjectBucket = [];
-                $scope.plotImageClusterBucket = [];
+                $scope.plotImageSubjectBucketSz = 0;
+                $scope.plotImageClusterBucketSz = 0;
 
                 /** table app data **/
                 $scope.tableView = "overview";
@@ -329,7 +320,7 @@
                 };          // current page info {number: 1, clusters: [0, 1, 2]}
                 $scope.tablePages = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]; // pagination being shown
                 $scope.tableClusterId = null; // selected cluster to view
-                $scope.tableImageBucket = [];
+                $scope.tableImageBucketSz = 0;
 
                 /** table gt app data **/
                 $scope.gtView = "overview";
@@ -433,7 +424,7 @@
                 windowPosition.x = window.scrollX;
                 windowPosition.y = window.scrollY;
                 $scope.tableClusterId = cluster_id;
-                $scope.tableImageBucket = [];
+                $scope.tableImageBucketSz = 0;
                 $scope.tableView = "cluster";
                 window.scrollTo(0, 0);
             };
@@ -441,19 +432,14 @@
             $scope.goTableOverview = function() {
                 $scope.tableClusterId = null;
                 $scope.tableView = "overview";
-                $scope.tableImageBucket = [];
+                $scope.tableImageBucketSz = 0;
                 window.scrollTo(windowPosition.x, windowPosition.y);
             };
 
             $scope.tableAddToBucket = function() {
-                var bucketSize = $scope.tableImageBucket.length;
                 var cluster_templates = $scope.clusters[$scope.tableClusterId].templates;
                 var totalSize = cluster_templates.length;
-                if (bucketSize < totalSize) {
-                    for (var i = bucketSize; i < Math.min(bucketSize + 80, totalSize); i++) {
-                        $scope.tableImageBucket.push(cluster_templates[i]);
-                    }
-                }
+                $scope.tableImageBucketSz = Math.min($scope.tableImageBucketSz + 100, totalSize);
             };
 
             $scope.showGtSubject = function(subject_id) {
@@ -493,6 +479,7 @@
                         groundTruthText = r.data;
                         load();
                         initGraph();
+                        $scope.title = $scope.subjectIDs.length + "Subjects, " + $scope.clusterIDs.length + "Clusters";
                         $scope.app = "plot";
                     }, function(error) {
                     });
@@ -902,8 +889,8 @@
 
                         var svg = d3.select(element[0]).append("svg");
                         svg.attr("width", w)
-                            .attr("height", h)
-                            .on("click", clear);
+                            .attr("height", h);
+                            //.on("click", clear);
 
                         // border
                         svg.append("rect")
