@@ -156,6 +156,8 @@
                         var t = $scope.templates[s_t[i]];
                         $scope.subject_templates.push(t);
                     }
+                    // sort by confidence
+                    $scope.subject_templates.sort(compareByConfidence);
                     $scope.plotImageSubjectBucketSz = Math.min(15, $scope.subject_templates.length);
 
                     // same cluster
@@ -165,6 +167,7 @@
                         var t = $scope.templates[c_t[j]["TEMPLATE_ID"]];
                         $scope.cluster_templates.push(t);
                     }
+                    $scope.cluster_templates.sort(compareByConfidence);
                     $scope.plotImageClusterBucketSz = Math.min(15, $scope.cluster_templates.length);
                 }
                 $scope.$apply();
@@ -554,7 +557,8 @@
                             obj[headers[j]] = currentline[j].trim();
                         }
                     }
-                    obj["CONFIDENCE"] = Number(obj["CONFIDENCE"]); // convert confidence to number
+                    var confidence = Number(obj["CONFIDENCE"]); // convert confidence to number
+                    obj["CONFIDENCE"] = confidence;
 
                     if (!$scope.clusters[cluster_index]) {
                         $scope.clusters[cluster_index] = {};
@@ -564,7 +568,8 @@
 
                     // create an empty entry in templates
                     $scope.templates[obj["TEMPLATE_ID"]] = {
-                        "CLUSTER_INDEX": cluster_index
+                        "CLUSTER_INDEX": cluster_index,
+                        "CONFIDENCE": confidence
                     };
 
                 }
@@ -784,6 +789,17 @@
                 return labels;
             }
 
+            function compareByConfidence(a, b) {
+                if (a["CONFIDENCE"] > b["CONFIDENCE"]) {
+                    return -1; // greater confidence comes first
+                }
+                if (a["CONFIDENCE"] < b["CONFIDENCE"]) {
+                    return 1;
+                }
+                // same
+                return 0;
+            }
+
             function round(value, decimals) {
                 return Number(Math.round(value+'e'+decimals)+'e-'+decimals);
             }
@@ -963,10 +979,10 @@
                         }
 
                         function zoomEnd() {
-                            if (scale == 1) radius = 1;
-                            else if (scale < 5) radius = 2;
-                            else if (scale < 10) radius = 3;
-                            else if (scale < 20) radius = 4;
+                            if (scale <= 2) radius = 1;
+                            else if (scale <= 5) radius = 2;
+                            else if (scale <= 10) radius = 3;
+                            else if (scale <= 20) radius = 4;
                             else radius = 5;
 
                             console.log(scale + ': ' + radius);
@@ -1108,11 +1124,10 @@
                             }
                         });
 
-                        var highlight_id;
                         scope.$watch('plotInfo.highlight', function(newValue, oldValue) {
                             if (newValue !== undefined && newValue !== null) {
-                                if (highlight_id) {
-                                    d3.select("[id='" + highlight_id + "']").attr("r", function(d) {
+                                if (oldValue) {
+                                    d3.select("[id='" + oldValue + "']").attr("r", function(d) {
                                             return getRadius(d)/scale;
                                         })
                                         .attr("stroke-width", function(d) {
@@ -1127,7 +1142,6 @@
                                     .attr("stroke-width", 2/scale)
                                     .transition().delay(1)
                                     .attr("r", 10/scale);
-                                highlight_id = newValue;
                             }
                         });
 
