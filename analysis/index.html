@@ -70,11 +70,11 @@
                         <div>
                             <b>Poses: </b>
                             <input type="checkbox" id="front" ng-model="plotInfo.showFaceFront">
-                            <label for="front">Front</label>
+                            <label for="front"><img src="circle.png"> Front</label>
                             <input type="checkbox" id="profile" ng-model="plotInfo.showFaceProfile">
-                            <label for="profile">Profile</label>
+                            <label for="profile"><img src="square.png"> Profile</label>
                             <input type="checkbox" id="angled" ng-model="plotInfo.showFaceAngled">
-                            <label for="angled">Half-profile</label>
+                            <label for="angled"><img src="triangle.png"> Half-profile</label>
                         </div>
                     </div>
 
@@ -88,7 +88,6 @@
                                     By Cluster
                                 </button>
                             </div>
-                            <button ng-show="template" class="btn btn-xs btn-primary" ng-click="clearPlotTemplate()">Clear Selection</button>
                             <div ng-if="template">
                                 <div class="infiniteImageListContainer">
                                     <div class="paddedLinear">
