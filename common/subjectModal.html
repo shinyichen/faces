@@ -68,6 +68,7 @@
                     display-height="100"
                     crop=true
                     ng-class="{'no-mark-thumbnail': s.match, 'mark-thumbnail': !s.match}"
+                    tooltip-placement="top" uib-tooltip="Confidence: {{s.CONFIDENCE}}"
                     style="vertical-align: bottom;"></thumbnail>
                 <button ng-if="$ctrl.clusters[cluster_id].templates.length > 3" type="button" class="btn btn-primary btn-xs" ng-click="$ctrl.goCluster(cluster_id)" style="vertical-align: bottom;">{{$ctrl.clusters[cluster_id].templates.length-3}} more</button>
             </td>
@@ -90,6 +91,7 @@
                        display-height="100"
                        crop=true
                        class="img-thumbnail"
+                       tooltip-placement="top" uib-tooltip="Confidence: {{s.CONFIDENCE}}"
                        ng-class="{'no-mark-thumbnail': s.match, 'mark-thumbnail': !s.match}"></thumbnail>
         </div>
     </div>
