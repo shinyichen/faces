@@ -152,6 +152,7 @@
                                                                class="img-thumbnail"
                                                                ng-click="showImage(t, true)"
                                                                ng-mouseover="highlightImage(t.TEMPLATE_ID)"
+                                                               ng-class="{'no-mark-thumbnail': t.match, 'mark-thumbnail': !t.match}"
                                                                style="cursor: pointer"
                                                                tooltip-placement="top" uib-tooltip="Confidence: {{t.CONFIDENCE}}">
 
@@ -180,6 +181,7 @@
                                                                class="img-thumbnail"
                                                                ng-click="showImage(t, true)"
                                                                ng-mouseover="highlightImage(t.TEMPLATE_ID)"
+                                                               ng-class="{'no-mark-thumbnail': t.match, 'mark-thumbnail': !t.match}"
                                                                style="cursor: pointer"
                                                                tooltip-placement="top" uib-tooltip="Confidence: {{t.CONFIDENCE}}">
 

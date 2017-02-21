@@ -739,7 +739,9 @@
 
                     // mark correctness
                     for (i = 0; i < cluster.templates.length; i++) {
-                        cluster.templates[i].match = $scope.templates[cluster.templates[i]['TEMPLATE_ID']]['SUBJECT_ID'] === mainSubject;
+                        var t = cluster.templates[i];
+                        t.match = $scope.templates[cluster.templates[i]['TEMPLATE_ID']]['SUBJECT_ID'] === mainSubject;
+                        $scope.templates[t["TEMPLATE_ID"]].match = t.match;
                     }
 
                     // map clusters to subject
