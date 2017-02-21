@@ -134,9 +134,9 @@
                                         <div ng-show="plotInfo.isBySubject">
                                             <div class="paddedLinear"> <!-- subject stats -->
                                                 <div>Total Clusters: <span>{{subjectClusters[subject_id].length}}</span></div>
+                                                <div>Total Recall: {{totalRecall(subject_id)}}</div>
                                                 <div>Average Precision: {{averagePrecision(subject_id)}}</div>
                                                 <div>Average Recall: {{averageRecall(subject_id)}}</div>
-                                                <div>Total Recall: {{totalRecall(subject_id)}}</div>
                                             </div>
                                             <div ng-repeat="t in [template]"> <!-- this forces infinite scroll to update when template is changed -->
                                                 <div infinite-scroll="plotAddToSubjectBucket()" infinite-scroll-distance="1" infinite-scroll-parent="true" infinite-scroll-container='".infiniteImageListContainer"'>
@@ -163,8 +163,8 @@
                                         <div ng-show="!plotInfo.isBySubject">
                                             <div class="paddedLinear"> <!-- subject stats -->
                                                 <div>Total Images: {{clusters[cluster_id].templates.length}}</div>
-                                                <div>Precision: {{clusters[cluster_id].precision}}</div>
-                                                <div>Recall: {{clusters[cluster_id].recall}}</div>
+                                                <div>Precision: {{round(clusters[cluster_id].precision, 2)}}</div>
+                                                <div>Recall: {{round(clusters[cluster_id].recall, 2)}}</div>
                                             </div>
                                             <div ng-repeat="t in [template]"> <!-- this forces infinite scroll to update when template is changed -->
                                                 <div infinite-scroll="plotAddToClusterBucket()" infinite-scroll-distance="1" infinite-scroll-parent="true" infinite-scroll-container='".infiniteImageListContainer"'>
@@ -194,60 +194,6 @@
                     </div>
                 </div>
 
-                <!-- subject view -->
-                <!--<div ng-show="plotView=='subject'">-->
-                <!--<div class="row">-->
-                <!--<div class="col-lg-4 col-md-4">-->
-                <!--<button type="button" class="btn btn-primary btn-sm" ng-click="showPlotOverview()">Back</button>-->
-                <!--</div>-->
-                <!--<div class="col-lg-4 col-md-4 text-center">-->
-                <!--<h4>Subject {{subject_id}} has {{subject_templates.length}} images</h4>-->
-                <!--</div>-->
-                <!--</div>-->
-
-                <!--<div>-->
-                <!--<thumbnail ng-repeat="t in subject_templates | orderBy: '-CONFIDENCE' track by $index"-->
-                <!--img-src="{{::imageDir}}/{{::t.FILENAME}}"-->
-                <!--box-x="t.FACE_X"-->
-                <!--box-y="t.FACE_Y"-->
-                <!--box-width="t.FACE_WIDTH"-->
-                <!--box-height="t.FACE_HEIGHT"-->
-                <!--display-width="100"-->
-                <!--display-height="100"-->
-                <!--crop=true-->
-                <!--ng-click="showImage(t, true)"-->
-                <!--class="img-thumbnail"-->
-                <!--style="cursor: pointer"></thumbnail>-->
-                <!--</div>-->
-                <!--</div>-->
-
-
-                <!--&lt;!&ndash; cluster view &ndash;&gt;-->
-                <!--<div ng-show="plotView=='cluster'">-->
-                <!--<div class="row">-->
-                <!--<div class="col-lg-4 col-md-4">-->
-                <!--<button type="button" class="btn btn-primary btn-sm" ng-click="showPlotOverview()">Back</button>-->
-                <!--</div>-->
-                <!--<div class="col-lg-4 col-md-4 text-center">-->
-                <!--<h4>Cluster {{cluster_id}} has {{cluster_templates.length}} images</h4>-->
-                <!--</div>-->
-                <!--</div>-->
-
-                <!--<div>-->
-                <!--<thumbnail ng-repeat="t in cluster_templates | orderBy: '-CONFIDENCE' track by $index"-->
-                <!--img-src="{{::imageDir}}/{{::t.FILENAME}}"-->
-                <!--box-x="t.FACE_X"-->
-                <!--box-y="t.FACE_Y"-->
-                <!--box-width="t.FACE_WIDTH"-->
-                <!--box-height="t.FACE_HEIGHT"-->
-                <!--display-width="100"-->
-                <!--display-height="100"-->
-                <!--crop=true-->
-                <!--ng-click="showImage(t, true)"-->
-                <!--class="img-thumbnail"-->
-                <!--style="cursor: pointer"></thumbnail>-->
-                <!--</div>-->
-                <!--</div>-->
             </div> <!-- end of plot app -->
 
             <!-- table app -->
@@ -386,9 +332,9 @@
                             <tr>
                                 <th>Subject ID</th>
                                 <th>Total Clusters</th>
+                                <th>Total Recall</th>
                                 <th>Average Precision</th>
                                 <th>Average Recall</th>
-                                <th>Total Recall</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -401,15 +347,15 @@
                                     <span ng-switch-default> 0</span>
                                 </td>
                                 <td ng-switch="subjectClusters[subject_id].length > 0">
+                                    <span ng-switch-when="true"> {{totalRecall(subject_id)}}</span>
+                                    <span ng-switch-default> --</span>
+                                </td>
+                                <td ng-switch="subjectClusters[subject_id].length > 0">
                                     <span ng-switch-when="true"> {{averagePrecision(subject_id)}}</span>
                                     <span ng-switch-default> --</span>
                                 </td>
                                 <td ng-switch="subjectClusters[subject_id].length > 0">
                                     <span ng-switch-when="true"> {{averageRecall(subject_id)}}</span>
-                                    <span ng-switch-default> --</span>
-                                </td>
-                                <td ng-switch="subjectClusters[subject_id].length > 0">
-                                    <span ng-switch-when="true"> {{totalRecall(subject_id)}}</span>
                                     <span ng-switch-default> --</span>
                                 </td>
                             </tr>

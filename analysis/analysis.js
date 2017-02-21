@@ -95,7 +95,7 @@
 
             $scope.gtClusterId = null; // selected cluster to view
 
-            var pageSize = 12;         // number of clusters per page
+            var pageSize = 25;         // number of clusters per page
 
             var template_file;
 
@@ -257,7 +257,7 @@
                         total += $scope.clusters[cluster_id].precision;
                     });
 
-                    averagePrecisions[subject_id] = round(total/clusters.length, 2);
+                    averagePrecisions[subject_id] = $scope.round(total/clusters.length, 2);
                 }
 
                 return averagePrecisions[subject_id];
@@ -267,11 +267,11 @@
             $scope.averageRecall = function(subject_id) {
                 if (!averageRecalls[subject_id]) {
                     var total = 0.0;
-                    var clusters = $scope.subjectClusters[subject_id]
+                    var clusters = $scope.subjectClusters[subject_id];
                     clusters.forEach(function(cluster_id) {
                         total += $scope.clusters[cluster_id].recall;
                     });
-                    averageRecalls[subject_id] = round(total/clusters.length, 2);
+                    averageRecalls[subject_id] = $scope.round(total/clusters.length, 2);
                 }
 
                 return averageRecalls[subject_id];
@@ -286,7 +286,7 @@
                         total += $scope.clusters[cluster_id].recall;
                     });
 
-                    totalRecalls[subject_id] = round(total, 3);
+                    totalRecalls[subject_id] = $scope.round(total, 3);
                 }
 
                 return totalRecalls[subject_id];
@@ -732,10 +732,10 @@
 
                     // calculate precision
                     var subjectCount = $scope.subjects[mainSubject].length;
-                    cluster.precision = round(clusterSubjectCount / cluster.templates.length, 2);
+                    cluster.precision = clusterSubjectCount / cluster.templates.length;
 
                     // calculate recall
-                    cluster.recall = round(clusterSubjectCount / subjectCount, 2);
+                    cluster.recall = clusterSubjectCount / subjectCount;
 
                     // mark correctness
                     for (i = 0; i < cluster.templates.length; i++) {
@@ -800,9 +800,10 @@
                 return 0;
             }
 
-            function round(value, decimals) {
+            $scope.round = function(value, decimals) {
                 return Number(Math.round(value+'e'+decimals)+'e-'+decimals);
             }
+
         }])
 
         .run(['$http', '$rootScope', function($http, $rootScope) {

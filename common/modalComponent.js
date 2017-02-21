@@ -55,6 +55,10 @@
                     $ctrl.view = "cluster";
                     window.scrollTo(0, 0);
                 };
+
+                $ctrl.round = function(value, decimals) {
+                    return Number(Math.round(value+'e'+decimals)+'e-'+decimals);
+                }
             }
         });
 })();

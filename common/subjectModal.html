@@ -53,8 +53,8 @@
             <tr ng-repeat="cluster_id in $ctrl.subjectClusters">
                 <td>{{cluster_id}}</td>
                 <td>{{$ctrl.clusters[cluster_id].templates.length}}</td>
-                <td>{{$ctrl.clusters[cluster_id].precision}}</td>
-                <td>{{$ctrl.clusters[cluster_id].recall}}</td>
+                <td>{{$ctrl.round($ctrl.clusters[cluster_id].precision, 2)}}</td>
+                <td>{{$ctrl.round($ctrl.clusters[cluster_id].recall, 2)}}</td>
                 <td>
                     <thumbnail ng-repeat="s in $ctrl.clusters[cluster_id].templates | orderBy: '-CONFIDENCE' | limitTo: 3"
                     class="img-thumbnail"
