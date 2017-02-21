@@ -19,6 +19,8 @@
                 preset: null
             };
 
+            $scope.loading = false;
+
             /** data for all apps **/
 
             $scope.title = null;
@@ -122,6 +124,7 @@
 
 
             $scope.open = function() {
+                $scope.loading = true;
                 $scope.preset = $scope.formModel.preset;
                 template_file = "../data/" + $scope.preset + "/hint.csv";
                 vector_file = "../data/analysis/" + $scope.preset + "_2d.txt";
@@ -170,6 +173,10 @@
                     $scope.plotImageClusterBucketSz = Math.min(15, $scope.cluster_templates.length);
                 }
                 $scope.$apply();
+            });
+
+            $scope.$on("plotReady", function() {
+                $scope.loading = false;
             });
 
             $scope.showImage = function(template, match) {
@@ -800,6 +807,7 @@
 
         .run(['$http', '$rootScope', function($http, $rootScope) {
 
+            $rootScope.appReady = false;
             $rootScope.yaw = {}; // this remains unchanged with each preset
 
             var pose_file = "../data/poses.txt";
@@ -819,13 +827,14 @@
 
                     $rootScope.yaw[img_id] = parseInt(yaw);
                 }
+                $rootScope.appReady = true;
             }, function(error) {
                 console.log(error)
             });
 
         }])
 
-        .directive('plot', ['d3Service', function (d3Service) {
+        .directive('plot', ['d3Service', '$timeout', function (d3Service, $timeout) {
             return {
                 restrict: 'E',
                 scope: {
@@ -1257,7 +1266,7 @@
                                     .attr("stroke-width", function(d) {
                                         return getStrokeWidth(d)/scale;
                                     });
-                                if (n.attr("d") !== null) {
+                                if (n.datum().pose === "angled") {
                                     n.attr("d", triangle);
                                 } else {
                                     n.attr("r", function(d) {
@@ -1272,6 +1281,10 @@
                                 }
                             }
                         });
+
+                        $timeout(function() { // rendered
+                            scope.$emit("plotReady");
+                        })
 
                     });
 
