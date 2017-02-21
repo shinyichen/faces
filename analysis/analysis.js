@@ -1233,6 +1233,7 @@
                                 highlighted = newValue;
                                 if (oldValue) {
                                     var s = d3.select("[id='" + oldValue + "']");
+                                    s.moveToBack();
                                     if (s.attr("d") !== null) {
                                         s.attr("d", triangle);
                                     } else {
@@ -1250,7 +1251,6 @@
                                         return getStrokeWidth(d)/scale;
                                     });
                                 }
-                                //selectedDot.moveToFront();
                                 var n = d3.select("[id='" + newValue + "']");
                                 n.moveToFront()
                                     .attr("stroke", "black")

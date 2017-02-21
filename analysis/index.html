@@ -91,7 +91,8 @@
                             <div ng-if="template">
                                 <div class="infiniteImageListContainer">
                                     <div class="paddedLinear">
-                                        <b>Image ID: {{template.TEMPLATE_ID}}</b>
+                                        <b>Image ID: {{template.TEMPLATE_ID}}</b><br>
+                                        Confidence: {{template.CONFIDENCE}}
                                     </div>
                                     <div ng-repeat="t in [template]" class="paddedLinear"> <!-- force thumbnail update when selection is modified -->
                                         <thumbnail img-src="{{::imageDir}}/{{t.FILENAME}}"
@@ -144,7 +145,8 @@
                                                            class="img-thumbnail"
                                                            ng-click="showImage(t, true)"
                                                            ng-mouseover="highlightImage(t.TEMPLATE_ID)"
-                                                           style="cursor: pointer">
+                                                           style="cursor: pointer"
+                                                           tooltip-placement="top" uib-tooltip="Confidence: {{t.CONFIDENCE}}">
 
                                                 </thumbnail>
                                             </div>
@@ -171,7 +173,8 @@
                                                            class="img-thumbnail"
                                                            ng-click="showImage(t, true)"
                                                            ng-mouseover="highlightImage(t.TEMPLATE_ID)"
-                                                           style="cursor: pointer">
+                                                           style="cursor: pointer"
+                                                           tooltip-placement="top" uib-tooltip="Confidence: {{t.CONFIDENCE}}">
 
                                                 </thumbnail>
                                             </div>
