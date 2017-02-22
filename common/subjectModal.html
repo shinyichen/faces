@@ -59,7 +59,7 @@
                     <thumbnail ng-repeat="s in $ctrl.clusters[cluster_id].templates | orderBy: '-CONFIDENCE' | limitTo: 3"
                     class="img-thumbnail"
                     ng-attr-id="{{s.FILENAME}}"
-                    img-src="{{::imageDir}}/{{s.FILENAME}}"
+                    img-src="{{::$ctrl.imageDir}}/{{s.FILENAME}}"
                     box-x="$ctrl.templates[s.TEMPLATE_ID].FACE_X"
                     box-y="$ctrl.templates[s.TEMPLATE_ID].FACE_Y"
                     box-width="$ctrl.templates[s.TEMPLATE_ID].FACE_WIDTH"
@@ -82,7 +82,7 @@
 
         <div>
             <thumbnail ng-repeat="s in $ctrl.clusters[$ctrl.selectedCid].templates | orderBy: '-CONFIDENCE' track by $index"
-                       img-src="{{::imageDir}}/{{::s.FILENAME}}"
+                       img-src="{{::$ctrl.imageDir}}/{{::s.FILENAME}}"
                        box-x="$ctrl.templates[s.TEMPLATE_ID].FACE_X"
                        box-y="$ctrl.templates[s.TEMPLATE_ID].FACE_Y"
                        box-width="$ctrl.templates[s.TEMPLATE_ID].FACE_WIDTH"

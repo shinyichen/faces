@@ -39,7 +39,7 @@
 
         .controller('resultsController', ['$scope', '$uibModal', '$http', 'views', function($scope, $uibModal, $http, views) {
 
-            $scope.imageDir = "../.."; // relative path to image directory
+            $scope.imageDir = "../imgs"; // relative path to image directory
 
             $scope.avgImgDir = null;
 

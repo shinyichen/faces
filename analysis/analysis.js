@@ -11,7 +11,7 @@
 
             $scope.app = "opener"; // opener, plot, table, table_gt
 
-            $scope.imageDir = "../..";
+            $scope.imageDir = "../imgs";
 
             $scope.presets = ["clusters_32", "clusters_32_avg", "clusters_32_min", "clusters_32_af01", "clusters_64", "clusters_128", "clusters_256", "clusters_512", "clusters_1024", "clusters_1870"];
 
