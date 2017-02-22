@@ -56,7 +56,7 @@
                 <td>{{$ctrl.round($ctrl.clusters[cluster_id].precision, 2)}}</td>
                 <td>{{$ctrl.round($ctrl.clusters[cluster_id].recall, 2)}}</td>
                 <td>
-                    <thumbnail ng-repeat="s in $ctrl.clusters[cluster_id].templates | orderBy: '-CONFIDENCE' | limitTo: 3"
+                    <thumbnail ng-repeat="s in $ctrl.clusters[cluster_id].templates | orderBy: '-CONFIDENCE' | limitTo: 4"
                     class="img-thumbnail"
                     ng-attr-id="{{s.FILENAME}}"
                     img-src="{{::$ctrl.imageDir}}/{{s.FILENAME}}"
@@ -70,7 +70,7 @@
                     ng-class="{'no-mark-thumbnail': s.match, 'mark-thumbnail': !s.match}"
                     tooltip-placement="top" uib-tooltip="Confidence: {{s.CONFIDENCE}}"
                     style="vertical-align: bottom;"></thumbnail>
-                <button ng-if="$ctrl.clusters[cluster_id].templates.length > 3" type="button" class="btn btn-primary btn-xs" ng-click="$ctrl.goCluster(cluster_id)" style="vertical-align: bottom;">{{$ctrl.clusters[cluster_id].templates.length-3}} more</button>
+                <button ng-if="$ctrl.clusters[cluster_id].templates.length > 4" type="button" class="btn btn-primary btn-xs" ng-click="$ctrl.goCluster(cluster_id)" style="vertical-align: bottom;">{{$ctrl.clusters[cluster_id].templates.length-4}} more</button>
             </td>
             </tr>
         </tbody>

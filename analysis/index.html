@@ -236,7 +236,7 @@
                             <td align="center">{{cid}}</td>
                             <td align="center">{{clusters[cid].templates.length}}</td>
                             <td>
-                                <thumbnail ng-repeat="s in clusters[cid].templates | orderBy: '-CONFIDENCE' | limitTo: 3"
+                                <thumbnail ng-repeat="s in clusters[cid].templates | orderBy: '-CONFIDENCE' | limitTo: 7"
                                            class="img-thumbnail no-mark-thumbnail"
                                            ng-attr-id="{{s.FILENAME}}"
                                            img-src="{{::imageDir}}/{{s.FILENAME}}"
@@ -248,8 +248,9 @@
                                            display-height="100"
                                            crop=true
                                            ng-click="showImage(templates[s.TEMPLATE_ID], true)"
+                                           tooltip-placement="top" uib-tooltip="Confidence: {{s.CONFIDENCE}}"
                                            style="vertical-align: bottom; cursor: pointer"></thumbnail>
-                                <button ng-if="clusters[cid].templates.length > 3" type="button" class="btn btn-primary btn-xs" ng-click="goTableCluster(cid)" style="vertical-align: bottom;">{{clusters[cid].templates.length-3}} more</button>
+                                <button ng-if="clusters[cid].templates.length > 7" type="button" class="btn btn-primary btn-xs" ng-click="goTableCluster(cid)" style="vertical-align: bottom;">{{clusters[cid].templates.length-7}} more</button>
                             </td>
                         </tr>
                         </tbody>
@@ -295,6 +296,7 @@
                                    display-height="100"
                                    crop=true
                                    ng-click="showImage(templates[s.TEMPLATE_ID], true)"
+                                   tooltip-placement="top" uib-tooltip="Confidence: {{s.CONFIDENCE}}"
                                    class="img-thumbnail"
                                    style="cursor: pointer"></thumbnail>
                     </div>
