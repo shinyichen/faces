@@ -80,9 +80,9 @@
     <div ng-show="$ctrl.view=='cluster'">
         <button type="button" class="btn btn-primary btn-xs" ng-click="$ctrl.goOverview()">Back</button>
 
-        <div>
-            <thumbnail ng-repeat="s in $ctrl.clusters[$ctrl.selectedCid].templates | orderBy: '-CONFIDENCE' track by $index"
-                       img-src="{{::$ctrl.imageDir}}/{{::s.FILENAME}}"
+        <div ng-repeat="cid in [$ctrl.selectedCid]">
+            <thumbnail ng-repeat="s in $ctrl.clusters[cid].templates | orderBy: '-CONFIDENCE' track by $index"
+                       img-src="{{::$ctrl.imageDir}}/{{s.FILENAME}}"
                        box-x="$ctrl.templates[s.TEMPLATE_ID].FACE_X"
                        box-y="$ctrl.templates[s.TEMPLATE_ID].FACE_Y"
                        box-width="$ctrl.templates[s.TEMPLATE_ID].FACE_WIDTH"
