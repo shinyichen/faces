@@ -5,9 +5,9 @@
         <tr>
             <th>Subject ID</th>
             <th>Total Clusters</th>
+            <th>Total Recall</th>
             <th>Average Precision</th>
             <th>Average Recall</th>
-            <th>Total Recall</th>
         </tr>
         </thead>
         <tbody>
@@ -20,15 +20,15 @@
                 <span ng-switch-default> 0</span>
             </td>
             <td ng-switch="$ctrl.subjectClusters.length > 0">
+                <span ng-switch-when="true"> {{$ctrl.totalRecall}}</span>
+                <span ng-switch-default> --</span>
+            </td>
+            <td ng-switch="$ctrl.subjectClusters.length > 0">
                 <span ng-switch-when="true"> {{$ctrl.averagePrecision}}</span>
                 <span ng-switch-default> --</span>
             </td>
             <td ng-switch="$ctrl.subjectClusters.length > 0">
                 <span ng-switch-when="true"> {{$ctrl.averageRecall}}</span>
-                <span ng-switch-default> --</span>
-            </td>
-            <td ng-switch="$ctrl.subjectClusters.length > 0">
-                <span ng-switch-when="true"> {{$ctrl.totalRecall}}</span>
                 <span ng-switch-default> --</span>
             </td>
         </tr>
