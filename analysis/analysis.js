@@ -1006,6 +1006,48 @@
                             })
                             .on("click", clicked);
 
+                        svg.on("mousedown", function() {
+                            if (!d3.event.shiftKey)
+                                return;
+
+                            var e = this;
+                            var origin = d3.mouse(e);
+                            var rect = svg.append("rect").attr("fill-opacity", 0.1).attr("stroke", "black").attr("stroke-width", 1);
+                            d3.select(window)
+                                .on("mousemove.zoomRect", function() {
+                                    var m = d3.mouse(e);
+                                    m[0] = Math.max(0, Math.min(w, m[0]));
+                                    m[1] = Math.max(0, Math.min(h, m[1]));
+                                    rect.attr("x", Math.min(origin[0], m[0]))
+                                        .attr("y", Math.min(origin[1], m[1]))
+                                        .attr("width", Math.abs(m[0] - origin[0]))
+                                        .attr("height", Math.abs(m[1] - origin[1]));
+                                }, true)
+                                .on("mouseup.zoomRect", function() {
+                                    d3.select(window).on("mousemove.zoomRect", null).on("mouseup.zoomRect", null);
+                                    var m = d3.mouse(e);
+                                    m[0] = Math.max(0, Math.min(w, m[0]));
+                                    m[1] = Math.max(0, Math.min(h, m[1]));
+                                    if (m[0] !== origin[0] && m[1] !== origin[1]) {
+                                        var T = d3.zoomTransform(svg.node()); // current transform
+                                        var dx = Math.abs(m[0] - origin[0])/ T.k;
+                                        var dy = Math.abs(m[1] - origin[1])/ T.k;
+                                        var s = 1 / Math.max(dx/w, dy/h);
+                                        var x = ((m[0]+origin[0])/2 - T.x)/ T.k; // new center 
+                                        var y = ((m[1]+origin[1])/2 - T.y)/ T.k;
+                                        x = x * s; // new center with new scale
+                                        y = y * s;
+                                        var tx = w/2 - x;
+                                        var ty = h/2 - y;
+
+                                        var t = d3.zoomIdentity.translate(tx, ty).scale(s);
+                                        svg.transition().duration(750).call(zoom.transform, t);
+                                    }
+                                    rect.remove();
+                                }, true);
+                            d3.event.stopImmediatePropagation();
+                        });
+
                         var zoom = d3.zoom()
                             .scaleExtent([1, 32])
                             .translateExtent([[0, 0], [w, h]])
@@ -1042,8 +1084,6 @@
                             else if (scale <= 10) radius = 3;
                             else if (scale <= 20) radius = 4;
                             else radius = 5;
-
-                            console.log(scale + ': ' + radius);
 
                             g.selectAll("circle")
                                 .attr("r", function(d) {
