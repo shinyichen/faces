@@ -557,6 +557,8 @@
                             obj[headers[j]] = currentline[j].trim();
                         }
                     }
+                    if (cluster_index === "-1")
+                        continue;
                     var confidence = Number(obj["CONFIDENCE"]); // convert confidence to number
                     obj["CONFIDENCE"] = confidence;
 
