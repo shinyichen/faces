@@ -666,13 +666,18 @@
                     for (var r = 0; r < vector.length; r++) { // rows
                         var template = filenameToTemplate[ids[r]];
                         var pose;
-                        var y = Math.abs(template.yaw);
-                        if (y <= 30)
+                        if (template.yaw === undefined || template.yaw === null)
                             pose = "front";
-                        else if (y <= 70)
-                            pose = "angled";
-                        else
-                            pose = "profile";
+                        else {
+                            var y = Math.abs(template.yaw);
+                            if (y <= 30)
+                                pose = "front";
+                            else if (y <= 70)
+                                pose = "angled";
+                            else
+                                pose = "profile";
+                        }
+
                         $scope.dataset[r] = {
                             "x": vector[r][0],
                             "y": vector[r][1],
@@ -1282,11 +1287,12 @@
                         var highlighted;
                         scope.$watch('plotInfo.highlight', function(newValue, oldValue) {
                             if (newValue !== undefined && newValue !== null) {
+                                selectedDot.moveToFront();
                                 highlighted = newValue;
                                 if (oldValue) {
                                     var s = d3.select("[id='" + oldValue + "']");
                                     s.moveToBack();
-                                    if (s.attr("d") !== null) {
+                                    if (s.datum().pose === "angled") {
                                         s.attr("d", triangle);
                                     } else {
                                         s.attr("r", function(d) {
