@@ -28,6 +28,24 @@
                         <option value="">Select Preset</option>
                         <option ng-repeat="p in presets track by $index" ng-value="p">{{p}}</option>
                     </select>
+                    <hr>
+                    <h4>Or open a new result:</h4>
+                    <div class="form-group">
+                        <label class="col-form-label">Templates File: </label>
+                        <input class="form-control" type="file" name="file" fileread="inputs.templateText">
+                    </div>
+                    <div class="form-group">
+                        <label class="col-form-label">Clusters File: </label>
+                        <input class="form-control" type="file" name="file" fileread="inputs.clustersText">
+                    </div>
+                    <div class="form-group">
+                        <label class="col-form-label">Ground Truth File: </label>
+                        <input class="form-control" type="file" name="file" fileread="inputs.groundTruthText">
+                    </div>
+                    <button type="button" class="btn btn-primary" ng-disabled="loading" ng-click="open()">
+                        <span ng-show="loading" class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span>
+                        Open
+                    </button>
                 </div>
             </div>
         </div>
@@ -53,7 +71,7 @@
                     </div>
                     <div class="col-lg-4 col-md-4 col-lg-4 col-md-4">
                         <div class="btn-group" data-toggle="buttons">
-                            <button class="btn btn-xs" ng-class="{'btn-primary': app == 'plot', 'btn-default': app !== 'plot'}" ng-click="openPlotApp()">
+                            <button class="btn btn-xs" ng-disabled="!formModel.preset" ng-class="{'btn-primary': app == 'plot', 'btn-default': app !== 'plot'}" ng-click="openPlotApp()">
                                 Plot View
                             </button>
                             <button class="btn btn-xs" ng-class="{'btn-primary': app == 'table', 'btn-default': app !== 'table'}" ng-click="openTableApp()">
@@ -199,7 +217,7 @@
             </div> <!-- end of plot app -->
 
             <!-- table app -->
-            <div ng-show="app == 'table' && data_ready">
+            <div ng-show="app == 'table'">
 
                 <!-- overview -->
                 <div ng-show="tableView==='overview'">
@@ -307,7 +325,7 @@
             <div ng-show="app=='table_gt'">
 
                 <!-- overview -->
-                <div ng-if="data_ready">
+                <div>
 
                     <div class="row">
                         <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">

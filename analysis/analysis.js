@@ -19,6 +19,12 @@
                 preset: null
             };
 
+            $scope.inputs = {
+                clustersText: null,
+                templateText: null,
+                groundTruthText: null
+            };
+
             $scope.loading = false;
 
             /** data for all apps **/
@@ -107,13 +113,7 @@
 
             var gt_file = "../data/ground_truth.csv";
 
-            var templateText = null;
-
             var filenameToTemplate = {};
-
-            var clustersText = null;
-
-            var groundTruthText = null;
 
             var vector, ids;
 
@@ -125,13 +125,16 @@
 
             $scope.open = function() {
                 $scope.loading = true;
-                $scope.preset = $scope.formModel.preset;
-                template_file = "../data/" + $scope.preset + "/hint.csv";
-                vector_file = "../data/analysis/" + $scope.preset + "_2d.txt";
-                id_file = "../data/analysis/" + $scope.preset + "_img.txt";
-                cluster_file = "../data/" + $scope.preset + "/clusters.txt";
-
-                loadPreset(); //load/parse file, init plot data, set app to plot
+                if ($scope.formModel.preset) {
+                    var preset = $scope.formModel.preset;
+                    template_file = "../data/" + preset + "/hint.csv";
+                    vector_file = "../data/analysis/" + preset + "_2d.txt";
+                    id_file = "../data/analysis/" + preset + "_img.txt";
+                    cluster_file = "../data/" + preset + "/clusters.txt";
+                    loadPreset(); //load/parse file, init plot data, set app to plot
+                } else {
+                    loadCustom();
+                }
 
             };
 
@@ -341,10 +344,10 @@
                 $scope.gtPages = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]; // pagination being shown
                 $scope.gtClusterId = null;
 
-                templateText = null;
+                $scope.inputs.templateText = null;
                 filenameToTemplate = {};
-                clustersText = null;
-                groundTruthText = null;
+                $scope.inputs.clustersText = null;
+                $scope.inputs.groundTruthText = null;
                 vector = null, ids = null;
 
                 windowPosition = {
@@ -478,15 +481,15 @@
 
             function loadPreset() {
                 $http.get(template_file).then(function(response) {
-                    templateText = response.data;
+                    $scope.inputs.templateText = response.data;
                     return $http.get(cluster_file);
                 }, function(error) {
                 }).then(function(response) {
 
-                    clustersText = response.data;
+                    $scope.inputs.clustersText = response.data;
 
                     $http.get(gt_file).then(function(r) {
-                        groundTruthText = r.data;
+                        $scope.inputs.groundTruthText = r.data;
                         load();
                         initGraph();
                         $scope.title = $scope.subjectIDs.length + "Subjects, " + $scope.clusterIDs.length + "Clusters";
@@ -497,16 +500,24 @@
                 });
             }
 
+            function loadCustom() {
+                load();
+                //initGraph();
+                $scope.title = $scope.subjectIDs.length + "Subjects, " + $scope.clusterIDs.length + "Clusters";
+                $scope.app = "table";
+                $scope.loading = false;
+            }
+
             function load() {
                 // result file
-                parseClusters(clustersText);
+                parseClusters($scope.inputs.clustersText);
                 $scope.clusterIDs = Object.keys($scope.clusters);
 
                 // input file
-                parseTemplates(templateText);
+                parseTemplates($scope.inputs.templateText);
 
                 // ground truth
-                parseGroundTruth(groundTruthText);
+                parseGroundTruth($scope.inputs.groundTruthText);
                 $scope.subjectIDs = Object.keys($scope.subjects);
                 calculatePrecision();
 
