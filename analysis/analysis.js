@@ -1293,7 +1293,6 @@
                                 highlighted = newValue;
                                 if (oldValue) {
                                     var s = d3.select("[id='" + oldValue + "']");
-                                    s.moveToBack();
                                     if (s.datum().pose === "angled") {
                                         s.attr("d", triangle);
                                     } else {
